@@ -1,0 +1,500 @@
+you: 7827
+it: 3758
+something: 2380
+that: 1535
+the statement: 1348
+i: 1169
+another way: 888
+the story: 688
+people: 579
+a person: 395
+they: 392
+the effect: 348
+he: 278
+someone: 245
+the last thing: 241
+she: 233
+we: 211
+who: 165
+one: 145
+some people: 133
+an activity: 112
+what: 86
+humans: 84
+both: 84
+which: 84
+dogs: 51
+many people: 49
+most people: 44
+the dog: 44
+water: 43
+the car: 41
+children: 36
+the fact: 35
+this: 34
+the baby: 33
+them: 32
+the tire: 30
+food: 28
+a dog: 27
+the cat: 27
+a cat: 26
+the children: 26
+men: 25
+cars: 25
+the teacher: 25
+animals: 24
+computers: 24
+a man: 24
+some: 24
+the sun: 24
+snow: 23
+a car: 23
+birds: 23
+the president: 23
+the coyote: 22
+a child: 21
+the jury: 21
+students: 20
+things: 20
+music: 19
+women: 19
+money: 19
+a computer: 18
+trees: 18
+others: 18
+everyone: 18
+dust: 18
+fire: 17
+cats: 17
+the space shuttle: 17
+the telephone: 17
+the dogs: 17
+the officer: 16
+love: 15
+beer: 15
+plants: 15
+teachers: 15
+books: 15
+boredom: 14
+life: 14
+the world: 14
+a tree: 14
+grandma: 14
+a wallet: 14
+smoke: 14
+the farmer: 14
+my hands: 14
+cookies: 13
+kids: 13
+a bird: 13
+salt: 13
+some animals: 13
+the boat: 13
+a cloud: 13
+the birds: 13
+a spider: 13
+the knife: 13
+a book: 12
+helium: 12
+ice: 12
+sex: 12
+the waitress: 12
+parents: 12
+the glass: 12
+an owl: 12
+farmers: 12
+a ghost: 12
+the class: 12
+milk: 11
+god: 11
+a student: 11
+my neighbor: 11
+the dentist: 11
+the policemen: 11
+time: 11
+the widow: 11
+a cake: 10
+skin: 10
+the stock market: 10
+human beings: 10
+wood: 10
+a musician: 10
+the crowd: 10
+rain: 10
+the person: 10
+excellence: 10
+horses: 10
+the tree: 10
+the ground: 10
+the catepillar: 10
+the rabbit: 10
+the people: 10
+the firemen: 10
+a crazy man: 10
+the woman: 10
+the soldier: 10
+the boy: 10
+the police: 10
+a house: 9
+your hair: 9
+flowers: 9
+paper: 9
+religion: 9
+guns: 9
+the moon: 9
+the child: 9
+me: 9
+walking: 9
+a jury: 9
+writing: 9
+fish: 9
+the plant: 9
+somebody: 9
+a glass: 9
+some individuals: 9
+eggs: 9
+death: 9
+the word: 9
+the snowman: 9
+the brain: 9
+my mother: 9
+man: 8
+bread: 8
+babies: 8
+glass: 8
+gravity: 8
+a woman: 8
+a human: 8
+dinner: 8
+the minister: 8
+a doctor: 8
+the king: 8
+the river: 8
+drinking: 8
+a lot: 8
+a string: 8
+reading: 8
+paint: 8
+your idea: 8
+a butcher: 8
+the man: 8
+no one: 8
+a farmer: 8
+nothing: 8
+the sky: 8
+the road: 8
+a letter: 8
+the squirrel: 8
+a can: 8
+the fireman: 8
+the hunter: 8
+a ticket: 8
+leaves: 8
+a wife: 7
+war: 7
+other people: 7
+a cook: 7
+mammals: 7
+studying: 7
+lions: 7
+a teacher: 7
+hair: 7
+a zoo: 7
+jewelry: 7
+some stores: 7
+a parent: 7
+a machine: 7
+the geese: 7
+a friend: 7
+the truck: 7
+the house: 7
+pets: 7
+the weather: 7
+doctors: 7
+anyone: 7
+cities: 7
+worms: 7
+some things: 7
+chairs: 7
+stairs: 7
+the mouse: 7
+rabbits: 7
+the map: 7
+air: 7
+the school: 7
+eating: 7
+the situation: 7
+a heater: 7
+the patient: 7
+a platform railing: 7
+a backyard: 7
+the tidal wave: 7
+a contraceptive: 7
+a movie: 6
+an eye: 6
+a bathroom: 6
+firemen: 6
+a stream: 6
+friends: 6
+a king: 6
+a church: 6
+the earth: 6
+a bus: 6
+a ship: 6
+a closet: 6
+airplanes: 6
+teeth: 6
+diving: 6
+boats: 6
+a mouse: 6
+these: 6
+hunger: 6
+dancing: 6
+the milk: 6
+a plate: 6
+cows: 6
+everything: 6
+criminals: 6
+one type: 6
+herself: 6
+sports: 6
+anything: 6
+fires: 6
+an underground area: 6
+ghosts: 6
+my friend: 6
+a bass drum: 6
+cloth: 6
+the bird: 6
+meat: 6
+candles: 6
+an industry: 6
+medication: 6
+the spider: 6
+morality: 6
+the snow: 6
+the parents: 6
+-: 6
+a ladder: 6
+a carry on bag: 6
+a system: 6
+photographs: 6
+a candy bar: 6
+all the people: 6
+a banker: 6
+a store shelf: 6
+a boy: 6
+u: 6
+the butterfly: 6
+french toast: 5
+a lake: 5
+snakes: 5
+dishes: 5
+change: 5
+alcohol: 5
+machines: 5
+a pot: 5
+soldiers: 5
+running: 5
+sound: 5
+a chef: 5
+sugar: 5
+exercise: 5
+dolphins: 5
+happiness: 5
+an arm: 5
+football: 5
+butterflies: 5
+matter: 5
+a letter opener: 5
+whales: 5
+clouds: 5
+the water: 5
+a horse: 5
+all the students: 5
+a game: 5
+terrorists: 5
+the human body: 5
+yourself: 5
+telephones: 5
+a candle: 5
+vehicles: 5
+a court: 5
+schools: 5
+a programmer: 5
+curiosity: 5
+drugs: 5
+a company: 5
+mom: 5
+coffee: 5
+the little boy: 5
+clothes: 5
+mailmen: 5
+kissing: 5
+rooms: 5
+a train station: 5
+the cow: 5
+all people: 5
+magazines: 5
+a leader: 5
+a saloon: 5
+our family: 5
+a band: 5
+houses: 5
+liquids: 5
+the wind: 5
+restaurants: 5
+a chess queen: 5
+painting: 5
+a window: 5
+the police man: 5
+families: 5
+the warden: 5
+wrestling: 5
+a group: 5
+cigarettes: 5
+a body: 5
+nature: 5
+the movie: 5
+planes: 5
+engines: 5
+a choir: 5
+an individual: 5
+grapes: 5
+my car: 5
+the windmill: 5
+a mother: 5
+spiders: 5
+a door: 5
+actors: 5
+a record library: 5
+a toy soldier: 5
+a circular route: 5
+a knife: 5
+science: 5
+the boys: 5
+the rain: 5
+frogs: 5
+cream: 5
+a blind man: 5
+mail: 5
+the young lady: 5
+a criminal: 5
+the student: 5
+an electronics store: 5
+a curb: 5
+the gallery: 5
+an organism: 5
+a staples: 5
+my dog: 5
+a strange man: 5
+a shopping arcade: 5
+a soprano: 5
+jane: 5
+jackets: 5
+a chess knight: 5
+an injury: 5
+a ballpoint pen: 5
+ice cream: 4
+lightning: 4
+a harp: 4
+a bicycle: 4
+a revolver: 4
+fans: 4
+a stage: 4
+metal: 4
+work: 4
+pollution: 4
+a place: 4
+grass: 4
+person: 4
+a fork: 4
+a captain: 4
+a basket: 4
+a chess board: 4
+sun: 4
+a gun: 4
+an artery: 4
+squirrels: 4
+a stringed instrument: 4
+a bicycle storage area: 4
+television: 4
+the students: 4
+a minister: 4
+stores: 4
+chess: 4
+a ball: 4
+fencing: 4
+lead: 4
+some pets: 4
+an animal: 4
+marriage: 4
+the store: 4
+roads: 4
+trains: 4
+wine: 4
+blood: 4
+containers: 4
+camping: 4
+muscles: 4
+the ball: 4
+a castle: 4
+peaches: 4
+a keyboard: 4
+a jar: 4
+a shelf: 4
+a thief: 4
+the amount: 4
+sleeping: 4
+the line: 4
+a rock: 4
+pop corn: 4
+the letter: 4
+killing: 4
+the leaves: 4
+corn: 4
+the train: 4
+an island: 4
+movies: 4
+tires: 4
+a hat: 4
+a pencil: 4
+a shower curtain: 4
+a vessel: 4
+a cello: 4
+the human brain: 4
+policemen: 4
+taxes: 4
+him: 4
+rice: 4
+a telephone book: 4
+words: 4
+some humans: 4
+wheat: 4
+merchandise: 4
+coal: 4
+fruit: 4
+dioxins: 4
+the owl: 4
+dead people: 4
+malls: 4
+a class: 4
+a newspaper: 4
+stars: 4
+heat: 4
+the bouquet: 4
+knowledge: 4
+a shoe: 4
+a forklift: 4
+her children: 4
+snowmen: 4
+persons: 4
+a: 4
+tools: 4
+the priest: 4
+lying: 4
+a mirror: 4
+hockey: 4
+all cultures: 4
+the couple: 4

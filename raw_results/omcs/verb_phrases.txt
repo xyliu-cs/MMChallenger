@@ -1,0 +1,500 @@
+understand the event: 3110
+has the step: 708
+happen as a consequence: 344
+answer the question: 235
+sent a letter: 49
+taught a class: 45
+wrote a book: 40
+illustrated with the story:1: 33
+having lunch: 33
+built a snowman: 30
+have sex: 28
+went camping: 28
+building a cathedral: 27
+play a game: 25
+walking in the rain: 23
+watched the movie: 22
+getting some money: 22
+went to the store: 22
+drive a car: 21
+beginning work: 21
+read a book: 20
+apply for a job: 20
+had sex: 20
+killing people: 19
+having sex: 19
+involved in an accident: 19
+get a haircut: 18
+going to a film: 18
+go to the store: 18
+ate the roadrunner: 18
+commit suicide: 17
+watching tv: 17
+learning about the world: 17
+stared out the window: 17
+loved one: 16
+kill people: 16
+having a party: 16
+lighting a fire: 16
+playing a game: 15
+marched in the parade: 15
+went to the zoo: 15
+went to the beach: 15
+reading a book: 14
+eating a cookie: 14
+listening to music: 14
+fixing a computer: 14
+deciding a criminal: 14
+spending money: 14
+having fun: 14
+eat breakfast: 14
+spent months: 14
+gave the dog: 14
+find a mouse: 14
+received a letter: 14
+returned the wallet: 14
+staying in bed: 14
+taught mathematics: 14
+watch a movie: 13
+watching television: 13
+driving a car: 13
+visiting an art: 13
+go to school: 13
+losing consciousness: 13
+taking a walk: 13
+eating vegetables: 13
+stay in bed: 13
+going to a restaurant: 13
+making a phone: 13
+ate a sandwich: 13
+attacked the mailman: 13
+stole some money: 13
+went to jail: 13
+saw a wallet: 13
+lying on the ground: 13
+opened the wallet: 13
+spend the summer: 13
+received a bill: 13
+have fun: 12
+go to bed: 12
+getting in shape: 12
+learning about science: 12
+rains in the desert: 12
+having a haircut: 12
+eat an apple: 12
+going to a place: 12
+playing the violin: 12
+going to market: 12
+view a film: 12
+become reality: 12
+determining the truth: 12
+play soccer: 12
+go to sleep: 12
+drank from a bottle: 12
+washed the laundry: 12
+had a baby: 12
+likes snakes: 12
+see the snakes: 12
+chopping firewood: 12
+listen to music: 12
+wearing gloves: 12
+convicted the criminal: 12
+ran up the tree: 12
+rang the bell: 12
+threw a coin: 12
+find a potato: 11
+climbing a mountain: 11
+starting a family: 11
+swallow semen: 11
+going fishing: 11
+start a fire: 11
+finding the truth: 11
+have lunch: 11
+ride a bicycle: 11
+find a kitten: 11
+lit a candle: 11
+listen to the radio: 11
+watch television: 11
+putting on the stand: 11
+visiting a museum: 11
+jump rope: 11
+use a calculator: 11
+cross the street: 11
+see a film: 11
+swept the floor: 11
+taking a break: 11
+entered into evidence: 11
+get some sun: 11
+settled on the shelf: 11
+assigned the students: 11
+looking for work: 11
+watching a movie: 10
+mailing a letter: 10
+watching a tv: 10
+lose weight: 10
+go on strike: 10
+buy presents: 10
+weeding the garden: 10
+proposing to a woman: 10
+climb a mountain: 10
+ride a bike: 10
+visit a museum: 10
+watch a film: 10
+see a play: 10
+buy a shirt: 10
+spend time: 10
+writing a program: 10
+playing sports: 10
+going to a performance: 10
+eating a hamburger: 10
+meeting people: 10
+have food: 10
+wrote a letter: 10
+fly on the airplane: 10
+painted a picture: 10
+broke a glass: 10
+burned to the ground: 10
+shot the waitress: 10
+make dinner: 10
+scared the cat: 10
+flew on a plane: 10
+got into bed: 10
+chopped the carrots: 10
+find a cat: 9
+find a snake: 9
+passing a class: 9
+make a shopping: 9
+play football: 9
+giving assistance: 9
+watering a plant: 9
+wage war: 9
+pay attention: 9
+saw a hippopotamus: 9
+paying cash: 9
+making music: 9
+hearing the news: 9
+complain about the state: 9
+getting a job: 9
+make people: 9
+reading the newspaper: 9
+running errands: 9
+learning about a subject: 9
+opening a business: 9
+buy a house: 9
+play baseball: 9
+go for a haircut: 9
+play frisbee: 9
+cooking a meal: 9
+causes stress: 9
+attending school: 9
+cook a meal: 9
+conquering a nation: 9
+see a movie: 9
+surfing the net: 9
+playing basketball: 9
+stand in line: 9
+meeting a friend: 9
+chat with friends: 9
+do a crossword: 9
+going to a concert: 9
+go for a swim: 9
+have a haircut: 9
+examining a thing: 9
+keep things: 9
+clean the house: 9
+went to work: 9
+cycled to work: 9
+stole a painting: 9
+saw a tiger: 9
+shot the bankrobber: 9
+fighting war: 9
+stalked a mouse: 9
+ran up the hill: 9
+find a crab: 9
+drank a bottle: 9
+eat meat: 9
+play games: 9
+wrote a program: 9
+ate the vegetables: 9
+saw smoke: 9
+likes animals: 9
+drank a glass: 9
+sang in the choir: 9
+barked at the mailman: 9
+cut the cake: 9
+broke a plate: 9
+crossed the sun: 9
+went to the pharmacy: 9
+get medication: 9
+got presents: 9
+practices the violin: 9
+saw people: 9
+paddled the boat: 9
+painted a chair: 9
+watched a swan: 9
+find a beaver: 8
+play cards: 8
+fighting the enemy: 8
+take the bus: 8
+playing frisbee: 8
+getting exercise: 8
+losing weight: 8
+viewing a video: 8
+see people: 8
+read the newspaper: 8
+propose to a woman: 8
+eat dinner: 8
+go for a drive: 8
+play music: 8
+driving to work: 8
+getting onto the web: 8
+watch a tv: 8
+taking an exam: 8
+answer questions: 8
+drive to work: 8
+commit murder: 8
+going for a drive: 8
+buying food: 8
+receiving a degree: 8
+painting a picture: 8
+score a homer: 8
+drink water: 8
+buy food: 8
+take a shower: 8
+playing sport: 8
+eat food: 8
+discovering the truth: 8
+remembering a phone: 8
+going to the mall: 8
+watch tv: 8
+setting a cup: 8
+meet a friend: 8
+going to bed: 8
+bringing suit: 8
+write a letter: 8
+committing to memory: 8
+surfing the web: 8
+starting a flame: 8
+buying a house: 8
+gave the boy: 8
+ran down the hill: 8
+played in front: 8
+entertain people: 8
+go to work: 8
+use a computer: 8
+read the book: 8
+turned into a butterfly: 8
+made a drink: 8
+crackeds some eggs: 8
+going on strike: 8
+has a turtle: 8
+use a vcr: 8
+view a video: 8
+extinguished the fire: 8
+drove across the border: 8
+hit the ball: 8
+planted corn: 8
+give assistance: 8
+spend money: 8
+wrote a message: 8
+bought a rose: 8
+rode the elevator: 8
+picked up the telephone: 8
+drank a soda: 8
+find a lizard: 8
+brought a can: 8
+drank the can: 8
+watching the tv: 8
+using a television: 8
+lay on the ground: 8
+walked along the beach: 8
+stepped on a seashell: 8
+heard a noise: 8
+painted a house: 8
+walk the dog: 8
+find a heifer: 7
+rented apartment: 7
+buying presents: 7
+light a match: 7
+start a flame: 7
+add up numbers: 7
+cook food: 7
+illustrate a point: 7
+buy things: 7
+mail a letter: 7
+making money: 7
+make a phone: 7
+have money: 7
+eating in a restaurant: 7
+laugh at a joke: 7
+hitting the bottle: 7
+recording somethign: 7
+get to the front: 7
+fly in an airplane: 7
+comforting a friend: 7
+pass a class: 7
+going to the zoo: 7
+wash clothes: 7
+strike a match: 7
+get in shape: 7
+go to a place: 7
+eating food: 7
+walked to the store: 7
+hear the crowd: 7
+drinking alcohol: 7
+buying a beer: 7
+find a bee: 7
+pay the bills: 7
+reading a magazine: 7
+fight the enemy: 7
+making a shopping: 7
+do some exercises: 7
+taping a television: 7
+commit perjury: 7
+passing a course: 7
+move a car: 7
+reading a letter: 7
+score a home: 7
+playing chess: 7
+having food: 7
+going to a play: 7
+designing software: 7
+expressing information: 7
+read a newspaper: 7
+play the piano: 7
+paying by credit: 7
+winning a baseball: 7
+invest money: 7
+send a criminal: 7
+cleaning clothing: 7
+run a marathon: 7
+causes anxiety: 7
+writing a term: 7
+receive a degree: 7
+drink alcohol: 7
+have a conversation: 7
+play poker: 7
+passing sentence: 7
+run errands: 7
+playing games: 7
+go to a laundromat: 7
+drill a hole: 7
+eating an apple: 7
+running after the ball: 7
+fight war: 7
+cook dinner: 7
+water a plant: 7
+go on the internet: 7
+going for a run: 7
+earn a living: 7
+popped some pop: 7
+find at the theatre: 7
+find an apple: 7
+find at a conference: 7
+flew onto a branch: 7
+hear music: 7
+find a gazelle: 7
+forgot the formula: 7
+open a business: 7
+entered a contest: 7
+wash dirt: 7
+take an exam: 7
+grow vegetables: 7
+go to a movie: 7
+add up a column: 7
+play the violin: 7
+cleaning the house: 7
+saw a giraffe: 7
+having an examination: 7
+going for a walk: 7
+used by humans: 7
+gave birth: 7
+howl with laughter: 7
+buy a beer: 7
+paid money: 7
+walked down the stairs: 7
+moves scenery: 7
+fell from the tree: 7
+fell to the ground: 7
+carry on bag: 7
+playing tennis: 7
+put out a fire: 7
+sculpting gel: 7
+ate a candy: 7
+puts on a jacket: 7
+rubbed cream: 7
+make a quilt: 7
+damaged houses: 7
+find in bed: 6
+going into a trance: 6
+find a sloth: 6
+flying in an airplane: 6
+find water: 6
+go camping: 6
+swallowing semen: 6
+go for a run: 6
+play lacrosse: 6
+get a contract: 6
+light a fire: 6
+using a computer: 6
+look through a telescope: 6
+pay by check: 6
+drew a horse: 6
+drank some water: 6
+go to market: 6
+produce an image: 6
+get onto the web: 6
+play ball: 6
+enjoying a film: 6
+enjoy the day: 6
+pay by credit: 6
+fix a computer: 6
+crossed the road: 6
+want people: 6
+listening to the radio: 6
+go to an opera: 6
+win a baseball: 6
+eat a cookie: 6
+bake a cake: 6
+investing money: 6
+seeing art: 6
+serving customers: 6
+hearing music: 6
+washing clothes: 6
+going to sleep: 6
+enjoying the day: 6
+reaching an advantage: 6
+play basketball: 6
+stand in a queue: 6
+take care: 6
+go fishing: 6
+make a patchwork: 6
+going to work: 6
+attending a meeting: 6
+having a conversation: 6
+maintain muscle: 6
+having a rest: 6
+attend class: 6
+crossing the street: 6
+going for a swim: 6
+looking through a telescope: 6
+attend a rock: 6
+do housework: 6
+impanel a jury: 6
+send e: 6
+giving a gift: 6
+set a cup: 6
+laughing at a joke: 6
+compute a sum: 6
+go to a restaurant: 6
+doing housework: 6
+playing hockey: 6
+taking an examination: 6
+change society: 6
+learning a language: 6
+following a recipe: 6
+begin work: 6
+getting to the front: 6
+go to a performance: 6
+surf the web: 6
+tape a television: 6
