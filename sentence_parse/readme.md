@@ -8,5 +8,5 @@ pip install allennlp
 pip install allennlp-models
 cd test_prior/sentence_parse
 wget https://storage.googleapis.com/allennlp-public-models/bert-base-srl-2020.11.19.tar.gz
-python allennlp_srl_parse_loc.py
+python allennlp_srl_parse_loc.py input_path output_path
 ```

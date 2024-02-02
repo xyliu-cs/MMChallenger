@@ -1,0 +1,500 @@
+the event: 78
+in: 65
+out: 65
+outside: 61
+where: 58
+in bed: 36
+in the event: 36
+down: 34
+at home: 32
+a place: 31
+to the doctor: 31
+at the zoo: 30
+in the rain: 30
+the: 28
+back: 27
+up: 26
+somewhere: 25
+in a restaurant: 23
+on paper: 23
+around: 23
+away: 22
+in a fast food restaurant: 20
+on: 19
+in it: 19
+in the desert: 18
+in the air: 17
+in a house: 16
+inside: 16
+to work: 16
+out of a window: 15
+in the parade: 15
+out the window: 15
+to the mall: 14
+down the stairs: 14
+in a book: 13
+on television: 13
+around a lake: 12
+through a telescope: 12
+in the refrigerator: 12
+there: 11
+upstairs: 11
+up the hill: 11
+in his bed: 11
+in water: 10
+up and down: 10
+in line: 10
+on the printer: 10
+on the shelf: 10
+up the tree: 10
+to paris: 10
+in a building: 9
+on it: 9
+at the brew pub: 9
+far away: 9
+over: 9
+upon a mouse: 9
+in the choir: 9
+on a plane: 9
+in the event " jane saw people at the zoo: 9
+to the shore: 9
+in their front yard: 9
+in the oven: 8
+in a store: 8
+in the ocean: 8
+in church: 8
+from between your toes: 8
+in joan 's ear: 8
+down the hill: 8
+in front of the ship: 8
+in the kitchen: 8
+down the slushy road: 8
+in spots: 8
+sideways: 8
+along the beach: 8
+in an office: 7
+in a field: 7
+on line: 7
+out of bed: 7
+at the theater: 7
+at the theatre: 7
+in a cabinet: 7
+at a conference: 7
+onto a branch: 7
+off a cliff: 7
+in the head: 7
+in the car: 7
+to the ground: 7
+in a town: 6
+in an airplane: 6
+at work: 6
+off: 6
+in school: 6
+to school: 6
+in the ground: 6
+in a city: 6
+down the street: 6
+into a curve: 6
+to the race: 6
+in the bathroom: 6
+in australia: 6
+at a store: 6
+on a farm: 6
+in reality: 6
+in the countryside: 5
+at the market: 5
+online: 5
+in a mall: 5
+in a backpack: 5
+on a shelf: 5
+in a plane: 5
+on tv: 5
+in a kitchen: 5
+at a park: 5
+in the garage: 5
+under the bed: 5
+in a play: 5
+on tables: 5
+in a museum: 5
+in the storm: 5
+in the event " jill sent a letter to her friend: 5
+in the sky: 5
+at the airport: 5
+over the moon: 5
+in a street: 5
+at the drive - thru: 5
+on the sidewalk: 5
+in the snow: 5
+at a shop: 5
+on the ice: 5
+at the supermarket: 5
+in the fire: 5
+in a revolution: 5
+at the bookstore: 5
+on the stove: 5
+at the stars: 5
+in the event " sarah is ironed her clothes: 5
+in the event " the teacher read a story to her students: 5
+in the event " shane decided to spend the summer hiking: 5
+at julie 's door: 5
+in a barber shop quartet: 5
+on the flower: 5
+in a tree: 4
+in a forest: 4
+in schools: 4
+behind: 4
+in china: 4
+in a school: 4
+in outerspace: 4
+at a church: 4
+at the bottom of the sea: 4
+at the bar: 4
+from a high bridge: 4
+on earth: 4
+at a friend 's house: 4
+through: 4
+at the office: 4
+in the event " lea is in love with donald . she moved into his apartment with him: 4
+at the front door: 4
+in the event " william drank a bottle of beer: 4
+tables: 4
+in a classroom: 4
+under water: 4
+in a wall: 4
+on a table: 4
+on the subway: 4
+at a school: 4
+at a train station: 4
+in the dark: 4
+on the carpet: 4
+in a bed: 4
+in the event " the mouse died: 4
+into my hair: 4
+in the event " jane painted a chair: 4
+in the event " sally drove her husband to the mall: 4
+in the event " john heard a noise like thunder . he went out of the logging cabin: 4
+at the park: 4
+across the border: 4
+in a drawer: 4
+at fairgrounds: 4
+in the event " chris threw a coin into the fountain: 4
+in a class: 4
+in the event " i am trying not to smoke cigarettes: 4
+in the event " sandra paddled the boat to the shore: 4
+in the event " jeff stole a bicycle: 4
+in a park: 3
+in a music store: 3
+on the sky: 3
+in a linen closet: 3
+in a hospital: 3
+in which: 3
+on the rug: 3
+in a sporting goods store: 3
+at a bus depot: 3
+in a band: 3
+in the ditch: 3
+underground: 3
+on the roof: 3
+at a desk: 3
+at airports: 3
+in the bedroom: 3
+in jail: 3
+at sea: 3
+at an airport: 3
+at a mall: 3
+in the basement: 3
+in the event " dan threw out the empty cookie box: 3
+after the ball: 3
+in an oven: 3
+near you: 3
+in the wilderness: 3
+on the moon: 3
+on water: 3
+in a trial: 3
+at a bar: 3
+at the beach: 3
+in hell: 3
+at a funeral: 3
+in a department store: 3
+at a hospital: 3
+in a hardware store: 3
+in the house: 3
+at a grocery store: 3
+home: 3
+in a medicine cabinet: 3
+in a bar: 3
+at a rest area: 3
+to his car: 3
+on them: 3
+in houses: 3
+at a concert: 3
+in a library: 3
+on a stage: 3
+in the desk: 3
+by: 3
+from one place: 3
+in the lottery: 3
+in war: 3
+at a party: 3
+in nature: 3
+on the paper: 3
+in a court: 3
+on the table: 3
+at disneyland: 3
+at the corner of two streets: 3
+on the desk: 3
+in the space shuttle: 3
+on the street: 3
+at school: 3
+a world: 3
+on the beach: 3
+in the: 3
+at a restaurant: 3
+outside the house: 3
+at: 3
+in a pharmacy: 3
+at chess: 3
+in seven moves: 3
+in a chess tournament: 3
+on the battlefield: 3
+in soccer: 3
+in a stadium: 3
+on the ground: 3
+at the department store: 3
+underwater: 3
+on the surface of the earth: 3
+in a desk: 3
+at the movies: 3
+on the water: 3
+in the united states: 3
+in a zoo: 3
+out of the logging cabin: 3
+at the opera: 3
+under a tree: 3
+in the woods: 3
+in a waste bin: 3
+in the newspaper: 3
+in a yard: 3
+in a stationery store: 3
+anywhere: 3
+here: 3
+in a bathtub: 3
+in the event " the tent collapsed: 3
+at the coffee shop: 3
+in the event " my housed burned to the ground: 3
+in the event " peter whispered in joan 's ear: 3
+in the event " john went to the market: 3
+in a movie: 2
+in a cathedral: 2
+on a roof: 2
+at a resturant: 2
+in religious groups: 2
+in a meadow: 2
+in zoos: 2
+through glass: 2
+at the gym: 2
+in a shopping complex: 2
+in television: 2
+in a toy store: 2
+in the event " bob collects baseball cards: 2
+at a neighbor 's house: 2
+on their bodies: 2
+on air: 2
+through the air: 2
+on a bed: 2
+on a runway: 2
+in a bedroom: 2
+in the office: 2
+in a suitcase: 2
+throughout the world: 2
+on top of water: 2
+from a distance: 2
+downhill: 2
+a court: 2
+at a bus stop: 2
+in your mouth: 2
+in the mail: 2
+in the face: 2
+in a newspaper: 2
+at the processing plant: 2
+in the event " our local football team spent extra hours practicing this week . the annual championship game was won by the local team: 2
+in the event " the telephone rang .: 2
+on a team: 2
+in a hotel: 2
+in japan: 2
+in a mirror: 2
+in the sun: 2
+across the room: 2
+at the library: 2
+in a microwave: 2
+at a demonstration: 2
+overboard: 2
+in a bowl: 2
+in the cupboard: 2
+on a boat: 2
+in the arctic: 2
+in a pantry: 2
+in a sewer: 2
+under a desk: 2
+inland: 2
+up a hill: 2
+on the airplane: 2
+in a castle: 2
+in construction: 2
+in many societies: 2
+overseas: 2
+outdoors: 2
+in europe: 2
+at a relatives house: 2
+in a pet store: 2
+in the distance: 2
+on the radio: 2
+on the couch: 2
+in a stomach: 2
+in stores: 2
+in many people: 2
+on this planet: 2
+in soil: 2
+on the map: 2
+in the rest area: 2
+in a jewelry store: 2
+in a trash can: 2
+into: 2
+through the post office: 2
+at church: 2
+in uganda: 2
+at beach: 2
+at a drive - in movie: 2
+in the mail box: 2
+in mind: 2
+in a greenhouse: 2
+on a computer: 2
+in an area: 2
+in a dwelling: 2
+in delaware: 2
+a sport: 2
+in a church: 2
+in a bottle: 2
+in new york city: 2
+in a: 2
+in an orchestra: 2
+in a forward direction: 2
+against the door: 2
+in a grocery: 2
+in wars: 2
+in space: 2
+in most cities: 2
+at a meeting: 2
+flat: 2
+in the bank: 2
+in a " pad: 2
+in a court room: 2
+behind your ears: 2
+indoors: 2
+in the brain: 2
+at the repair shop: 2
+the stages: 2
+at a war: 2
+at a movie: 2
+at a library: 2
+on canvas: 2
+in an exercise room: 2
+at at hotel: 2
+in a file cabinet: 2
+at dinner: 2
+behind the refrigerator: 2
+in the yard: 2
+in a dog 's mouth: 2
+in a farm: 2
+in the modern world: 2
+in the midlands: 2
+at a saloon: 2
+in my house: 2
+in all directions: 2
+at an apartment: 2
+in cold areas: 2
+in restaurants: 2
+into a rage: 2
+in the closet: 2
+in hospital: 2
+in the outdoors: 2
+in a lab: 2
+in the mirror: 2
+in the event " jim cut his finger with the knife: 2
+in the corner: 2
+in the city: 2
+downtown: 2
+in your yard: 2
+in the garden: 2
+in the event " jeff bought a candy bar: 2
+from: 2
+in the toilet: 2
+in a garden: 2
+in my cereal: 2
+on my back: 2
+into the net: 2
+in the event " the kite flew high: 2
+atop a mountain: 2
+in a living room: 2
+at the top of a mountain: 2
+in the wild: 2
+in cities: 2
+space: 2
+at a waterfall: 2
+in the jungle: 2
+off the underarms: 2
+in a wooded area: 2
+in a pocket: 2
+in orbit: 2
+in the street: 2
+in a back yard: 2
+in a box: 2
+in the chemistry lab: 2
+in my brain: 2
+beside you: 2
+room: 2
+in the event " jack hit the ball . he scored a home run: 2
+in the event " paula went on a cruise to the caribbean: 2
+at a hardware shop: 2
+in the event " dwight apologized to anne: 2
+in the event " walt built an amusement park: 2
+on highways: 2
+in a bank: 2
+behind a chair: 2
+at your house: 2
+at a internet cafe: 2
+on the bottom: 2
+in food: 2
+in the store: 2
+in a closet: 2
+under your bed: 2
+in a coal mine: 2
+over the rainbow: 2
+in which case: 2
+at room temperature: 2
+out of the house: 2
+on you: 2
+in the event " bob ate an orange: 2
+in the event " the baby died: 2
+in the event " jim drove to the mall: 2
+in the event " billy dropped his ice cream cone: 2
+in the event " helen got sick . helen died: 2
+in a tent: 2
+in the event " bob 's sister died: 2
+up in the air: 2
+in a playground: 2
+in the event " jake bet sally for a beer: 2
+in theaters: 2
+in a sandbox: 2
+through malls: 2
+in santa monica: 2
+in a pencil sharpener: 1
+in london , uk: 1
+in a plate: 1
+in make music: 1
+in a computer: 1
+in groom lake: 1
+in a synagogue: 1
+in oregon: 1
+in a country: 1
+in minnesota: 1

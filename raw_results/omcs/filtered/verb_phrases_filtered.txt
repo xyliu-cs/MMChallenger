@@ -1,0 +1,50 @@
+sent a letter: 49
+taught a class: 45
+wrote a book: 40
+built a snowman: 30
+went camping: 28
+building a cathedral: 27
+play a game: 25
+walking in the rain: 23
+watched the movie: 22
+drive a car: 21
+read a book: 20
+watching tv: 17
+stared out the window: 17
+having a party: 16
+eating a cookie: 14
+fixing a computer: 14
+eat breakfast: 14
+taught mathematics: 14
+eating vegetables: 13
+stay in bed: 13
+ate a sandwich: 13
+attacked the mailman: 13
+stole some money: 13
+lying on the ground: 13
+opened the wallet: 13
+eat an apple: 12
+going to a place: 12
+playing the violin: 12
+play soccer: 12
+drank from a bottle: 12
+washed the laundry: 12
+chopping firewood: 12
+listen to music: 12
+ran up the tree: 12
+threw a coin: 12
+find a potato: 11
+climbing a mountain: 11
+start a fire: 11
+ride a bicycle: 11
+use a calculator: 11
+swept the floor: 11
+settled on the shelf: 11
+weeding the garden: 10
+writing a program: 10
+climb a mountain: 10
+broke a glass: 10
+scared the cat: 10
+play football: 9
+watering a plant: 9
+cooking a meal: 9
