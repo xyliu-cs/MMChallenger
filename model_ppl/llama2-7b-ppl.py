@@ -38,8 +38,8 @@ def calculate_perplexity(sentence, tokenizer, model, device):
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-tokenizer = LlamaTokenizer.from_pretrained(input_file_path)
-model = LlamaForCausalLM.from_pretrained(input_file_path).to(device)
+tokenizer = LlamaTokenizer.from_pretrained(model_file_path)
+model = LlamaForCausalLM.from_pretrained(model_file_path).to(device)
 
 
 print(f"Loading sentences from {input_file_path} ...")
@@ -59,7 +59,7 @@ for sent_dict in sent_list:
     i += 1
     if (i % 100 == 0):
         print(f"Processed {i} sentences")
-print(f"Processed {i} sentences")
+print(f"\n============\nTotal: Processed {i} sentences\n============")
 j_data["data"] = sent_list_ppl
 
 
