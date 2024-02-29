@@ -1,5 +1,5 @@
 import torch
-from transformers import LlamaForCausalLM, LlamaTokenizer
+from transformers import LlamaForCausalLM, LlamaTokenizer, AutoTokenizer, AutoModelForCausalLM
 import argparse
 import json
 
@@ -38,13 +38,27 @@ def calculate_perplexity(sentence, tokenizer, model, device):
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-tokenizer = LlamaTokenizer.from_pretrained(model_file_path)
-model = LlamaForCausalLM.from_pretrained(model_file_path).to(device)
+model_folder_name = model_file_path.split('/')[-1].lower()
+
+if "llama2" in model_folder_name:
+    tokenizer = LlamaTokenizer.from_pretrained(model_file_path)
+    model = LlamaForCausalLM.from_pretrained(model_file_path).to(device)
+elif "vicuna" in model_folder_name:
+    tokenizer = AutoTokenizer.from_pretrained(model_file_path)
+    model = AutoModelForCausalLM.from_pretrained(model_file_path).to(device)
+else:
+    print(f"Language model {model_folder_name} is not supported yet.")
 
 
 print(f"Loading sentences from {input_file_path} ...")
 with open(input_file_path, 'r') as f:
     j_data = json.load(f)
+
+print(f"Testing the availablity of output path {output_file_path} ...")
+with open(output_file_path, 'w') as f:
+    j_test = {'a': 2024}
+    json.dump(j_test, f)
+
 
 sent_list = j_data["data"]
 sent_list_ppl = []
