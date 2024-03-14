@@ -1,0 +1,30 @@
+the dog: 44
+the baby: 33
+the cat: 27
+the teacher: 25
+the president: 23
+the coyote: 22
+the jury: 21
+a computer: 18
+the telephone: 17
+the officer: 16
+the plant: 9
+the farmer: 14
+the waitress: 12
+parents: 12
+the glass: 12
+a ghost: 12
+a student: 11
+a musician: 10
+the rabbit: 10
+a crazy man: 10
+the soldier: 10
+the police: 10
+horses: 10
+the minister: 8
+the fireman: 8
+the hunter: 8
+a butcher: 8
+a doctor: 8
+the king: 8
+a programmer: 5
