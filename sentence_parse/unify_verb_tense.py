@@ -1,14 +1,14 @@
 from lemminflect import getInflection, getLemma
-import argparse
+# import argparse
 
-parser = argparse.ArgumentParser(description='Change the verb in the verb phrases to the present continuous form.')
-parser.add_argument('input_file_path', type=str, help='The path to the input file (verb_phrases_filtered.txt)')
-parser.add_argument('output_file_path', type=str, help='The path to the output file (gerund_phrases_filtered.txt)')
+# parser = argparse.ArgumentParser(description='Change the verb in the verb phrases to the present continuous form.')
+# parser.add_argument('input_file_path', type=str, help='The path to the input file (verb_phrases_filtered.txt)')
+# parser.add_argument('output_file_path', type=str, help='The path to the output file (gerund_phrases_filtered.txt)')
 
 # Execute the parse_args() method
-args = parser.parse_args()
-input_file_path = args.input_file_path
-output_file_path = args.output_file_path
+# args = parser.parse_args()
+input_file_path = '../raw_results/omcs/filtered_v2/verbs_filtered_v2.txt'
+output_file_path = '../raw_results/omcs/filtered_v2/gerunds_filtered_v2.txt'
 
 def get_present_continuous(verb):
     lemma = getLemma(verb, upos='VERB')
@@ -26,7 +26,9 @@ def get_present_continuous(verb):
 with open(input_file_path, 'r') as f:
     phrases = f.readlines()
 
-vp_list = [phrase.split(": ")[0] for phrase in phrases]
+# vp_list = [phrase.split(": ")[0] for phrase in phrases]
+vp_list = [verb.strip() for verb in phrases]
+    
 with open(output_file_path, 'w') as f:
     for vp in vp_list:
         words = vp.split()
