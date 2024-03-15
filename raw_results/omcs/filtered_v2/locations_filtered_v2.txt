@@ -1,0 +1,50 @@
+in bed: 36
+at home: 32
+at the zoo: 30
+in a restaurant: 23
+in a fast food restaurant: 20
+in the desert: 18
+in the air: 17
+in a house: 16
+in the parade: 15
+down the stairs: 14
+on television: 13
+around a lake: 12
+in the refrigerator: 12
+up the hill: 11
+in water: 10
+on the shelf: 10
+up the tree: 10
+at the brew pub: 9
+on a plane: 9
+in their front yard: 9
+in the oven: 8
+in a store: 8
+in the ocean: 8
+in church: 8
+in front of the ship: 8
+in the kitchen: 8
+down the slushy road: 8
+along the beach: 8
+in an office: 7
+in a field: 7
+at the theater: 7
+in a cabinet: 7
+at a conference: 7
+in the car: 7
+in school: 6
+in the bathroom: 6
+in the countryside: 5
+at the market: 5
+in a mall: 5
+at a park: 5
+in the garage: 5
+in a play: 5
+in a museum: 5
+in the storm: 5
+at the airport: 5
+at the drive - thru: 5
+on the sidewalk: 5
+in the fire: 5
+in the snow: 5
+in a forest: 4
