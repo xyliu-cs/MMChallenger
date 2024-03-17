@@ -1,7 +1,7 @@
 import json
 from collections import deque
 
-def extract_base_sentences(input_path, output_path, ban_list, method='default', reservoir_capacity=5, verbose=True):
+def extract_base_sentences(input_path, output_path, ban_list, method='default', reservoir_capacity=5, preview=False, verbose=True):
     def print_v(*args, **kwargs):
         if verbose:
             print(*args, **kwargs)
@@ -28,9 +28,12 @@ def extract_base_sentences(input_path, output_path, ban_list, method='default', 
                     compare_batch.append(sent_dict)
             # assert(len(compare_batch) == 5000)
             sorted_compare_list = sorted(compare_batch, key=lambda x: x['ppl'])
-            print_v(f"\n{subject}\n========")
-            for i in sorted_compare_list[:5]:
-                print_v(f"{i['text']}, ppl = {i['ppl']}")
+            print_v(f"\n[{subject}]")
+            if preview:
+                for i in sorted_compare_list[:5]:
+                    print_v(f"{i['text']}, ppl = {i['ppl']}")
+            else:
+                print_v(f"{sorted_compare_list[0]['text']}, ppl = {sorted_compare_list[0]['ppl']}")
             base_sentences.append(sorted_compare_list[0])
 
     
@@ -83,19 +86,32 @@ def extract_base_sentences(input_path, output_path, ban_list, method='default', 
             for sent_dict in reservoir:
                 base_sentences.append(sent_dict)
         
-        for base in base_sentences:
-            print_v(f"\n[{base['subj']}]")
-            print_v(f"{base['text']}")
+        if preview:
+            for base in base_sentences:
+                out_subj = base['subj']
+                print_v(f"\n[{out_subj}]")
+                current_idx = subject_ppl_order[out_subj]
+                compare_batch = []
+                for sent_dict in sentence_data:
+                    if (sent_dict['subj'] == out_subj) and (sent_dict['vp'] not in ban_list['verb']) and (sent_dict['loc'] not in ban_list['loc']):
+                        compare_batch.append(sent_dict)
+                sorted_compare_list = sorted(compare_batch, key=lambda x: x['ppl'])
+                for i in sorted_compare_list[current_idx:current_idx+5]:
+                    print_v(f"{i['text']}, ppl = {i['ppl']}")
+        else:
+            for base in base_sentences:
+                print_v(f"\n[{base['subj']}]")
+                print_v(f"{base['text']}\n")
  
     else:
         raise ValueError("Method should be passed as 'default' or 'reservoir'.")
 
     # branches merges here
-    base_sentences_sorted_ids = sorted(base_sentences, key=lambda x: x['id'])
+    base_sentences_sorted = sorted(base_sentences, key=lambda x: x['id'])
     with open(output_path, 'w') as f:
-        json.dump(base_sentences_sorted_ids, f, indent=4)
+        json.dump(base_sentences_sorted, f, indent=4)
     
-    return base_sentences_sorted_ids
+    return base_sentences_sorted
 
 
 
