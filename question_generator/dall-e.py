@@ -5,6 +5,20 @@ import base64
 import json
 import time
 import os
+import glob
+from PIL import Image
+
+def convert_jpg_to_webp_folder(input_folder):
+    webp_folder_path = os.path.join(input_folder, 'webp')
+    os.makedirs(webp_folder_path)
+    jpg_files = glob.glob(os.path.join(input_folder, '*.jpg'))
+    
+    for jpg_file in jpg_files:
+        base_filename = os.path.basename(jpg_file)
+        webp_filename = f"{os.path.splitext(base_filename)[0]}.webp"
+        webp_file_path = os.path.join(webp_folder_path, webp_filename)
+        with Image.open(jpg_file) as image:
+            image.save(webp_file_path, 'WEBP')
 
 
 def generate_image_from_sentence(end_point, authen, sentence, id, image_folder_path, iter=1):
@@ -102,14 +116,17 @@ if __name__ == '__main__':
     for i, text in enumerate(text_list):
         for it in range(2):
             generate_image_from_sentence(url, auth_key, text, i+1, output_image_folder, iter=it+1) 
-            print(f"Generated the {i+1}th image at iteration {it+1}")
+            print(f"Generating the {i+1}th image at iteration {it+1}")
             time.sleep(10)
     
     # Makeup rounds
-    # flaw_list = [(5, 1), (6, 2), (8, 1), (10, 2), (16, 1), (16, 2)]  # manual check and input (flawed_image_id, iter) to the list
+    # flaw_list = [(11,2)]  # manual check and input (flawed_image_id, iter) to the list
     # deprecate_flawed_image(output_image_folder, flaw_list)
     # for item in flaw_list:
     #     index = item[0]-1
+    #     print(f"Generating the {item[0]}th image at iteration {item[1]}")
     #     generate_image_from_sentence(url, auth_key, text_list[index], item[0], output_image_folder, item[1])
-    #     print(f"Generated the {item[0]}th image.")
     #     time.sleep(10)
+            
+    # convert to webp if necessary
+    # convert_jpg_to_webp_folder(output_image_folder)
