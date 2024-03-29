@@ -27,13 +27,13 @@ def extract_base_sentences(input_path, output_path, ban_list, method='default', 
                 if (sent_dict['subj'] == subject) and (sent_dict['vp'] not in ban_list['verb']) and (sent_dict['loc'] not in ban_list['loc']):
                     compare_batch.append(sent_dict)
             # assert(len(compare_batch) == 5000)
-            sorted_compare_list = sorted(compare_batch, key=lambda x: x['ppl'])
+            sorted_compare_list = sorted(compare_batch, key=lambda x: x['logprob'], reverse=True)
             print_v(f"\n[{subject}]")
             if preview:
                 for i in sorted_compare_list[:5]:
-                    print_v(f"{i['text']}, ppl = {i['ppl']}")
+                    print_v(f"{i['text']}, logprob = {i['logprob']}")
             else:
-                print_v(f"{sorted_compare_list[0]['text']}, ppl = {sorted_compare_list[0]['ppl']}")
+                print_v(f"{sorted_compare_list[0]['text']}, logprob = {sorted_compare_list[0]['logprob']}")
             base_sentences.append(sorted_compare_list[0])
 
     
@@ -56,7 +56,7 @@ def extract_base_sentences(input_path, output_path, ban_list, method='default', 
                 if (sent_dict['subj'] == subject) and (sent_dict['vp'] not in ban_list['verb']) and (sent_dict['loc'] not in ban_list['loc']):
                     compare_batch.append(sent_dict)
                 # assert(len(compare_batch) == 5000)
-            sorted_compare_list = sorted(compare_batch, key=lambda x: x['ppl'])
+            sorted_compare_list = sorted(compare_batch, key=lambda x: x['logprob'], reverse=True)
 
             item = sorted_compare_list[ppl_index]
             verb_loc = item['vp'] + ' ' + item['loc']  # e.g. [riding a bicycle in the countryside]
@@ -70,13 +70,13 @@ def extract_base_sentences(input_path, output_path, ban_list, method='default', 
             else:
                 # If the reservoir is full, pop the max perplexity sentence
                 reservoirs[verb_loc].append(item)
-                sorted_ppl_subject = sorted(reservoirs[verb_loc], key=lambda x: x['ppl'])
+                sorted_ppl_subject = sorted(reservoirs[verb_loc], key=lambda x: x['logprob'], reverse=True)
                 replace_subj = sorted_ppl_subject[-1]['subj']
                 subject_ppl_order[replace_subj] += 1
                 subjects_queue.append(replace_subj)
                 for i, d in enumerate(reservoirs[verb_loc]):
                     if d['subj'] == replace_subj:
-                        print_v(f'[Program Info] Dequeuing [{d['text']}]')
+                        print_v(f'[Program Info] Dequeuing [{d["text"]}]')
                         del reservoirs[verb_loc][i]
                         break
                 assert(len(reservoirs[verb_loc]) == reservoir_capacity)
@@ -95,9 +95,9 @@ def extract_base_sentences(input_path, output_path, ban_list, method='default', 
                 for sent_dict in sentence_data:
                     if (sent_dict['subj'] == out_subj) and (sent_dict['vp'] not in ban_list['verb']) and (sent_dict['loc'] not in ban_list['loc']):
                         compare_batch.append(sent_dict)
-                sorted_compare_list = sorted(compare_batch, key=lambda x: x['ppl'])
+                sorted_compare_list = sorted(compare_batch, key=lambda x: x['logprob'], reverse=True)
                 for i in sorted_compare_list[current_idx:current_idx+5]:
-                    print_v(f"{i['text']}, ppl = {i['ppl']}")
+                    print_v(f"{i['text']}, logprob = {i['logprob']}")
         else:
             for base in base_sentences:
                 print_v(f"\n[{base['subj']}]")
@@ -116,7 +116,7 @@ def extract_base_sentences(input_path, output_path, ban_list, method='default', 
 
 
 if __name__ == '__main__':
-    input_path = "/home/liu/test_resources/sentence_lookup/sentence_lookup_vicuna_2024-03-14_auto.json"
-    output_path = "/home/liu/test_resources/base_sentences/base_sentences_0316_reservoir.json"
-    ban_words = {'verb': ['riding a bicycle'], 'loc':[]}
-    extract_base_sentences(input_path, output_path, ban_words, method = 'reservoir')
+    input_path = "/120040051/test_resource/sentence_ppl_lookup/sents_logprob_0328.json"
+    output_path = "/120040051/test_resource/base_sentence/base_sentences_0329.json"
+    ban_words = {'verb': [], 'loc':[]}
+    extract_base_sentences(input_path, output_path, ban_words, method = 'reservoir', reservoir_capacity=1)

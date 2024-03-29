@@ -64,7 +64,7 @@ def construct_by_templates(candidate_dict, type):
     if type == 'verb':
         for group_id, sent_list in candidate_dict.items():
             local_verb_question = {}
-            ppl_vp = {}
+            logprob_vp = {}
             vp_shortlist = []
             gt_subj, gt_be, gt_verb, gt_loc = None, None, None, None
             dt_verbs = {}
@@ -80,7 +80,7 @@ def construct_by_templates(candidate_dict, type):
                     seq = sent['tag'].removeprefix("distractor")
                     dt_verbs[f"dt_vp{seq}"] = sent['vp']
                 
-                ppl_vp[sent['vp']] = sent['ppl'] # it represents the sentence's ppl
+                logprob_vp[sent['vp']] = sent['logprob'] # it represents the sentence's ppl
                 vp_shortlist.append(sent['vp'])
 
             assert(any([gt_subj, gt_be, gt_verb, gt_loc]) != None)
@@ -93,7 +93,7 @@ def construct_by_templates(candidate_dict, type):
             local_verb_question['gt_vp'] = gt_verb
             for dt_key in dt_verbs:
                 local_verb_question[dt_key] = dt_verbs[dt_key]
-            local_verb_question['ppl'] = ppl_vp
+            local_verb_question['logprob'] = logprob_vp
 
             random.shuffle(vp_shortlist)  # we shuffle the option's list
             choice_ans_idx = vp_shortlist.index(gt_verb)
@@ -103,25 +103,21 @@ def construct_by_templates(candidate_dict, type):
 
 
             # Multiple Choice Questions, add here for more templates
-            choice_prefix_format1 = f"What {gt_be} {gt_subj} doing {gt_loc}?"
-            choice_prefix_format2 = f"What {gt_be} {gt_subj} doing {gt_loc} as shown in the image?"
-            choice_prefix_format3 = f"{gt_loc.capitalize()}, {gt_subj} {gt_be}  "
-            choice_prefix_format4 = f"Select the best option to complete the image description: {gt_loc.capitalize()}, {gt_subj} {gt_be}  "
-            choice_prefix_list = [choice_prefix_format1,choice_prefix_format2,choice_prefix_format3,choice_prefix_format4]
-            choice_options_format1 = []
-            choice_options_format2 = []
+            choice_question = f"Question: What {gt_be} {gt_subj} doing {gt_loc}?"
+
+            choice_option_list = ['Options:']
             letters = [chr(i) for i in range(ord('A'), ord('A') + option_num)]
             for i in range(option_num):
-                choice_options_format1.append(f'{letters[i]}. {vp_shortlist[i]}')
-                choice_options_format2.append(f'({letters[i]}) {vp_shortlist[i]}')
-            
-            choice_options_format1_str = '\n'.join(choice_options_format1)
-            choice_options_format2_str = '  '.join(choice_options_format2)
 
-            for i in range(len(choice_prefix_list)):
-                local_verb_question[f'choice_{i}_1'] = choice_prefix_list[i] + '\n' + choice_options_format1_str
-                local_verb_question[f'choice_{i}_2'] = choice_prefix_list[i] + '  ' + choice_options_format2_str
-            
+                choice_option_list.append(f'({letters[i]}) {vp_shortlist[i]}.')
+            choice_options = ' '.join(choice_option_list)
+
+            choice_postfix_instructblip = "Answer:"
+            choice_postfix_llava = "Answer with the option's letter from the given choices directly."
+
+            local_verb_question[f'choice_instructblip'] = choice_question + ' ' + choice_options + ' ' + choice_postfix_instructblip
+            local_verb_question[f'choice_llava'] = choice_question + '\n' + choice_options + '\n' + choice_postfix_llava
+          
             local_verb_question['choice answer'] = letters[choice_ans_idx]
             for dt_key in choice_dt_idx:
                 seq = dt_key.removeprefix("dt_vp")
@@ -136,16 +132,14 @@ def construct_by_templates(candidate_dict, type):
                 local_verb_question['binary-no'] = f"Does the image show that {gt_subj} {gt_be} {dt_verbs['dt_vp1']} {gt_loc}?" # Always choose the top distractor 
                 local_verb_question['binary-no answer'] = "No"
             
-            max_ppl_verb = max(ppl_vp, key=ppl_vp.get)
-            local_verb_question['binary-cp'] = f"Does the image show that {gt_subj} {gt_be} {max_ppl_verb} {gt_loc}?"
+            min_logprob_verb = min(logprob_vp, key=logprob_vp.get)
+            local_verb_question['binary-cp'] = f"Does the image show that {gt_subj} {gt_be} {min_logprob_verb} {gt_loc}?"
             local_verb_question['binary-cp answer'] = "No"
 
 
             # Open questions, add here for more templates
-            local_verb_question['open_1'] = choice_prefix_format1
-            local_verb_question['open_2'] = choice_prefix_format2
-            local_verb_question['open_3'] = choice_prefix_format3
-            local_verb_question['open_4'] = f"Based on the image, {gt_loc}, {gt_subj} {gt_be} "
+            local_verb_question['open llava'] = f"What {gt_be} {gt_subj} doing {gt_loc}? Answer the question using a single word or phrase."
+            local_verb_question['open instructblip'] = f"What {gt_be} {gt_subj} doing {gt_loc}? Short Answer:"
 
             local_verb_question['open answer keyword'] = gt_verb
             local_verb_question['text'] = f"{gt_subj} {gt_be} {gt_verb} {gt_loc}."
@@ -155,7 +149,7 @@ def construct_by_templates(candidate_dict, type):
     elif type == 'location':
         for group_id, sent_list in candidate_dict.items():
             local_loc_question = {}
-            ppl_loc = {}
+            logprob_loc = {}
             loc_shortlist = []
             gt_subj, gt_be, gt_verb, gt_loc = None, None, None, None
             dt_locs = {}
@@ -171,7 +165,7 @@ def construct_by_templates(candidate_dict, type):
                     seq = sent['tag'].removeprefix("distractor")
                     dt_locs[f"dt_loc{seq}"] = sent['loc']
                 
-                ppl_loc[sent['loc']] = sent['ppl'] # it represents the sentence's ppl
+                logprob_loc[sent['loc']] = sent['logprob'] # it represents the sentence's ppl
                 loc_shortlist.append(sent['loc'])
 
             assert(any([gt_subj, gt_be, gt_verb, gt_loc]) != None)
@@ -184,7 +178,7 @@ def construct_by_templates(candidate_dict, type):
             local_loc_question['gt_loc'] = gt_loc
             for dt_key in dt_locs:
                 local_loc_question[dt_key] = dt_locs[dt_key]
-            local_loc_question['ppl'] = ppl_loc
+            local_loc_question['logprob'] = logprob_loc
 
             random.shuffle(loc_shortlist)  # we shuffle the option's list
             choice_ans_idx = loc_shortlist.index(gt_loc)
@@ -194,28 +188,22 @@ def construct_by_templates(candidate_dict, type):
 
 
             # Multiple Choice Questions, add here for more templates
-            choice_prefix_format1 = f"Where {gt_be} {gt_subj} {gt_verb}?"
-            choice_prefix_format2 = f"Where {gt_be} {gt_subj} {gt_verb} as shown in the image?"
-            choice_prefix_format3 = f"{gt_subj.capitalize()} {gt_be} {gt_verb}  "
-            choice_prefix_format4 = f"Select the best option to complete the image description: {gt_subj.capitalize()} {gt_be} {gt_verb}  "
-            choice_prefix_list = [choice_prefix_format1,choice_prefix_format2,choice_prefix_format3,choice_prefix_format4]
-            choice_options_format1 = []
-            choice_options_format2 = []
+            choice_question = f"Question: Where {gt_be} {gt_subj} {gt_verb}?"
+
+            choice_option_list = ['Options:']
             letters = [chr(i) for i in range(ord('A'), ord('A') + option_num)]
             for i in range(option_num):
-                choice_options_format1.append(f'{letters[i]}. {loc_shortlist[i]}')
-                choice_options_format2.append(f'({letters[i]}) {loc_shortlist[i]}')
-            
-            choice_options_format1_str = '\n'.join(choice_options_format1)
-            choice_options_format2_str = '  '.join(choice_options_format2)
+                choice_option_list.append(f'({letters[i]}) {loc_shortlist[i]}.')
+            choice_options = ' '.join(choice_option_list)
 
-            for i in range(len(choice_prefix_list)):
-                local_loc_question[f'choice_{i}_1'] = choice_prefix_list[i] + '\n' + choice_options_format1_str
-                local_loc_question[f'choice_{i}_2'] = choice_prefix_list[i] + '  ' + choice_options_format2_str
-            
-            local_loc_question['choice answer'] = letters[choice_ans_idx]
+            choice_postfix_instructblip = "Answer:"
+            choice_postfix_llava = "Answer with the option's letter from the given choices directly."
+
+            local_loc_question[f'choice_instructblip'] = choice_question + ' ' + choice_options + ' ' + choice_postfix_instructblip
+            local_loc_question[f'choice_llava'] = choice_question + '\n' + choice_options + '\n' + choice_postfix_llava
+
             for dt_key in choice_dt_idx:
-                seq = dt_key.removeprefix("dt_vp")
+                seq = dt_key.removeprefix("dt_loc")
                 local_loc_question[f'distractor{seq} answer'] = letters[choice_dt_idx[dt_key]]
 
 
@@ -227,16 +215,14 @@ def construct_by_templates(candidate_dict, type):
                 local_loc_question['binary-no'] = f"Does the image show that {gt_subj} {gt_be} {gt_verb} {dt_locs['dt_loc1']}?" # Always choose the top distractor 
                 local_loc_question['binary-no answer'] = "No"
             
-            max_ppl_loc = max(ppl_loc, key=ppl_loc.get)
-            local_loc_question['binary-cp'] = f"Does the image show that {gt_subj} {gt_be} {gt_verb} {max_ppl_loc}?"
+            min_logprob_loc = min(logprob_loc, key=logprob_loc.get)
+            local_loc_question['binary-cp'] = f"Does the image show that {gt_subj} {gt_be} {gt_verb} {min_logprob_loc}?"
             local_loc_question['binary-cp answer'] = "No"
 
 
             # Open questions, add here for more templates
-            local_loc_question['open_1'] = choice_prefix_format1
-            local_loc_question['open_2'] = choice_prefix_format2
-            local_loc_question['open_3'] = choice_prefix_format3
-            local_loc_question['open_4'] = f"Based on the image, {gt_subj} {gt_be} {gt_verb} "
+            local_loc_question['open llava'] = f"Where {gt_be} {gt_subj} {gt_verb}? Answer the question using a single word or phrase."
+            local_loc_question['open instructblip'] = f"Where {gt_be} {gt_subj} {gt_verb}? Short Answer:"
 
             local_loc_question['open answer keyword'] = gt_loc
             local_loc_question['text'] = f"{gt_subj} {gt_be} {gt_verb} {gt_loc}."
@@ -280,7 +266,7 @@ def clean_generate(sentence_ppl_path, base_path, output_file, type, check_model,
             for sent in sentence_data:
                 if (sent['subj'] == subject) and (sent['loc'] == location) and (sent['vp'] not in ban_list['verb']):
                     control_batch.append(sent)
-            sorted_batch = sorted(control_batch, key=lambda x: x['ppl'])
+            sorted_batch = sorted(control_batch, key=lambda x: x['logprob'], reverse=True)
 
             options = {}
             options_idx = {}
@@ -344,7 +330,7 @@ def clean_generate(sentence_ppl_path, base_path, output_file, type, check_model,
             for sent in sentence_data:
                 if (sent['subj'] == subject) and (sent['vp'] == verb_phrase) and (sent['loc'] not in ban_list['loc']):
                     control_batch.append(sent)
-            sorted_batch = sorted(control_batch, key=lambda x: x['ppl'])
+            sorted_batch = sorted(control_batch, key=lambda x: x['logprob'], reverse=True)
 
             options = {}
             options_idx = {}
@@ -423,8 +409,8 @@ def clean_generate(sentence_ppl_path, base_path, output_file, type, check_model,
 
 if __name__ == '__main__':
     model = SentenceTransformer('whaleloops/phrase-bert')
-    sentence_ppl = "/home/liu/test_resources/sentence_lookup/sentence_lookup_vicuna_2024-03-14_auto.json"
-    base_sentences = "/home/liu/test_resources/base_sentences/base_sentences_0316_default.json"
-    outfile = '/home/liu/test_resources/input_questions/location_questions_0317.json'
-    ban_words = {'verb': ['riding a bicycle'], 'loc':[]}
-    clean_generate(sentence_ppl, base_sentences, outfile, 'location', model, option_num=5, num_distractors=1, ban_list=ban_words, dump_intermediate=False)
+    sentence_ppl = "/120040051/test_resource/sentence_ppl_lookup/sents_logprob_0328.json"
+    base_sentences = "/120040051/test_resource/base_sentence/base_sentences_0329.json"
+    outfile = '/120040051/test_resource/input_question/verb_questions_0329.json'
+    ban_words = {'verb': [], 'loc':[]}
+    clean_generate(sentence_ppl, base_sentences, outfile, 'location', model, 'reservoir', option_num=4, num_distractors=1, ban_list=ban_words, dump_intermediate=False)
