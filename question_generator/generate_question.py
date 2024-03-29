@@ -115,8 +115,8 @@ def construct_by_templates(candidate_dict, type):
             choice_postfix_instructblip = "Answer:"
             choice_postfix_llava = "Answer with the option's letter from the given choices directly."
 
-            local_verb_question[f'choice_instructblip'] = choice_question + ' ' + choice_options + ' ' + choice_postfix_instructblip
-            local_verb_question[f'choice_llava'] = choice_question + '\n' + choice_options + '\n' + choice_postfix_llava
+            local_verb_question[f'choice instructblip'] = choice_question + ' ' + choice_options + ' ' + choice_postfix_instructblip
+            local_verb_question[f'choice llava'] = choice_question + '\n' + choice_options + '\n' + choice_postfix_llava
           
             local_verb_question['choice answer'] = letters[choice_ans_idx]
             for dt_key in choice_dt_idx:
@@ -199,8 +199,8 @@ def construct_by_templates(candidate_dict, type):
             choice_postfix_instructblip = "Answer:"
             choice_postfix_llava = "Answer with the option's letter from the given choices directly."
 
-            local_loc_question[f'choice_instructblip'] = choice_question + ' ' + choice_options + ' ' + choice_postfix_instructblip
-            local_loc_question[f'choice_llava'] = choice_question + '\n' + choice_options + '\n' + choice_postfix_llava
+            local_loc_question[f'choice instructblip'] = choice_question + ' ' + choice_options + ' ' + choice_postfix_instructblip
+            local_loc_question[f'choice llava'] = choice_question + '\n' + choice_options + '\n' + choice_postfix_llava
 
             for dt_key in choice_dt_idx:
                 seq = dt_key.removeprefix("dt_loc")
@@ -294,7 +294,7 @@ def clean_generate(sentence_ppl_path, base_path, output_file, type, check_model,
             while need_further_iteration:
                 phrase_dict = {tag: options[tag]['vp'] for tag in options}
                 print_v(f"Group {ctr}: {phrase_dict.values()}")
-                tags_need_to_move = check_phrase_closeness(check_model, phrase_dict, 0.74, num_distractors) # verb threshold
+                tags_need_to_move = check_phrase_closeness(check_model, phrase_dict, 0.78, num_distractors) # verb threshold
 
                 if len(tags_need_to_move) == 0:
                     print_v(f"Group {ctr} Succeed.\n========")
@@ -409,8 +409,8 @@ def clean_generate(sentence_ppl_path, base_path, output_file, type, check_model,
 
 if __name__ == '__main__':
     model = SentenceTransformer('whaleloops/phrase-bert')
-    sentence_ppl = "/120040051/test_resource/sentence_ppl_lookup/sents_logprob_0328.json"
-    base_sentences = "/120040051/test_resource/base_sentence/base_sentences_0329.json"
-    outfile = '/120040051/test_resource/input_question/verb_questions_0329.json'
+    sentence_ppl = "/home/liu/test_resources/sentence_lookup/sents_logprob_0328.json"
+    base_sentences = "/home/liu/test_resources/base_sentences/base_sentences_0329.json"
+    outfile = '/home/liu/test_resources/input_questions/location_questions.json'
     ban_words = {'verb': [], 'loc':[]}
     clean_generate(sentence_ppl, base_sentences, outfile, 'location', model, 'reservoir', option_num=4, num_distractors=1, ban_list=ban_words, dump_intermediate=False)
