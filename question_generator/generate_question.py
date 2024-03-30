@@ -202,6 +202,7 @@ def construct_by_templates(candidate_dict, type):
             local_loc_question[f'choice instructblip'] = choice_question + ' ' + choice_options + ' ' + choice_postfix_instructblip
             local_loc_question[f'choice llava'] = choice_question + '\n' + choice_options + '\n' + choice_postfix_llava
 
+            local_loc_question['choice answer'] = letters[choice_ans_idx]
             for dt_key in choice_dt_idx:
                 seq = dt_key.removeprefix("dt_loc")
                 local_loc_question[f'distractor{seq} answer'] = letters[choice_dt_idx[dt_key]]
