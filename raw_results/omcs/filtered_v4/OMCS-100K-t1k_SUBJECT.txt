@@ -1,0 +1,50 @@
+the dog: 173
+the baby: 136
+the cat: 105
+the teacher: 83
+the farmer: 83
+the president: 50
+a student: 48
+the coyote: 48
+the waitress: 42
+a musician: 41
+horses: 41
+a doctor: 40
+the jury: 31
+a patient: 30
+the telephone: 28
+the soldier: 21
+the dentist: 19
+a chef: 18
+a gardener: 16
+a butcher: 16
+actors: 16
+a judge: 16
+the knight: 15
+the pharmacist: 15
+a crazy man: 14
+the king: 14
+the hunter: 13
+a pilot: 13
+the fireman: 12
+a machine: 11
+a criminal: 11
+a thief: 10
+a painter: 10
+the mailman: 9
+a customer: 9
+a merchant: 8
+a scientist: 8
+the band: 7
+a golfer: 7
+a policeman: 7
+a bully: 7
+the cashier: 7
+a carpenter: 6
+terrorists: 6
+a baseball player: 6
+a prisoner: 6
+a janitor: 6
+a spy: 5
+a fisherman: 5
+a mechanic: 5

@@ -1,0 +1,60 @@
+in bed: 36
+at the zoo: 30
+in a restaurant: 23
+in the desert: 18
+in a house: 16
+in the refrigerator: 12
+at the pub: 9
+on a plane: 9
+in the front yard: 9
+in a store: 8
+in church: 8
+in the kitchen: 8
+in an office: 7
+in a field: 7
+at the theater: 7
+at a conference: 7
+in the car: 7
+in school: 6
+in the bathroom: 6
+in the countryside: 5
+at the market: 5
+in a mall: 5
+at a park: 5
+in the garage: 5
+in a museum: 5
+at the airport: 5
+in a kennel
+in a crib
+on the windowsill
+in a classroom
+in white house
+in a board room
+in a library
+on the stage
+in a clinic
+in court
+in a dentist chair
+in a phone booth
+in a battlefield
+in the garden
+in a laboratory
+in a castle
+in a forest
+in a cockpit
+in a building
+in jail
+at a store
+at the front door
+at a bar
+at the golf course
+at a roadblock
+in the street
+at school
+at a shop
+at a bookstore
+outside a house
+on a baseball field
+in a cell
+on a boat
+in a garage

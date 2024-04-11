@@ -1,0 +1,130 @@
+sent a letter: 148
+wrote a book: 97
+read a book: 87
+taught a class: 74
+playing poker: 73
+drive a car: 69
+watching tv: 62
+went camping: 62
+take a shower: 60
+built a snowman: 48
+building a cathedral: 44
+making a phone call: 44
+lighting a fire: 42
+smoked a cigarette: 42
+use a computer: 42
+ate the roadrunner: 41
+playing baseball: 40
+start a fire: 39
+stole some money: 39
+taking a bath: 39
+drink water: 38
+caught a fish: 37
+eating a hamburger: 36
+read the newspaper: 35
+eating vegetables: 35
+playing the violin: 35
+drink alcohol: 35
+fly a kite: 34
+ride a bike: 34
+paint a picture: 34
+chopped the carrots: 34
+play chess: 33
+fixing a computer: 32
+buy a beer: 31
+sign a contract: 30
+bake a cake: 29
+play the piano: 29
+use a calculator: 29
+riding a horse: 29
+fight war: 29
+cook a meal: 28
+chop firewood: 27
+weeding the garden: 27
+lit a candle: 27
+washing clothes: 27
+teaching other people: 27
+pay cash: 27
+cook dinner: 27
+opened the wallet: 27
+took a nap: 27
+walk the dog: 27
+run a marathon: 26
+writing a program: 26
+starting a flame: 26
+make bread: 26
+smoke cigarettes: 26
+planted corn: 26
+water a plant: 25
+stole a painting: 25
+send e-mail: 24
+drill a hole: 23
+eat ice cream: 23
+grow vegetables: 23
+painted a house: 23
+broke the windows: 23
+swept the floor: 22
+broke a glass: 22
+convict a suspect: 22
+ate some grass: 22
+mows the lawn: 22
+shot a goal: 22
+painted a wall: 22
+cut the cake: 21
+shot the suspect: 21
+open a gift: 21
+mark its territory
+wet his diaper
+hunt mice
+question a student
+gather his crops
+farm his land
+sign a Bill
+bus a table
+eat oats
+prescribe medicine
+judge the defendant
+take a pill
+hang on a wall
+fire a gun
+fix your teeth
+season food
+water flowers
+cut the meat
+conduct an experiment
+present a performance
+fine a defendant
+ride a horse
+issue a drug
+honor a knight
+bag a deer
+fly a plane
+put out a fire
+extinguish fires
+wash dishes
+deal drugs
+rob a bank
+burn the house
+pick pocket
+steal from a store
+sort mails
+order an item
+sell goods
+play music
+drive a ball
+book a robber
+direct traffic
+start a fight
+count money
+hammer a nail
+measure a board
+set vehicle bombs
+field a baseball
+attempt to escape
+clean a toilet
+mop a floor
+bug a telephone
+row a boat
+fish for tuna
+oil a gear
+condition an engine
