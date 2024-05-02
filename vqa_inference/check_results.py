@@ -1,5 +1,6 @@
 import os
 import json
+from collections import defaultdict
 
 
 def identify_model_type(answer_file_path):
@@ -12,41 +13,19 @@ def identify_model_type(answer_file_path):
         raise KeyError (f"Unsupported model answer {base_name}")
 
 
-def shorten_error_list(typed_error_dict):
-    short_list = []
-    for id, key_list in typed_error_dict.items():
-        img1, img2 = 0, 0
-        for key_name in key_list:
-            if "img1" in key_name:
-                img1 += 1
-            elif "img2" in key_name:
-                img2 += 1
-        if img1 != 0:
-            short_list.append(f"{str(id)}a({img1})")
-        if img2 != 0:
-            short_list.append(f"{str(id)}b({img2})")
-    return short_list
+def construct_result_table(json_data, model_type, option_num, img_per_content=2, repeat=5):
 
-
-def type_and_shorten(error_dict, _key):
-    typed_error = {}
-    for qid, error_list in error_dict.items():
-        if len(error_list[_key]) != 0:
-            typed_error[qid] = error_list[_key]
-    return shorten_error_list(typed_error)
-
-
-
-def construct_result_table(input_file_path, model_type, option_num, iter=2, repeat=5):
-    error = {}
-    choice_success = {}
-    unexpected = {}
     option_list = [chr(i) for i in range(ord('A'), ord('A') + option_num)]
 
-    with open(input_file_path, 'r') as f:
-        answer_list = json.load(f)
-    total_len = len(answer_list) * 2
-    for answer in answer_list:
+    error_full = {"choice":defaultdict(list), "binary-yes":defaultdict(list), "binary-no":defaultdict(list), "binary-cp":defaultdict(list)}
+    error_short = {"choice":set(), "binary-yes":set(), "binary-no":set(), "binary-cp":set()}
+
+    unexpected_full = {"choice":defaultdict(list), "binary-yes":defaultdict(list), "binary-no":defaultdict(list), "binary-cp":defaultdict(list)}
+    unexpected_short = {"choice":set(), "binary-yes":set(), "binary-no":set(), "binary-cp":set()}
+
+    choice_success_short = set()   # failure on distractor
+
+    for answer in json_data:
         q_id = answer['id']
         dt_option = answer['distractor1 answer']  # A
         gt_option = answer['choice answer']       # A
@@ -57,19 +36,20 @@ def construct_result_table(input_file_path, model_type, option_num, iter=2, repe
         if model_type == "instructblip":
             gt_option = f"({gt_option})"
             dt_option = f"({dt_option})"
+            option_list = [f'({option})' for option in option_list]
     
-        local_error = {"choice":[], "binary-yes":[], "binary-no":[], "binary-cp":[]}
-        local_unexp = {"choice":[], "binary-yes":[], "binary-no":[], "binary-cp":[]}
-        local_choice_success = [] # failure on distractor
-        
-        for i in range(iter):
+        for i in range(img_per_content):
             for j in range(repeat):
+                short_name = f"q{q_id}_img{i+1}"
+
                 choice_key = f"choice_ans_img{i+1}_{j+1}"
+                # choice_key = f"choice1_ans_empty_{j+1}"
                 choice_answer_text = answer[choice_key]
                 if not choice_answer_text.startswith(gt_option): # error
                     if choice_answer_text.startswith(dt_option): # success
-                        local_choice_success.append(choice_key)
-                        local_error['choice'].append(choice_key)
+                        choice_success_short.add(short_name)
+                        error_full['choice'][q_id].append(choice_key)
+                        error_short['choice'].add(short_name)
                     else:
                         not_start_letter = True
                         for letter in option_list:
@@ -77,71 +57,82 @@ def construct_result_table(input_file_path, model_type, option_num, iter=2, repe
                                 not_start_letter = False
                                 break
                         if not_start_letter:                    # unexpected
-                            local_unexp['choice'].append(choice_key)
-                        else:                 
-                            local_error['choice'].append(choice_key)
+                            unexpected_full['choice'][q_id].append(choice_key)
+                            unexpected_short['choice'].add(short_name)
+
+                        else:                                   # false positive
+                            error_full['choice'][q_id].append(choice_key)
+                            error_short['choice'].add(short_name)
             
+
                 binary_yes_key = f"binary-yes_ans_img{i+1}_{j+1}"
+                # binary_yes_key = f"binary-yes_ans_empty_{j+1}"
                 binary_yes_answer = answer[binary_yes_key]
                 if not binary_yes_answer.startswith(yes_ans):  # error
                     if binary_yes_answer.startswith(no_ans):   # success
-                        local_error['binary-yes'].append(binary_yes_key)
+                        error_full['binary-yes'][q_id].append(binary_yes_key)
+                        error_short['binary-yes'].add(short_name)
                     else:                                      # unexpected
-                        local_unexp['binary-yes'].append(binary_yes_key)
+                        error_full['binary-yes'][q_id].append(binary_yes_key)
+                        unexpected_short['binary-yes'].add(short_name)
+
 
                 binary_no_key = f"binary-no_ans_img{i+1}_{j+1}"
+                # binary_no_key = f"binary-no_ans_empty_{j+1}"
                 binary_no_answer = answer[binary_no_key]
                 if not binary_no_answer.startswith(no_ans):
                     if binary_no_answer.startswith(yes_ans):
-                        local_error['binary-no'].append(binary_no_key)
+                        error_full['binary-no'][q_id].append(binary_no_key)
+                        error_short['binary-no'].add(short_name)
                     else:
-                        local_unexp['binary-no'].append(binary_no_key)
+                        unexpected_full['binary-no'][q_id].append(binary_no_key)
+                        unexpected_short['binary-no'].add(short_name)
+
 
                 binary_cp_key = f"binary-cp_ans_img{i+1}_{j+1}"
+                # binary_cp_key = f"binary-cp_ans_empty_{j+1}"
                 binary_cp_answer = answer[binary_cp_key]
                 if not binary_cp_answer.startswith(cp_ans):
                     if binary_cp_answer.startswith(yes_ans):
-                        local_error['binary-cp'].append(binary_cp_key)
+                        error_full['binary-cp'][q_id].append(binary_cp_key)
+                        error_short['binary-cp'].add(short_name)
                     else:
-                        local_unexp['binary-cp'].append(binary_cp_key)
-        error[q_id] = local_error
-        unexpected[q_id] = local_unexp
-        choice_success[q_id] = local_choice_success
-    
-    key_pool = ['choice', 'binary-yes', 'binary-no', 'binary-cp']
-    res_dict = {}
-    for i in key_pool:
-        res_dict[i] = type_and_shorten(error, i)
-    res_dict['choice_success'] = shorten_error_list(choice_success) # already typed
-
-    return total_len, res_dict
+                        unexpected_full['binary-cp'][q_id].append(binary_cp_key)
+                        unexpected_short['binary-cp'].add(short_name)
 
 
-
-
-def show_results(total_len, res_dict, dump=False):
-    for question_type in res_dict:
-        error_list = res_dict[question_type]
-        print('='*40)
-        print(question_type)
-        print('Error cases: ' + ', '.join(error_list))
-        print(f"Total error: {len(error_list)}, Error trigger rate = {round(len(error_list)/total_len, 2)}")
-
-    if dump:
-        with open('./error_results_dump.txt', 'w') as f:
-            for question_type in res_dict:
-                error_list = res_dict[question_type]
-                f.write('='*40 + '\n')
-                f.write(question_type + '\n')
-                f.write('Error cases: ' + ', '.join(error_list) + '\n')
-                f.write(f"Total error: {len(error_list)}, Error trigger rate = {round(len(error_list)/total_len, 2)}\n")
-
-
+    return choice_success_short, error_full, error_short, unexpected_full, unexpected_short
 
 
 if __name__ == '__main__':
-    input_file_path = "/120040051/test_resource/output_answers/location_answers_0329_instructblip-7b.json"
+    input_file_path = "/120040051/test_resource/output_answers/location_answers_NT_0502_llava15-7b.json"
     model_name = identify_model_type(input_file_path)
     print(f"Checking answers from {model_name} ...")
-    total_test_case, error_dict = construct_result_table(input_file_path, model_name, 4)
-    show_results(total_test_case, error_dict, dump=False)
+
+    with open(input_file_path, 'r') as f:
+        answers = json.load(f)
+
+    total_content = len(answers)
+    image_per_question = 2
+    question_per_type = total_content * image_per_question
+
+    mcq_success, error_full_table, error_short_table, unexp_full_table, unexp_short_table = construct_result_table(answers, model_name, option_num=4, img_per_content=2, repeat=5)
+
+    print("="*40)
+    print("Summary")
+    print("="*40)
+
+    print(f"MCQ Total: {question_per_type}")
+    print(f"MCQ Success: {len(mcq_success)}")
+    print(f"MCQ Error: {len(error_short_table['choice'])}")
+    print(f"MCQ Unexpected: {len(unexp_short_table['choice'])}")
+    print(f"Error rate = {len(mcq_success)/question_per_type}")
+    print(f"False positive rate = {(len(error_short_table['choice']) - len(mcq_success))/question_per_type}")
+    print(f"Unexpected rate = {len(unexp_short_table['choice'])/question_per_type}")
+    print()
+
+    print(f"Binary Total: {question_per_type}")
+    print(f"Binary Error: {len(error_short_table['binary-no'])}")
+    print(f"Binary Unexpected: {len(unexp_short_table['binary-no'])}")
+    print(f"Error rate = {len(error_short_table['binary-no'])/question_per_type}")
+    print(f"Unexpected rate = {len(unexp_short_table['binary-no'])/question_per_type}")
