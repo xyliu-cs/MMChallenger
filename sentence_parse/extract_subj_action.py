@@ -1,9 +1,8 @@
 import spacy
-from spacy.matcher import Matcher
 from collections import Counter
 import json
 
-def extract_action_subjects(doc):
+def extract_subject_phrases(doc):
     named_entities = set(ent.text for ent in doc.ents)  # Exclude named entities.
     action_subjects = []
     for chunk in doc.noun_chunks:
@@ -17,31 +16,26 @@ def extract_action_subjects(doc):
     return action_subjects
 
 
-def extract_verbs_phrase(doc, nlp):
-    verb_phrases = []
-    matcher = Matcher(nlp.vocab)
-    # Pattern for transitive and intransitive verb phrases
-    transitive_pattern = [{"POS": "VERB"}, {"POS": "DET", "OP": "?"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "OP": "+"}]
-    # intransitive_pattern = [{"POS": "VERB"}, {"POS": "ADP"}, {"POS": "DET", "OP": "?"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "OP": "+"}]
+def extract_action_phrases(doc):
+    action_phrases = []
 
-    # Add patterns to matcher
-    matcher.add("verb_phrases", [transitive_pattern])
-    # matcher.add("verb_phrases", [transitive_pattern, intransitive_pattern])
+    for token in doc:
+        if token.pos_ == "VERB":
+            # Find the direct object child of the verb
+            direct_objs = [child for child in token.children if child.dep_ == "dobj"]
+            for dobj in direct_objs:
+                # Include only determiners and compound nouns in the phrase
+                det = [det.text for det in dobj.lefts if det.dep_ == 'det']
+                compounds = [comp.text for comp in dobj.lefts if comp.dep_ == 'compound']  # omit multi-layered compound
 
-    matches = matcher(doc)
-    for match_id, start, end in matches:
-        span_text = doc[start:end].text.lower()
-        found_subphrase = False 
-        for i in range(len(verb_phrases)): # find if there is a sub-phrase in the list
-            phrase = verb_phrases[i]
-            if (phrase in span_text) and len(phrase) < len(span_text):
-                verb_phrases[i] = span_text
-                found_subphrase = True
-            
-        if not found_subphrase:
-            verb_phrases.append(span_text)
+                # Construct the direct object phrase excluding any adjectives
+                dobj_phrase = ' '.join(det + compounds + [dobj.text])
 
-    return verb_phrases
+                # Build the verb phrase by combining the verb with the direct object phrase
+                verb_phrase = f"{token.text} {dobj_phrase}"
+                verb_phrases.append(verb_phrase.lower())
+
+    return action_phrases
 
 
 # Remove the duplicates
@@ -73,8 +67,8 @@ if __name__ == '__main__':
     for sentence in sentences:
         doc = nlp(sentence)
         # Add items to the respective sets
-        add_to_set(subjects, extract_action_subjects(doc))
-        add_to_set(verb_phrases, extract_verbs_phrase(doc, nlp))
+        add_to_set(subjects, extract_subject_phrases(doc))
+        add_to_set(verb_phrases, extract_action_phrases(doc))
         i += 1
 
         if (i % 1000 == 0):
