@@ -14,6 +14,6 @@ python allennlp_srl_parse_loc.py input_path output_path
 ```
 Or
 ```bash
-HF_ENDPOINT=https://hf-mirror.com allennlp_srl_parse_loc.py input_path output_path
+HF_ENDPOINT=https://hf-mirror.com python extract_place_phrases.py input_path output_path
 ```
 if no direct connection to hugging face (as required by allennlp source code)
