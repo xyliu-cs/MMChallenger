@@ -9,6 +9,11 @@ conda activate allennlp-env
 pip install allennlp
 pip install allennlp-models
 cd test_prior/sentence_parse
-wget https://storage.googleapis.com/allennlp-public-models/bert-base-srl-2020.11.19.tar.gz
+wget -c https://storage.googleapis.com/allennlp-public-models/bert-base-srl-2020.11.19.tar.gz
 python allennlp_srl_parse_loc.py input_path output_path
 ```
+Or
+```bash
+HF_ENDPOINT=https://hf-mirror.com allennlp_srl_parse_loc.py input_path output_path
+```
+if no direct connection to hugging face (as required by allennlp source code)
