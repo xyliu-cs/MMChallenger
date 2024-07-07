@@ -70,5 +70,5 @@ if __name__ == "__main__":
     place_occurence_dict = construct_phrase_occurrence_dict(place_phrases)
 
     with open(output_file_path, "w") as f:
-        json.dump(place_phrases, f)
+        json.dump(place_occurence_dict, f)
     print(f"Finished extracting action phrases, file written to {output_file_path}.")

@@ -1,5 +1,6 @@
 import spacy
 from collections import Counter
+from tqdm import tqdm
 import json
 
 def extract_subject_phrases(doc):
@@ -18,7 +19,6 @@ def extract_subject_phrases(doc):
 
 def extract_action_phrases(doc):
     action_phrases = []
-
     for token in doc:
         if token.pos_ == "VERB":
             # Find the direct object child of the verb
@@ -55,42 +55,36 @@ if __name__ == '__main__':
     nlp = spacy.load("en_core_web_trf")
     with open("/120040051/test_resource/OMCS/omcs-sentences-more-en.txt", 'r') as file1:
         sentences = [line.strip() for line in file1.readlines()]
-    assert(len(sentences) == 956544)
+    # assert(len(sentences) == 956544)
     
     subjects = {}
     verb_phrases = {}
 
-    partial = 100000
-    sentence_batch = sentences[:partial]
+    USE_SPLIT = 100000
+    sentence_batch = sentences[:USE_SPLIT]
     total_len = len(sentences)
-    i = 1
-    for sentence in sentences:
+    for sentence in tqdm(sentences, desc="Extracting subject and action phrases.."):
         doc = nlp(sentence)
         # Add items to the respective sets
         add_to_set(subjects, extract_subject_phrases(doc))
         add_to_set(verb_phrases, extract_action_phrases(doc))
-        i += 1
-
-        if (i % 1000 == 0):
-            print(f"Processed {i} / {total_len}")
-    print(f"Processed {i-1} / {total_len}")
 
     
-    with open('/120040051/test_resource/OMCS/OMCS-SUBJ-Full.json', 'w') as f:
+    with open('/120040051/test_resource/OMCS/OMCS-SUB-100k.json', 'w') as f:
         json.dump(subjects, f)
-    with open('/120040051/test_resource/OMCS/OMCS-VERB-Full.json', 'w') as f:
+    with open('/120040051/test_resource/OMCS/OMCS-ACT-100k.json', 'w') as f:
         json.dump(verb_phrases, f)
 
-        # Filter to keep top 150 for each category
+    # Filter to keep top 150 for each category
     top_subjects = get_top_n_items(subjects, 500)
     top_verb_phrases = get_top_n_items(verb_phrases, 500)
 
-    with open('/120040051/test_resource/OMCS/OMCS-SUBJ-Full-t500.txt', 'w') as file:
+    with open('/120040051/test_resource/OMCS/OMCS-SUB-100k-t500.txt', 'w') as file:
         for subject, freq in top_subjects:
             file.write(f"{subject}: {freq}\n")
-    print("Subjects writing complete.")
+    print("Subject phrases writing complete.")
 
-    with open('/120040051/test_resource/OMCS/OMCS-VERB-Full-t500.txt', 'w') as file:
+    with open('/120040051/test_resource/OMCS/OMCS-ACT-100k-t500.txt', 'w') as file:
         for vp, freq in top_verb_phrases:
             file.write(f"{vp}: {freq}\n")
-    print("Verb phrases writing complete.")
+    print("Action phrases writing complete.")
