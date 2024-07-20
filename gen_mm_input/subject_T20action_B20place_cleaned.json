@@ -1,0 +1,1874 @@
+{
+  "a person": {
+    "driving a car": [
+      [
+        "at the theater",
+        -52.38
+      ],
+      [
+        "in a bathroom",
+        -43.45
+      ],
+      [
+        "in the fridge",
+        -43.08
+      ]
+    ],
+    "riding a bike": [
+      [
+        "at the theater",
+        -52.89
+      ],
+      [
+        "in the fridge",
+        -43.92
+      ],
+      [
+        "in a cathedral",
+        -42.74
+      ]
+    ],
+    "using a computer": [
+      [
+        "in a corral",
+        -45.67
+      ],
+      [
+        "on top of water",
+        -45.34
+      ],
+      [
+        "in the swamp",
+        -42.71
+      ]
+    ],
+    "riding a horse": [
+      [
+        "in an ambulance",
+        -44.83
+      ],
+      [
+        "in a courthouse",
+        -44.43
+      ],
+      [
+        "in a classroom",
+        -44.13
+      ]
+    ],
+    "running a marathon": [
+      [
+        "at the theater",
+        -56.94
+      ],
+      [
+        "at the supermarket",
+        -48.37
+      ]
+    ],
+    "flying a kite": [
+      [
+        "at a discotheque",
+        -48.41
+      ],
+      [
+        "in a bathroom",
+        -46.08
+      ]
+    ]
+  },
+  "the dog": {
+    "digging a hole": [
+      [
+        "at a banquet",
+        -49.94
+      ],
+      [
+        "at a bookstore",
+        -49.43
+      ],
+      [
+        "at the theater",
+        -48.95
+      ]
+    ]
+  },
+  "the baby": {
+    "taking a bath": [
+      [
+        "at a concert",
+        -52.57
+      ],
+      [
+        "on a freeway",
+        -52.48
+      ],
+      [
+        "on a mountain peak",
+        -52.13
+      ]
+    ]
+  },
+  "the cat": {
+    "climbing a tree": [
+      [
+        "in a courthouse",
+        -50.42
+      ],
+      [
+        "in an airplane",
+        -49.36
+      ],
+      [
+        "in a bus",
+        -49.07
+      ]
+    ]
+  },
+  "the teacher": {
+    "teaching a class": [
+      [
+        "on top of water",
+        -50.62
+      ],
+      [
+        "in the trash",
+        -48.05
+      ],
+      [
+        "in a tube",
+        -47.64
+      ]
+    ]
+  },
+  "the farmer": {
+    "chopping firewood": [
+      [
+        "in a courthouse",
+        -53.53
+      ],
+      [
+        "at a discotheque",
+        -50.95
+      ],
+      [
+        "at a concert",
+        -49.9
+      ]
+    ],
+    "pouring milk": [
+      [
+        "in a courthouse",
+        -56.81
+      ],
+      [
+        "at a discotheque",
+        -53.6
+      ],
+      [
+        "in an ambulance",
+        -51.5
+      ]
+    ],
+    "planting corn": [
+      [
+        "at a discotheque",
+        -58.24
+      ],
+      [
+        "in a casino",
+        -52.66
+      ]
+    ],
+    "picking strawberries": [
+      [
+        "in a courthouse",
+        -53.83
+      ],
+      [
+        "at the laundromat",
+        -52.89
+      ]
+    ]
+  },
+  "a child": {
+    "climbing a tree": [
+      [
+        "at the theater",
+        -54.29
+      ],
+      [
+        "at a discotheque",
+        -47.16
+      ],
+      [
+        "in a bathroom",
+        -46.95
+      ]
+    ],
+    "flying a kite": [
+      [
+        "at the theater",
+        -55.14
+      ],
+      [
+        "in the fridge",
+        -46.98
+      ],
+      [
+        "in an ambulance",
+        -46.91
+      ]
+    ],
+    "watching tv": [
+      [
+        "on a freeway",
+        -48.29
+      ],
+      [
+        "on top of water",
+        -48.09
+      ],
+      [
+        "in the swamp",
+        -47.75
+      ]
+    ]
+  },
+  "a car": {
+    "hitting the deer": [
+      [
+        "at a cafe",
+        -55.24
+      ],
+      [
+        "in a classroom",
+        -52.64
+      ]
+    ]
+  },
+  "the president": {
+    "writing a letter": [
+      [
+        "in a kennel",
+        -57.47
+      ],
+      [
+        "in the oven",
+        -55.76
+      ]
+    ]
+  },
+  "a student": {
+    "taking an exam": [
+      [
+        "in the parade",
+        -46.09
+      ],
+      [
+        "in the fridge",
+        -45.85
+      ]
+    ]
+  },
+  "the coyote": {
+    "digging a hole": [
+      [
+        "in an ambulance",
+        -55.82
+      ],
+      [
+        "in a pharmacy",
+        -55.73
+      ]
+    ],
+    "climbing a tree": [
+      [
+        "in a slaughter house",
+        -57.08
+      ]
+    ],
+    "pulling a rabbit": [
+      [
+        "in a courthouse",
+        -60.4
+      ]
+    ]
+  },
+  "parents": {
+    "watching tv": [
+      [
+        "in a kennel",
+        -46.99
+      ],
+      [
+        "in a cage",
+        -45.25
+      ],
+      [
+        "on top of water",
+        -44.99
+      ],
+      [
+        "on a freeway",
+        -44.85
+      ]
+    ]
+  },
+  "a computer": {
+    "playing chess": [
+      [
+        "in the ditch",
+        -48.87
+      ],
+      [
+        "in the parade",
+        -47.59
+      ]
+    ]
+  },
+  "the waitress": {
+    "serving food": [
+      [
+        "on a freeway",
+        -51.19
+      ],
+      [
+        "in a corral",
+        -50.96
+      ],
+      [
+        "in a pond",
+        -50.48
+      ]
+    ],
+    "sweeping the floor": [
+      [
+        "on a freeway",
+        -56.01
+      ],
+      [
+        "on a roof",
+        -54.13
+      ],
+      [
+        "on the battlefield",
+        -53.54
+      ]
+    ],
+    "washing the dishes": [
+      [
+        "on a freeway",
+        -59.29
+      ],
+      [
+        "in a courthouse",
+        -57.7
+      ]
+    ]
+  },
+  "a musician": {
+    "playing the piano": [
+      [
+        "on a freeway",
+        -47.76
+      ],
+      [
+        "in the fridge",
+        -45.9
+      ],
+      [
+        "in an ambulance",
+        -44.12
+      ]
+    ],
+    "playing the violin": [
+      [
+        "in a slaughter house",
+        -49.46
+      ]
+    ]
+  },
+  "a doctor": {
+    "writing a letter": [
+      [
+        "in an arena",
+        -50.06
+      ],
+      [
+        "in the swamp",
+        -49.31
+      ],
+      [
+        "at the zoo",
+        -49.27
+      ]
+    ]
+  },
+  "fish": {
+    "eating food": [
+      [
+        "at a street corner",
+        -46.74
+      ],
+      [
+        "on a mountain peak",
+        -45.76
+      ]
+    ]
+  },
+  "the officer": {
+    "arresting the suspect": [
+      [
+        "in a fish tank",
+        -56.54
+      ],
+      [
+        "in a terrarium",
+        -54.9
+      ]
+    ]
+  },
+  "flowers": {
+    "climbing a tree": [
+      [
+        "on a freeway",
+        -48.92
+      ]
+    ]
+  },
+  "a cook": {
+    "serving food": [
+      [
+        "in a fish tank",
+        -47.76
+      ],
+      [
+        "on a freeway",
+        -47.21
+      ],
+      [
+        "in a shower",
+        -44.44
+      ]
+    ],
+    "cooking a meal": [
+      [
+        "at the laundromat",
+        -48.49
+      ],
+      [
+        "in a fish tank",
+        -48.21
+      ],
+      [
+        "in a coal mine",
+        -47.6
+      ]
+    ]
+  },
+  "a bird": {
+    "catching a fish": [
+      [
+        "in an ambulance",
+        -51.38
+      ]
+    ]
+  },
+  "the jury": {
+    "writing a letter": [
+      [
+        "in a slaughter house",
+        -62.74
+      ],
+      [
+        "on a roof",
+        -55.86
+      ]
+    ]
+  },
+  "a patient": {
+    "reading the newspaper": [
+      [
+        "in the arctic",
+        -49.1
+      ],
+      [
+        "in the fridge",
+        -46.98
+      ],
+      [
+        "on the battlefield",
+        -46.52
+      ]
+    ]
+  },
+  "kids": {
+    "playing cards": [
+      [
+        "in the fridge",
+        -43.18
+      ],
+      [
+        "on a freeway",
+        -42.27
+      ],
+      [
+        "in the arctic",
+        -40.47
+      ]
+    ],
+    "jumping rope": [
+      [
+        "in a fish tank",
+        -46.4
+      ],
+      [
+        "in a courthouse",
+        -45.08
+      ]
+    ]
+  },
+  "ants": {
+    "eating vegetables": [
+      [
+        "in an ambulance",
+        -52.64
+      ]
+    ]
+  },
+  "cows": {
+    "eating food": [
+      [
+        "at the theater",
+        -53.9
+      ],
+      [
+        "in a courthouse",
+        -50.7
+      ],
+      [
+        "at a discotheque",
+        -50.11
+      ]
+    ]
+  },
+  "a spider": {
+    "digging a hole": [
+      [
+        "at a banquet",
+        -51.69
+      ],
+      [
+        "in a clinic",
+        -48.93
+      ]
+    ]
+  },
+  "the boy scout": {
+    "playing cards": [
+      [
+        "in a fish tank",
+        -57.07
+      ],
+      [
+        "on a freeway",
+        -54.86
+      ]
+    ]
+  },
+  "criminals": {
+    "committing murder": [
+      [
+        "in a fish tank",
+        -45.84
+      ]
+    ],
+    "drilling a hole": [
+      [
+        "at a conference",
+        -46.5
+      ]
+    ]
+  },
+  "the soldier": {
+    "fighting the enemy": [
+      [
+        "in a kennel",
+        -55.28
+      ],
+      [
+        "in a fish tank",
+        -53.92
+      ]
+    ],
+    "digging a hole": [
+      [
+        "at a discotheque",
+        -56.02
+      ],
+      [
+        "in a mall",
+        -53.75
+      ],
+      [
+        "at a cafe",
+        -51.89
+      ]
+    ]
+  },
+  "the mouse": {
+    "digging a hole": [
+      [
+        "in an ambulance",
+        -54.76
+      ],
+      [
+        "at a swimming pool",
+        -52.37
+      ]
+    ]
+  },
+  "the minister": {
+    "writing a letter": [
+      [
+        "at a discotheque",
+        -63.45
+      ],
+      [
+        "in a fish tank",
+        -55.92
+      ],
+      [
+        "at the gym",
+        -54.86
+      ]
+    ]
+  },
+  "the dentist": {
+    "drilling a hole": [
+      [
+        "on a freeway",
+        -52.04
+      ],
+      [
+        "at a park",
+        -50.51
+      ]
+    ]
+  },
+  "the rabbit": {
+    "digging a hole": [
+      [
+        "in a mall",
+        -52.06
+      ],
+      [
+        "in a clinic",
+        -51.94
+      ]
+    ]
+  },
+  "a chef": {
+    "cooking a meal": [
+      [
+        "on a freeway",
+        -45.62
+      ],
+      [
+        "in a fish tank",
+        -45.28
+      ],
+      [
+        "in the swamp",
+        -44.09
+      ],
+      [
+        "at a swimming pool",
+        -43.51
+      ]
+    ],
+    "making bread": [
+      [
+        "at the theater",
+        -54.77
+      ],
+      [
+        "in a tube",
+        -49.69
+      ]
+    ]
+  },
+  "an owl": {
+    "eating an apple": [
+      [
+        "in an ambulance",
+        -53.48
+      ],
+      [
+        "in a pharmacy",
+        -49.31
+      ]
+    ]
+  },
+  "the firemen": {
+    "fighting a fire": [
+      [
+        "in a fish tank",
+        -51.65
+      ],
+      [
+        "in the fridge",
+        -48.81
+      ]
+    ],
+    "breaking the windows": [
+      [
+        "in a terrarium",
+        -59.85
+      ],
+      [
+        "in a fish tank",
+        -59.24
+      ],
+      [
+        "in a tube",
+        -56.64
+      ]
+    ]
+  },
+  "a ghost": {
+    "writing a letter": [
+      [
+        "at the theater",
+        -60.84
+      ],
+      [
+        "on a freeway",
+        -50.3
+      ]
+    ]
+  },
+  "the space shuttle": {
+    "fighting a fire": [
+      [
+        "in a slaughter house",
+        -64.0
+      ],
+      [
+        "at the theatre",
+        -60.8
+      ],
+      [
+        "in a courthouse",
+        -60.42
+      ]
+    ]
+  },
+  "a parent": {
+    "washing clothes": [
+      [
+        "at the theater",
+        -58.05
+      ],
+      [
+        "on a freeway",
+        -50.47
+      ],
+      [
+        "in an ambulance",
+        -49.07
+      ]
+    ],
+    "sweeping the floor": [
+      [
+        "on a freeway",
+        -50.01
+      ],
+      [
+        "in the arctic",
+        -49.03
+      ]
+    ]
+  },
+  "a gardener": {
+    "mowing the lawn": [
+      [
+        "in a bathroom",
+        -52.02
+      ],
+      [
+        "on a freeway",
+        -50.86
+      ],
+      [
+        "in the arctic",
+        -49.21
+      ]
+    ],
+    "watering a plant": [
+      [
+        "at the theater",
+        -58.79
+      ]
+    ],
+    "weeding the garden": [
+      [
+        "in a coal mine",
+        -50.75
+      ]
+    ],
+    "pruning a bush": [
+      [
+        "on a freeway",
+        -51.28
+      ],
+      [
+        "at a banquet",
+        -50.8
+      ]
+    ],
+    "picking strawberries": [
+      [
+        "in the fireplace",
+        -52.39
+      ],
+      [
+        "in a courthouse",
+        -52.08
+      ]
+    ]
+  },
+  "a butcher": {
+    "serving customers": [
+      [
+        "in a classroom",
+        -50.25
+      ],
+      [
+        "at the laundromat",
+        -49.84
+      ],
+      [
+        "on a freeway",
+        -49.73
+      ],
+      [
+        "in a dental office",
+        -49.28
+      ]
+    ],
+    "slaughtering a pig": [
+      [
+        "at the bookstore",
+        -55.44
+      ],
+      [
+        "at the gym",
+        -53.98
+      ],
+      [
+        "at a concert",
+        -51.4
+      ],
+      [
+        "in the cupboard",
+        -51.38
+      ]
+    ]
+  },
+  "a horse": {
+    "eating some grass": [
+      [
+        "in an ambulance",
+        -54.13
+      ],
+      [
+        "at a discotheque",
+        -52.27
+      ],
+      [
+        "in a locker room",
+        -51.97
+      ]
+    ]
+  },
+  "the squirrel": {
+    "eating an apple": [
+      [
+        "at a military base",
+        -53.38
+      ],
+      [
+        "in a coal mine",
+        -51.71
+      ],
+      [
+        "in a spa",
+        -51.33
+      ]
+    ]
+  },
+  "actors": {
+    "playing cards": [
+      [
+        "in the oven",
+        -42.02
+      ],
+      [
+        "in a tube",
+        -38.9
+      ]
+    ]
+  },
+  "a judge": {
+    "writing a letter": [
+      [
+        "at a discotheque",
+        -58.86
+      ],
+      [
+        "in a corral",
+        -56.36
+      ]
+    ]
+  },
+  "the knight": {
+    "riding a horse": [
+      [
+        "in a locker room",
+        -51.55
+      ],
+      [
+        "in a spa",
+        -49.79
+      ],
+      [
+        "in a clinic",
+        -49.71
+      ]
+    ],
+    "fighting the enemy": [
+      [
+        "at a swimming pool",
+        -56.36
+      ],
+      [
+        "at a race track",
+        -56.3
+      ],
+      [
+        "in a fish tank",
+        -54.84
+      ]
+    ],
+    "serving food": [
+      [
+        "in an ambulance",
+        -54.18
+      ],
+      [
+        "on a freeway",
+        -53.61
+      ]
+    ]
+  },
+  "the geese": {
+    "lying eggs": [
+      [
+        "in an ambulance",
+        -55.5
+      ],
+      [
+        "at a race track",
+        -52.86
+      ]
+    ]
+  },
+  "the policemen": {
+    "arresting the suspect": [
+      [
+        "in a kennel",
+        -55.31
+      ],
+      [
+        "on a roof",
+        -52.5
+      ]
+    ],
+    "walking the dog": [
+      [
+        "in a fish tank",
+        -54.21
+      ]
+    ]
+  },
+  "the waiter": {
+    "sweeping the floor": [
+      [
+        "on a freeway",
+        -54.17
+      ],
+      [
+        "on a roof",
+        -52.09
+      ]
+    ],
+    "serving food": [
+      [
+        "on a freeway",
+        -50.7
+      ],
+      [
+        "in a fish tank",
+        -50.22
+      ]
+    ],
+    "washing the dishes": [
+      [
+        "on a freeway",
+        -55.72
+      ],
+      [
+        "in a courthouse",
+        -55.61
+      ],
+      [
+        "in an ambulance",
+        -54.3
+      ]
+    ],
+    "pouring milk": [
+      [
+        "at the repair shop",
+        -56.73
+      ],
+      [
+        "in a dental office",
+        -56.73
+      ],
+      [
+        "in a coal mine",
+        -54.5
+      ]
+    ]
+  },
+  "the pharmacist": {
+    "serving customers": [
+      [
+        "on a freeway",
+        -54.62
+      ],
+      [
+        "on a tree",
+        -49.78
+      ]
+    ],
+    "using a computer": [
+      [
+        "in a pond",
+        -54.03
+      ]
+    ]
+  },
+  "politicians": {
+    "drinking alcohol": [
+      [
+        "in the oven",
+        -47.92
+      ],
+      [
+        "in a corral",
+        -46.06
+      ]
+    ],
+    "playing cards": [
+      [
+        "in a shower",
+        -43.88
+      ]
+    ]
+  },
+  "the king": {
+    "riding a horse": [
+      [
+        "in a fish tank",
+        -53.23
+      ]
+    ],
+    "playing chess": [
+      [
+        "at a race track",
+        -54.05
+      ]
+    ]
+  },
+  "the audience": {
+    "attending a lecture": [
+      [
+        "in the ditch",
+        -53.61
+      ]
+    ],
+    "seeing a film": [
+      [
+        "in a cage",
+        -52.39
+      ]
+    ],
+    "seeing a play": [
+      [
+        "in the oven",
+        -53.59
+      ]
+    ]
+  },
+  "a writer": {
+    "writing a book": [
+      [
+        "in a corral",
+        -46.52
+      ],
+      [
+        "in the fireplace",
+        -46.18
+      ]
+    ],
+    "using a computer": [
+      [
+        "in the fridge",
+        -46.72
+      ]
+    ]
+  },
+  "the hunter": {
+    "riding a horse": [
+      [
+        "in an ambulance",
+        -56.88
+      ],
+      [
+        "in a bathtub",
+        -54.73
+      ]
+    ],
+    "climbing a tree": [
+      [
+        "in a bathroom",
+        -55.62
+      ]
+    ],
+    "hitting the deer": [
+      [
+        "in a courthouse",
+        -56.71
+      ]
+    ],
+    "catching a fish": [
+      [
+        "on a freeway",
+        -54.88
+      ]
+    ]
+  },
+  "a pilot": {
+    "using a computer": [
+      [
+        "in a fish tank",
+        -53.46
+      ]
+    ]
+  },
+  "worms": {
+    "eating vegetables": [
+      [
+        "in a courthouse",
+        -50.85
+      ]
+    ]
+  },
+  "the catepillar": {
+    "climbing a tree": [
+      [
+        "in a bathtub",
+        -59.83
+      ]
+    ]
+  },
+  "the fireman": {
+    "fighting a fire": [
+      [
+        "in a pond",
+        -50.23
+      ],
+      [
+        "in a fish tank",
+        -49.31
+      ]
+    ]
+  },
+  "a lawyer": {
+    "writing a letter": [
+      [
+        "in a corral",
+        -52.31
+      ]
+    ],
+    "signing a contract": [
+      [
+        "in a fish tank",
+        -51.72
+      ]
+    ]
+  },
+  "a machine": {
+    "sweeping the floor": [
+      [
+        "on a freeway",
+        -49.55
+      ]
+    ],
+    "serving food": [
+      [
+        "in the swamp",
+        -50.72
+      ]
+    ]
+  },
+  "lions": {
+    "eating meat": [
+      [
+        "in a courthouse",
+        -49.79
+      ],
+      [
+        "at a discotheque",
+        -49.16
+      ]
+    ]
+  },
+  "lizards": {
+    "eating vegetables": [
+      [
+        "at a concert",
+        -45.82
+      ],
+      [
+        "in the fireplace",
+        -45.77
+      ]
+    ]
+  },
+  "frogs": {
+    "eating fish": [
+      [
+        "at the theater",
+        -55.03
+      ]
+    ]
+  },
+  "a criminal": {
+    "committing murder": [
+      [
+        "in a fish tank",
+        -49.97
+      ]
+    ],
+    "starting a fire": [
+      [
+        "in a fish tank",
+        -51.38
+      ]
+    ]
+  },
+  "a thief": {
+    "stealing a painting": [
+      [
+        "in a corral",
+        -50.24
+      ],
+      [
+        "in a shower",
+        -49.75
+      ]
+    ],
+    "stealing a diamond": [
+      [
+        "in an ambulance",
+        -48.66
+      ]
+    ],
+    "stealing a bicycle": [
+      [
+        "in the fridge",
+        -48.23
+      ]
+    ],
+    "stealing some money": [
+      [
+        "in a shower",
+        -50.79
+      ],
+      [
+        "in a kennel",
+        -50.17
+      ]
+    ]
+  },
+  "a painter": {
+    "painting a picture": [
+      [
+        "in an ambulance",
+        -45.51
+      ],
+      [
+        "in the cupboard",
+        -44.32
+      ]
+    ],
+    "painting a wall": [
+      [
+        "on the battlefield",
+        -46.02
+      ]
+    ]
+  },
+  "snakes": {
+    "eating vegetables": [
+      [
+        "in an ambulance",
+        -46.91
+      ]
+    ]
+  },
+  "the bear": {
+    "catching a fish": [
+      [
+        "in an ambulance",
+        -56.64
+      ],
+      [
+        "in a spa",
+        -50.88
+      ]
+    ],
+    "eating meat": [
+      [
+        "at a concert",
+        -53.83
+      ]
+    ]
+  },
+  "a family": {
+    "playing cards": [
+      [
+        "in a fish tank",
+        -47.48
+      ],
+      [
+        "in the swamp",
+        -44.54
+      ]
+    ],
+    "cooking dinner": [
+      [
+        "in an ambulance",
+        -47.48
+      ],
+      [
+        "on a freeway",
+        -46.88
+      ]
+    ],
+    "watching tv": [
+      [
+        "in the ditch",
+        -53.76
+      ],
+      [
+        "in a courthouse",
+        -50.71
+      ]
+    ]
+  },
+  "a police officer": {
+    "driving a car": [
+      [
+        "in a locker room",
+        -49.78
+      ],
+      [
+        "in a bathtub",
+        -48.83
+      ]
+    ],
+    "taking a picture": [
+      [
+        "in the oven",
+        -47.75
+      ]
+    ],
+    "using a computer": [
+      [
+        "in a fish tank",
+        -51.47
+      ]
+    ]
+  },
+  "whales": {
+    "eating fish": [
+      [
+        "on a freeway",
+        -44.73
+      ]
+    ]
+  },
+  "the penguins": {
+    "eating fish": [
+      [
+        "in a playground",
+        -48.86
+      ],
+      [
+        "in a clinic",
+        -48.47
+      ]
+    ]
+  },
+  "a customer": {
+    "buying food": [
+      [
+        "in a slaughter house",
+        -47.91
+      ],
+      [
+        "in the swamp",
+        -47.9
+      ]
+    ],
+    "signing a contract": [
+      [
+        "in the oven",
+        -49.29
+      ]
+    ],
+    "paying cash": [
+      [
+        "in the jungle",
+        -49.01
+      ]
+    ],
+    "getting a haircut": [
+      [
+        "in the oven",
+        -49.68
+      ]
+    ]
+  },
+  "a merchant": {
+    "serving customers": [
+      [
+        "in an ambulance",
+        -45.93
+      ]
+    ],
+    "using a calculator": [
+      [
+        "in an arena",
+        -53.08
+      ]
+    ]
+  },
+  "a band": {
+    "making music": [
+      [
+        "in an ambulance",
+        -45.61
+      ],
+      [
+        "in a courthouse",
+        -44.81
+      ]
+    ]
+  },
+  "the warden": {
+    "reading the newspaper": [
+      [
+        "in an arena",
+        -55.05
+      ],
+      [
+        "in a fish tank",
+        -54.72
+      ],
+      [
+        "in a corral",
+        -54.13
+      ]
+    ],
+    "making a phone call": [
+      [
+        "in a tube",
+        -57.1
+      ]
+    ]
+  },
+  "a scientist": {
+    "teaching a class": [
+      [
+        "at a discotheque",
+        -51.85
+      ],
+      [
+        "on a freeway",
+        -48.42
+      ]
+    ],
+    "using a computer": [
+      [
+        "in the oven",
+        -50.99
+      ]
+    ]
+  },
+  "ducks": {
+    "eating food": [
+      [
+        "in a courthouse",
+        -47.01
+      ],
+      [
+        "on the battlefield",
+        -44.91
+      ]
+    ]
+  },
+  "the priest": {
+    "lighting a candle": [
+      [
+        "on a freeway",
+        -54.4
+      ]
+    ],
+    "teaching a class": [
+      [
+        "at a discotheque",
+        -52.98
+      ],
+      [
+        "at the dentist",
+        -51.84
+      ]
+    ]
+  },
+  "squirrels": {
+    "drinking water": [
+      [
+        "in an ambulance",
+        -47.55
+      ],
+      [
+        "at a conference",
+        -44.98
+      ]
+    ]
+  },
+  "a policeman": {
+    "riding a horse": [
+      [
+        "at a discotheque",
+        -46.43
+      ],
+      [
+        "in a locker room",
+        -46.37
+      ]
+    ]
+  },
+  "the cashier": {
+    "serving customers": [
+      [
+        "in the arctic",
+        -52.23
+      ],
+      [
+        "in the jungle",
+        -49.8
+      ]
+    ],
+    "paying cash": [
+      [
+        "in a fish tank",
+        -54.42
+      ],
+      [
+        "on a tree",
+        -51.78
+      ]
+    ]
+  },
+  "an artist": {
+    "painting a picture": [
+      [
+        "in an ambulance",
+        -43.09
+      ],
+      [
+        "in a fish tank",
+        -41.52
+      ]
+    ],
+    "painting a wall": [
+      [
+        "in a slaughter house",
+        -45.04
+      ],
+      [
+        "in the fridge",
+        -44.22
+      ]
+    ]
+  },
+  "a carpenter": {
+    "drilling a hole": [
+      [
+        "on a freeway",
+        -48.73
+      ],
+      [
+        "at a banquet",
+        -46.56
+      ]
+    ],
+    "chopping firewood": [
+      [
+        "in a casino",
+        -52.36
+      ],
+      [
+        "in a courthouse",
+        -51.52
+      ]
+    ]
+  },
+  "terrorists": {
+    "committing murder": [
+      [
+        "in the fridge",
+        -46.08
+      ]
+    ],
+    "starting a fire": [
+      [
+        "in a shower",
+        -43.32
+      ],
+      [
+        "in a spa",
+        -43.19
+      ]
+    ]
+  },
+  "a salesman": {
+    "serving customers": [
+      [
+        "in a corral",
+        -46.6
+      ],
+      [
+        "in a shower",
+        -46.56
+      ]
+    ],
+    "making a phone call": [
+      [
+        "in the swamp",
+        -51.77
+      ]
+    ]
+  },
+  "a prisoner": {
+    "reading a book": [
+      [
+        "at a discotheque",
+        -52.6
+      ],
+      [
+        "on a freeway",
+        -49.31
+      ]
+    ],
+    "taking a shower": [
+      [
+        "at a bookstore",
+        -49.64
+      ],
+      [
+        "on a freeway",
+        -47.86
+      ]
+    ]
+  },
+  "the chicken": {
+    "lying eggs": [
+      [
+        "at a discotheque",
+        -56.33
+      ],
+      [
+        "in an ambulance",
+        -52.25
+      ]
+    ]
+  },
+  "a sailor": {
+    "catching a fish": [
+      [
+        "in an ambulance",
+        -52.81
+      ],
+      [
+        "at the bookstore",
+        -50.3
+      ],
+      [
+        "on the subway",
+        -48.97
+      ]
+    ]
+  },
+  "turtles": {
+    "eating food": [
+      [
+        "in a courthouse",
+        -51.49
+      ],
+      [
+        "on a freeway",
+        -49.18
+      ]
+    ]
+  },
+  "a robber": {
+    "drilling a hole": [
+      [
+        "on a freeway",
+        -52.91
+      ]
+    ],
+    "committing murder": [
+      [
+        "in a fish tank",
+        -54.62
+      ],
+      [
+        "in an ambulance",
+        -53.83
+      ]
+    ]
+  },
+  "a bee": {
+    "eating an apple": [
+      [
+        "at a military base",
+        -49.15
+      ],
+      [
+        "in a coal mine",
+        -47.82
+      ]
+    ]
+  },
+  "vampires": {
+    "drinking alcohol": [
+      [
+        "in a kennel",
+        -52.43
+      ],
+      [
+        "in a fish tank",
+        -51.64
+      ]
+    ],
+    "committing murder": [
+      [
+        "in a fish tank",
+        -52.38
+      ]
+    ] 
+  },
+  "pigs": {
+    "eating vegetables": [
+      [
+        "at a military base",
+        -46.25
+      ]
+    ],
+    "digging a hole": [
+      [
+        "at a bookstore",
+        -48.25
+      ],
+      [
+        "in a mall",
+        -45.69
+      ]
+    ]
+  },
+  "a fisherman": {
+    "catching a fish": [
+      [
+        "in the cupboard",
+        -47.55
+      ],
+      [
+        "in a playground",
+        -45.44
+      ]
+    ],
+    "going fishing": [
+      [
+        "at a banquet",
+        -50.43
+      ],
+      [
+        "in the booth",
+        -46.68
+      ]
+    ]
+  },
+  "an elephant": {
+    "taking a bath": [
+      [
+        "at the bookstore",
+        -44.97
+      ],
+      [
+        "in a courthouse",
+        -44.94
+      ]
+    ],
+    "drinking water": [
+      [
+        "at the bookstore",
+        -47.59
+      ],
+      [
+        "in a casino",
+        -45.91
+      ]
+    ]
+  },
+  "parrots": {
+    "eating food": [
+      [
+        "in an ambulance",
+        -48.85
+      ],
+      [
+        "in the arctic",
+        -48.13
+      ]
+    ]
+  }
+}

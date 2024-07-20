@@ -1,0 +1,373 @@
+{
+  "a person": [
+    "driving a car",
+    "riding a bike",
+    "using a computer",
+    "riding a horse",
+    "running a marathon",
+    "flying a kite"
+  ],
+  "the dog": [
+    "digging a hole"
+  ],
+  "the baby": [
+    "taking a bath"
+  ],
+  "the cat": [
+    "climbing a tree"
+  ],
+  "the teacher": [
+    "teaching a class"
+  ],
+  "the farmer": [
+    "chopping firewood",
+    "pouring milk",
+    "planting corn",
+    "picking strawberries"
+  ],
+  "a child": [
+    "climbing a tree",
+    "flying a kite",
+    "watching tv"
+  ],
+  "a car": [
+    "hitting the deer"
+  ],
+  "the president": [
+    "writing a letter"
+  ],
+  "a student": [
+    "taking an exam"
+  ],
+  "the coyote": [
+    "digging a hole",
+    "climbing a tree",
+    "pulling a rabbit"
+  ],
+  "parents": [
+    "watching tv"
+  ],
+  "a computer": [
+    "playing chess"
+  ],
+  "the waitress": [
+    "serving food",
+    "sweeping the floor",
+    "washing the dishes"
+  ],
+  "a musician": [
+    "playing the piano",
+    "playing the violin"
+  ],
+  "a doctor": [
+    "writing a letter"
+  ],
+  "fish": [
+    "eating food"
+  ],
+  "the officer": [
+    "arresting the suspect"
+  ],
+  "flowers": [
+    "climbing a tree"
+  ],
+  "a cook": [
+    "serving food",
+    "cooking a meal"
+  ],
+  "a bird": [
+    "catching a fish"
+  ],
+  "the jury": [
+    "writing a letter"
+  ],
+  "a patient": [
+    "reading the newspaper"
+  ],
+  "kids": [
+    "playing cards",
+    "jumping rope"
+  ],
+  "ants": [
+    "eating vegetables"
+  ],
+  "cows": [
+    "eating food"
+  ],
+  "a spider": [
+    "digging a hole"
+  ],
+  "the boy scout": [
+    "playing cards"
+  ],
+  "criminals": [
+    "committing murder",
+    "drilling a hole"
+  ],
+  "the soldier": [
+    "fighting the enemy",
+    "digging a hole"
+  ],
+  "the mouse": [
+    "digging a hole"
+  ],
+  "the minister": [
+    "writing a letter"
+  ],
+  "the dentist": [
+    "drilling a hole"
+  ],
+  "the rabbit": [
+    "digging a hole"
+  ],
+  "a chef": [
+    "cooking a meal",
+    "making bread"
+  ],
+  "an owl": [
+    "eating an apple"
+  ],
+  "the firemen": [
+    "fighting a fire",
+    "breaking the windows"
+  ],
+  "a ghost": [
+    "writing a letter"
+  ],
+  "the space shuttle": [
+    "fighting a fire"
+  ],
+  "a parent": [
+    "washing clothes",
+    "sweeping the floor"
+  ],
+  "a gardener": [
+    "mowing the lawn",
+    "watering a plant",
+    "weeding the garden",
+    "pruning a bush",
+    "picking strawberries"
+  ],
+  "a butcher": [
+    "serving customers",
+    "slaughtering a pig"
+  ],
+  "a horse": [
+    "eating some grass"
+  ],
+  "the squirrel": [
+    "eating an apple"
+  ],
+  "actors": [
+    "playing cards"
+  ],
+  "a judge": [
+    "writing a letter"
+  ],
+  "the knight": [
+    "riding a horse",
+    "fighting the enemy",
+    "serving food"
+  ],
+  "the geese": [
+    "lying eggs"
+  ],
+  "the policemen": [
+    "arresting the suspect",
+    "walking the dog"
+  ],
+  "the waiter": [
+    "sweeping the floor",
+    "serving food",
+    "washing the dishes",
+    "pouring milk"
+  ],
+  "the pharmacist": [
+    "serving customers",
+    "using a computer"
+  ],
+  "politicians": [
+    "drinking alcohol",
+    "playing cards"
+  ],
+  "the snowman": [
+  ],
+  "the king": [
+    "playing chess",
+    "riding a horse"
+  ],
+  "the audience": [
+    "attending a lecture",
+    "seeing a film",
+    "seeing a play"
+  ],
+  "a writer": [
+    "writing a book",
+    "using a computer"
+  ],
+  "the hunter": [
+    "riding a horse",
+    "climbing a tree",
+    "hitting the deer",
+    "catching a fish"
+  ],
+  "a pilot": [
+    "using a computer"
+  ],
+  "worms": [
+    "eating vegetables"
+  ],
+  "the catepillar": [
+    "climbing a tree"
+  ],
+  "the fireman": [
+    "fighting a fire"
+  ],
+  "a lawyer": [
+    "writing a letter",
+    "signing a contract"
+  ],
+  "a machine": [
+    "sweeping the floor",
+    "serving food"
+  ],
+  "lions": [
+    "eating meat"
+  ],
+  "lizards": [
+    "eating vegetables"
+  ],
+  "frogs": [
+    "eating fish"
+  ],
+  "a criminal": [
+    "committing murder",
+    "starting a fire"
+  ],
+  "a thief": [
+    "stealing a painting",
+    "stealing a diamond",
+    "stealing a bicycle",
+    "stealing some money"
+  ],
+  "a painter": [
+    "painting a picture",
+    "painting a wall"
+  ],
+  "snakes": [
+    "eating vegetables"
+  ],
+  "the bear": [
+    "catching a fish",
+    "eating meat"
+  ],
+  "a family": [
+    "playing cards",
+    "watching tv",
+    "cooking dinner"
+  ],
+  "a police officer": [
+    "driving a car",
+    "taking a picture",
+    "using a computer"
+  ],
+  "whales": [
+    "eating fish"
+  ],
+  "the penguins": [
+    "eating fish"
+  ],
+  "a customer": [
+    "buying food",
+    "signing a contract",
+    "paying cash",
+    "getting a haircut"
+  ],
+  "a merchant": [
+    "serving customers",
+    "using a calculator"
+  ],
+  "a band": [
+    "making music"
+  ],
+  "the warden": [
+    "reading the newspaper",
+    "making a phone call"
+  ],
+  "a scientist": [
+    "teaching a class",
+    "using a computer"
+  ],
+  "ducks": [
+    "eating food"
+  ],
+  "the priest": [
+    "lighting a candle",
+    "teaching a class"
+  ],
+  "squirrels": [
+    "drinking water"
+  ],
+  "a policeman": [
+    "riding a horse"
+  ],
+  "the cashier": [
+    "serving customers",
+    "paying cash"
+  ],
+  "an artist": [
+    "painting a picture",
+    "painting a wall"
+  ],
+  "a carpenter": [
+    "drilling a hole",
+    "chopping firewood"
+  ],
+  "terrorists": [
+    "committing murder",
+    "starting a fire"
+  ],
+  "a salesman": [
+    "serving customers",
+    "making a phone call"
+  ],
+  "a prisoner": [
+    "reading a book",
+    "taking a shower"
+  ],
+  "the chicken": [
+    "lying eggs"
+  ],
+  "a sailor": [
+    "catching a fish"
+  ],
+  "turtles": [
+    "eating food"
+  ],
+  "a robber": [
+    "drilling a hole",
+    "committing murder"
+  ],
+  "a bee": [
+    "eating an apple"
+  ],
+  "vampires": [
+    "committing murder",
+    "drinking alcohol"
+  ],
+  "pigs": [
+    "eating vegetables",
+    "digging a hole"
+  ],
+  "a fisherman": [
+    "catching a fish",
+    "going fishing"
+  ],
+  "an elephant": [
+    "taking a bath",
+    "drinking water"
+  ],
+  "parrots": [
+    "eating food"
+  ]
+}
