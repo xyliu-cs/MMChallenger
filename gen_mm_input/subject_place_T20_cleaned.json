@@ -1,0 +1,385 @@
+{
+  "a person": [
+    "on the street",
+    "in a car",
+    "in an office"
+  ],
+  "the dog": [
+    "on the street",
+    "on the bed"
+  ],
+  "the baby": [
+    "in the car",
+    "on the bed"
+  ],
+  "the cat": [
+    "on the bed",
+    "on the table"
+  ],
+  "the teacher": [
+    "in a classroom"
+  ],
+  "the farmer": [
+    "in a field",
+    "on a farm"
+  ],
+  "a child": [
+    "on the street",
+    "in a playground"
+  ],
+  "a car": [
+    "on the road",
+    "in the garage"
+  ],
+  "the president": [
+    "in a court",
+    "on the street"
+  ],
+  "a student": [
+    "at a university",
+    "in a classroom"
+  ],
+  "the coyote": [
+    "in the woods"
+  ],
+  "parents": [
+    "in the kitchen",
+    "in the basement"
+  ],
+  "a computer": [
+    "in a library"
+  ],
+  "the waitress": [
+    "at the bar",
+    "at a cafe",
+    "in a restaurant"
+  ],
+  "a musician": [
+    "on the street",
+    "on a stage",
+    "in a studio"
+  ],
+  "a doctor": [
+    "at a hospital",
+    "in a clinic"
+  ],
+  "fish": [
+    "in the ocean",
+    "in a tank"
+  ],
+  "the officer": [
+    "on the street",
+    "in the car",
+    "at the airport"
+  ],
+  "flowers": [
+    "in a garden"
+  ],
+  "a cook": [
+    "in the kitchen",
+    "in a restaurant"
+  ],
+  "a bird": [
+    "in the sky",
+    "in a cage",
+    "on a tree"
+  ],
+  "the jury": [
+    "in a court"
+  ],
+  "a patient": [
+    "at a hospital",
+    "in an ambulance"
+  ],
+  "kids": [
+    "on the beach",
+    "on the lawn"
+  ],
+  "ants": [
+    "on the ground",
+    "on a tree",
+    "on the table"
+  ],
+  "cows": [
+    "in a field",
+    "on a farm"
+  ],
+  "a spider": [
+    "in the basement",
+    "on a tree"
+  ],
+  "the boy scout": [
+    "in the jungle"
+  ],
+  "criminals": [
+    "on the street",
+    "in the car"
+  ],
+  "the soldier": [
+    "on the battlefield"
+  ],
+  "the mouse": [
+    "on the table",
+    "in the kitchen"
+  ],
+  "the minister": [
+    "at a funeral",
+    "in a church"
+  ],
+  "the dentist": [
+    "at the dentist"
+  ],
+  "the rabbit": [
+    "on the ground"
+  ],
+  "a chef": [
+    "at a cafe",
+    "at a banquet"
+  ],
+  "an owl": [
+    "on a tree",
+    "in the sky"
+  ],
+  "the firemen": [
+    "in the fire",
+    "in the basement"
+  ],
+  "a ghost": [
+    "in a house",
+    "on the battlefield"
+  ],
+  "the space shuttle": [
+    "in the sky",
+    "in a museum"
+  ],
+  "a parent": [
+    "at a school",
+    "in a car"
+  ],
+  "a gardener": [
+    "in a greenhouse",
+    "in a garden"
+  ],
+  "a butcher": [
+    "in a market",
+    "in the basement"
+  ],
+  "a horse": [
+    "in a field",
+    "in a barn"
+  ],
+  "the squirrel": [
+    "on a tree",
+    "on the lawn"
+  ],
+  "actors": [
+    "on a stage",
+    "at the theatre"
+  ],
+  "a judge": [
+    "in a court"
+  ],
+  "the knight": [
+    "in a castle",
+    "in a battle"
+  ],
+  "the geese": [
+    "on the lawn"
+  ],
+  "the policemen": [
+    "in the parade",
+    "in the basement",
+    "in the bank"
+  ],
+  "the waiter": [
+    "at a cafe"
+  ],
+  "the pharmacist": [
+    "in a pharmacy"
+  ],
+  "politicians": [
+    "at a conference"
+  ],
+  "the snowman": [
+    "on the ice"
+  ],
+  "the king": [
+    "on the battlefield",
+    "at a banquet"
+  ],
+  "the audience": [
+    "at a concert",
+    "at the theatre",
+    "at a conference"
+  ],
+  "a writer": [
+    "in a library"
+  ],
+  "the hunter": [
+    "in the woods",
+    "in the jungle",
+    "in the desert"
+  ],
+  "a pilot": [
+    "in an airplane"
+  ],
+  "worms": [
+    "on the ground"
+  ],
+  "the catepillar": [
+    "on a tree"
+  ],
+  "the fireman": [
+    "in the fire",
+    "on the street",
+    "by the fire"
+  ],
+  "a lawyer": [
+    "in a court",
+    "in an office"
+  ],
+  "a machine": [
+    "in a factory",
+    "in the kitchen"
+  ],
+  "lions": [
+    "at the zoo",
+    "in the wilderness"
+  ],
+  "lizards": [
+    "in the desert"
+  ],
+  "frogs": [
+    "in a pond"
+  ],
+  "a criminal": [
+    "in a court",
+    "on the street",
+    "in the bank"
+  ],
+  "a thief": [
+    "on the street",
+    "in a house",
+    "in a store"
+  ],
+  "a painter": [
+    "in a studio",
+    "in a field"
+  ],
+  "snakes": [
+    "in the desert",
+    "in the water"
+  ],
+  "the bear": [
+    "in the woods",
+    "on the road"
+  ],
+  "a family": [
+    "on the beach",
+    "in a house"
+  ],
+  "a police officer": [
+    "in a court",
+    "at a roadblock"
+  ],
+  "whales": [
+    "in the ocean"
+  ],
+  "the penguins": [
+    "on the ice"
+  ],
+  "a customer": [
+    "in a store",
+    "in the bank"
+  ],
+  "a merchant": [
+    "in a market"
+  ],
+  "a band": [
+    "at a concert",
+    "at a wedding"
+  ],
+  "the warden": [
+    "in the basement"
+  ],
+  "a scientist": [
+    "in a laboratory",
+    "at a conference"
+  ],
+  "ducks": [
+    "in a pond",
+    "on the road"
+  ],
+  "the priest": [
+    "in a church",
+    "on the battlefield"
+  ],
+  "squirrels": [
+    "on a tree",
+    "on the lawn"
+  ],
+  "a policeman": [
+    "at the airport",
+    "at a school"
+  ],
+  "the cashier": [
+    "at the supermarket",
+    "at a gas station",
+    "at the bookstore"
+  ],
+  "an artist": [
+    "in a studio",
+    "in a field"
+  ],
+  "a carpenter": [
+    "in a factory",
+    "on a farm"
+  ],
+  "terrorists": [
+    "at the airport",
+    "on the subway"
+  ],
+  "a salesman": [
+    "in a store"
+  ],
+  "a prisoner": [
+    "in the basement",
+    "at a military base"
+  ],
+  "the chicken": [
+    "in the oven",
+    "in the fridge",
+    "at the supermarket"
+  ],
+  "a sailor": [
+    "on a ship",
+    "on the beach",
+    "in the water"
+  ],
+  "turtles": [
+    "in a tank"
+  ],
+  "a robber": [
+    "at a gas station",
+    "in the bank",
+    "in a store"
+  ],
+  "a bee": [
+    "in the wilderness"
+  ],
+  "vampires": [
+    "in the woods"
+  ],
+  "pigs": [
+    "on a farm"
+  ],
+  "a fisherman": [
+    "on a boat"
+  ],
+  "an elephant": [
+    "in a forest"
+  ],
+  "parrots": [
+    "in a cage"
+  ]
+}

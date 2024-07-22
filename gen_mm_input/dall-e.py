@@ -7,6 +7,7 @@ import time
 import os
 import glob
 from PIL import Image
+from tqdm import tqdm
 
 def convert_jpg_to_webp_folder(input_folder):
     webp_folder_path = os.path.join(input_folder, 'webp')
@@ -21,15 +22,23 @@ def convert_jpg_to_webp_folder(input_folder):
             image.save(webp_file_path, 'WEBP')
 
 
-def generate_image_from_sentence(end_point, authen, sentence, id, image_folder_path, iter=1):
-    out_path = image_folder_path + f'/q{id}_{iter}.jpg'
+def generate_image_from_sentence(end_point, authen, expr_lst, id, image_folder_path, iter=1):
+    underscore = []
+    for phrase in expr_lst:
+        underscore.append(phrase.replace(' ', '_'))   
+    out_path = os.path.join(image_folder_path, f'{id:0>5}_{underscore[0]}_{underscore[1]}_{underscore[2]}.jpg')
     if os.path.exists(out_path):
         print(f"Image {out_path} already exists, the request is cancelled.")
         return
 
     # Constructing the payload as a dictionary
+    if expr_lst[2] in ["at the theater", "at the theatre"]:
+        expr_lst[2] = "in the theater"
+    elif expr_lst[2] == "at a swimming pool":
+        expr_lst[2] = "in a swimming pool"
+
     payload = {
-        'prompt': sentence,
+        'prompt': " ".join(expr_lst),
         'model': 'dall-e-3',
         'n': 1,
         'quality': 'standard',
@@ -71,6 +80,16 @@ def read_sentence_list(file_path, sent_key_name):
         sent_list.append(q_dict[sent_key_name])
     return sent_list
 
+def read_dict_to_expr(data_path):
+    sent_list = []
+    with open(data_path, 'r') as f:
+        data = json.load(f)
+    for subject in data:
+        for action in data[subject]:
+            for place_tup in data[subject][action]:
+                sent_list.append([subject, action, place_tup[0]])
+    return sent_list
+
 
 def write_meta_file(image_folder_path, sent_list):
     out_file_path = image_folder_path + '/meta_info.json'
@@ -79,7 +98,7 @@ def write_meta_file(image_folder_path, sent_list):
         return
     out_dict = {}
     for index in range(len(sent_list)):
-        out_dict[f"image{index+1}"] = sent_list[index]
+        out_dict[f"image{index+1}"] = ' '.join(sent_list[index])
     with open(out_file_path, 'w') as f:
         json.dump(out_dict, f, indent=4)
     print(f"Generated meta file {out_file_path}")
@@ -106,18 +125,20 @@ def deprecate_flawed_image(image_folder, deprecated_list, postfix='.jpg'):
 
 if __name__ == '__main__':
     url = "https://cn2us02.opapi.win/v1/images/generations"
-    input_file = "/home/liu/test_resources/input_questions/verb_questions_0329.json"
-    auth_key = '' # add here
-    output_image_folder = '/home/liu/test_resources/images/verb'
-    text_list = read_sentence_list(input_file, 'text')
-    write_meta_file(output_image_folder, text_list)
+    input_file = "/home/liu/github_repos/MMChallenger/gen_mm_input/subject_T20action_B20place_cleaned.json"
+    auth_key = 'sk-HcTUQUYI386890171282T3BlBKFJ876AE6081bd74D0c8871' # add here
+    output_image_folder = '/home/liu/test_resources/images/0720/place'
+    # text_list = read_sentence_list(input_file, 'text')
+    tuple_list = read_dict_to_expr(input_file)
+    # print(tuple_list)
+    write_meta_file(output_image_folder, tuple_list)
 
     # first two round of generation
-    for i, text in enumerate(text_list):
-        for it in range(2):
-            generate_image_from_sentence(url, auth_key, text, i+1, output_image_folder, iter=it+1) 
-            print(f"Generating the {i+1}th image at iteration {it+1}")
-            time.sleep(10)
+    for i, tup in enumerate(tqdm(tuple_list[:], desc="Generating images")):
+        for it in range(1):
+            generate_image_from_sentence(url, auth_key, tup, i+1, output_image_folder, iter=it+1) 
+            # print(f"Generating the {i+1}th image at iteration {it+1}")
+            time.sleep(5)
     
     # Makeup rounds
     # flaw_list = [(11,2)]  # manual check and input (flawed_image_id, iter) to the list
