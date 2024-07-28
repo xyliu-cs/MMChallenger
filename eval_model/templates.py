@@ -22,8 +22,9 @@ OPENAI_SA = """[[Prefix]][[Text]][[Postfix]] Answer no more than 5 words."""
 
 
 
-def route_templates(model_type):
+def route_templates(model_type: str) -> dict:
     if model_type == "llava-vicuna":
         model_templates = {"MCQ": LLAVA_VICUNA_MCQ, "YN": LLAVA_VICUNA_YN, "SA": LLAVA_VICUNA_SA}
     elif model_type == "instructblip":
         model_templates = {"MCQ": INSTRUCTBLIP_MCQ, "YN": INSTRUCTBLIP_YN, "SA": INSTRUCTBLIP_SA}
+    return model_templates

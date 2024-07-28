@@ -39,12 +39,12 @@ def generate_mcq_prompt(gt_triplet, mcq_dict, target, mcq_prompt_template, postf
     option_B = mcq_dict["B"]
     option_C = mcq_dict["C"]
     option_D = mcq_dict["D"]
-    mcq_tmp.replace("[[Text]]", text, 1)
-    mcq_tmp.replace("[[OptionA]]", option_A, 1)
-    mcq_tmp.replace("[[OptionB]]", option_B, 1)
-    mcq_tmp.replace("[[OptionC]]", option_C, 1)
-    mcq_tmp.replace("[[OptionD]]", option_D, 1)
-    mcq_tmp.replace("[[Postfix]]", postfix, 1)
+    mcq_tmp = mcq_tmp.replace("[[Text]]", text, 1) \
+                     .replace("[[OptionA]]", option_A, 1) \
+                     .replace("[[OptionB]]", option_B, 1) \
+                     .replace("[[OptionC]]", option_C, 1) \
+                     .replace("[[OptionD]]", option_D, 1) \
+                     .replace("[[Postfix]]", postfix, 1)
     return mcq_tmp
 
 
@@ -70,9 +70,11 @@ def generate_yn_prompt(gt_triplet, yn_prompt_template, target, postfix='', prefi
             raise ValueError(f"Unsupported target type {target}")  
     if prefix:
         text = text.lower()
-    yn_tmp.replace("[[Text]]", text, 1)
-    yn_tmp.replace("[[Prefix]]", prefix, 1)
-    yn_tmp.replace("[[Postfix]]", postfix, 1)
+    
+    yn_tmp = yn_tmp.replace("[[Text]]", text, 1) \
+                   .replace("[[Prefix]]", prefix, 1) \
+                   .replace("[[Postfix]]", postfix, 1)
+    
     return yn_tmp
 
 
@@ -92,7 +94,7 @@ def generate_sa_prompt(gt_triplet, sa_prompt_template, target, postfix='', prefi
     if prefix:
         text = text.lower()
 
-    sa_tmp.replace("[[Text]]", text, 1)
-    sa_tmp.replace("[[Prefix]]", prefix, 1)
-    sa_tmp.replace("[[Postfix]]", postfix, 1)
+    sa_tmp = sa_tmp.replace("[[Text]]", text, 1) \
+                   .replace("[[Prefix]]", prefix, 1) \
+                   .replace("[[Postfix]]", postfix, 1)
     return sa_tmp
