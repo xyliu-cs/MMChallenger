@@ -117,7 +117,9 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
                     if model_type == "llava-vicuna":
                         output_text = output_text.split('ASSISTANT: ')[1]
                     elif model_type == "qwen-vl":
-                        output_text = output_text.split('Answer:')[1].split('\n')[0].strip()
+                        attempt = output_text.split('Answer:')[1].split('\n')[0].strip()
+                        if attempt != '':
+                            output_text = attempt
                         # print(output_text)
                     # print(output_text)
                     local_ans.append(output_text)
