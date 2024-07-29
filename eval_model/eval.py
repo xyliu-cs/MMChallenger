@@ -93,7 +93,7 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
                     if model_type == "llava-vicuna":
                         output_text = output_text.split('ASSISTANT: ')[1]
                     local_ans.append(output_text)
-            output_dict[f"{q_type}_model_ans"].append(local_ans)
+                output_dict[f"{q_type}_model_ans"].append(local_ans)
         output_list_of_dict.append(output_dict)
     print(f"Finished on all the {len(output_list_of_dict)} inputs")
     write_json(json_list=output_list_of_dict, json_path=text_output_path)
