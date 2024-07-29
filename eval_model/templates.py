@@ -20,6 +20,7 @@ Answer no more than 5 words. ASSISTANT:"""
 
 # https://github.com/QwenLM/Qwen-VL/blob/aa00ed04091eea5fcdd32985e7915f1c53e7d599/eval_mm/evaluate_vqa.py#L281
 # https://github.com/QwenLM/Qwen-VL/blob/master/eval_mm/seed_bench/EVAL_SEED.md#how-to-process-video-by-qwen-vl
+# https://github.com/QwenLM/Qwen-VL/blob/aa00ed04091eea5fcdd32985e7915f1c53e7d599/eval_mm/evaluate_multiple_choice.py#L128
 QWEN_VL_MCQ = """Question: [[Text]]
 Options: A. [[OptionA]]
 B. [[OptionB]]

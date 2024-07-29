@@ -32,14 +32,14 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
             model = InstructBlipForConditionalGeneration.from_pretrained(model_dir).to(device)
     elif model_type == "qwen-vl":
         torch.manual_seed(1234)
-        processor = AutoTokenizer.from_pretrained("/120040051/Qwen-VL", trust_remote_code=True)
+        processor = AutoTokenizer.from_pretrained(model_dir, trust_remote_code=True)
         if use_device_map:
             print(f"Setting device map to {device_map}")
-            model = AutoModelForCausalLM.from_pretrained("/120040051/Qwen-VL", device_map="auto", trust_remote_code=True, fp16=True)
+            model = AutoModelForCausalLM.from_pretrained(model_dir, device_map="auto", trust_remote_code=True, fp16=True)
         else:
             device = "cuda" if torch.cuda.is_available() else "cpu"
             print(f"Setting device {device}")
-            model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen-VL", device_map=device, trust_remote_code=True)
+            model = AutoModelForCausalLM.from_pretrained(model_dir, device_map=device, trust_remote_code=True)
     return model.eval(), processor
 
 
@@ -117,7 +117,8 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
                     if model_type == "llava-vicuna":
                         output_text = output_text.split('ASSISTANT: ')[1]
                     elif model_type == "qwen-vl":
-                        output_text = output_text.split('Answer: ')[1]
+                        output_text = output_text.split('Answer:')[1].split('\n')[0].strip()
+                        # print(output_text)
                     # print(output_text)
                     local_ans.append(output_text)
                 output_dict[f"{q_type}_model_ans"].append(local_ans)
@@ -128,7 +129,7 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
 
 if __name__ == "__main__":
     text_input = "/120040051/merged0728/input_info.json"
-    text_output = "/120040051/test_resource/output_answers/qwen_vl_outputs.json"
+    text_output = "/120040051/test_resource/output_answers/qwen_vl_chat_outputs.json"
     model_type = "qwen-vl"
     # export CUDA_VISIBLE_DEVICES="2,3" for qwen (only support 2 cards parallel)
     model_dir = "/120040051/Qwen-VL-Chat"
