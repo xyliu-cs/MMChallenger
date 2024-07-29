@@ -1,7 +1,4 @@
-import torch
-from transformers import AutoProcessor, LlavaForConditionalGeneration
-from PIL import Image
-import json, os, copy
+import copy
 from lemminflect import getLemma, getInflection
 
 

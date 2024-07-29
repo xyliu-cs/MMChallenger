@@ -1,4 +1,4 @@
-INSTRUCTBLIP_MCQ = """Question: [[Text]] Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]]. [[Postfix]]Answer:"""
+INSTRUCTBLIP_MCQ = """Question: [[Text]] Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]]. [[Postfix]] Answer:"""
 INSTRUCTBLIP_YN = """[[Prefix]][[Text]][[Postfix]] Answer:"""
 INSTRUCTBLIP_SA = """[[Prefix]][[Text]][[Postfix]] Short Answer:"""
 
@@ -7,7 +7,7 @@ INSTRUCTBLIP_SA = """[[Prefix]][[Text]][[Postfix]] Short Answer:"""
 LLAVA_VICUNA_MCQ = """USER: <image>
 Question: [[Text]]
 Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]].
-[[Postfix]]Answer with the option's letter from the given choices directly. ASSISTANT:"""
+[[Postfix]] Answer with the option's letter from the given choices directly. ASSISTANT:"""
 LLAVA_VICUNA_YN = """USER: <image>
 [[Prefix]][[Text]][[Postfix]]
 Answer Yes or No directly. ASSISTANT:"""
@@ -16,7 +16,7 @@ LLAVA_VICUNA_SA = """USER: <image>
 Answer no more than 5 words. ASSISTANT:"""
 
 
-OPENAI_MCQ = """Question: [[Text]] Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]]. [[Postfix]]Answer with the option's letter from the given choices directly."""
+OPENAI_MCQ = """Question: [[Text]] Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]]. [[Postfix]] Answer with the option's letter from the given choices directly."""
 OPENAI_YN = """[[Prefix]][[Text]][[Postfix]] Answer Yes or No directly."""
 OPENAI_SA = """[[Prefix]][[Text]][[Postfix]] Answer no more than 5 words."""
 

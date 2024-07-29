@@ -57,7 +57,7 @@ def infer_target_type(image_name):
 
 
 
-def eval_model(model_dir, model_type, text_input_path, image_folder, text_output_path,  use_device_map=True, half_prec=False):
+def eval_model(model_dir, model_type, text_input_path, image_folder, text_output_path, prefix='', postfix='',use_device_map=True, half_prec=False):
     model, processor = load_local_model(model_dir=model_dir, model_type=model_type, use_device_map=use_device_map)
     input_list_of_dict = read_json(text_input_path)
     output_list_of_dict = []
@@ -74,9 +74,9 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
             place = input_dict["target"]["place"]
         gt_triplet = [subject, action, place]
         model_templates = route_templates(model_type=model_type)
-        mcq = generate_mcq_prompt(gt_triplet=gt_triplet, mcq_dict=input_dict["MCQ_options"], target=input_type, mcq_prompt_template=model_templates["MCQ"])
-        yn = generate_yn_prompt(gt_triplet=gt_triplet, yn_prompt_template=model_templates["YN"], target=input_type)
-        sa = generate_sa_prompt(gt_triplet=gt_triplet, sa_prompt_template=model_templates["SA"], target=input_type)
+        mcq = generate_mcq_prompt(gt_triplet=gt_triplet, mcq_dict=input_dict["MCQ_options"], target=input_type, mcq_prompt_template=model_templates["MCQ"], postfix=postfix)
+        yn = generate_yn_prompt(gt_triplet=gt_triplet, yn_prompt_template=model_templates["YN"], target=input_type, prefix=prefix, postfix=postfix)
+        sa = generate_sa_prompt(gt_triplet=gt_triplet, sa_prompt_template=model_templates["SA"], target=input_type, prefix=prefix, postfix=postfix)
         prompt_dict = {"mcq": mcq, "yn": yn, "sa": sa}
         output_dict = copy.deepcopy(input_dict)
         output_dict["category"] = input_type
@@ -101,9 +101,10 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
 
 if __name__ == "__main__":
     text_input = "/120040051/merged0728/input_info.json"
-    text_output = "/120040051/test_resource/output_answers/llava15_13b_outputs.json"
+    text_output = "/120040051/test_resource/output_answers/llava15_13b_outputs_common_sense.json"
     model_type = "llava-vicuna"
     model_dir = "/120040051/llava-1.5-13b-hf"
     image_folder = "/120040051/merged0728"
+    append = " Please insist your common knowledge of the world for the answer."
     hf_logging.set_verbosity_error()
-    eval_model(model_dir=model_dir, model_type=model_type, text_input_path=text_input, image_folder=image_folder, text_output_path=text_output)
+    eval_model(model_dir=model_dir, model_type=model_type, text_input_path=text_input, image_folder=image_folder, text_output_path=text_output, postfix=append)
