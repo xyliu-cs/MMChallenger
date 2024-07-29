@@ -31,7 +31,8 @@ def generate_mcq_prompt(gt_triplet, mcq_dict, target, mcq_prompt_template, postf
     elif target == "action":
         text = f"What {aux} {subject} doing {place}?"
     else:
-        raise ValueError(f"Unsupported target type {target}")  
+        raise ValueError(f"Unsupported target type {target}")
+    text = text + ' '  
     option_A = mcq_dict["A"]
     option_B = mcq_dict["B"]
     option_C = mcq_dict["C"]
@@ -67,7 +68,7 @@ def generate_yn_prompt(gt_triplet, yn_prompt_template, target, postfix='', prefi
             raise ValueError(f"Unsupported target type {target}")  
     if prefix:
         text = text.lower()
-    
+    text = text + ' '
     yn_tmp = yn_tmp.replace("[[Text]]", text, 1) \
                    .replace("[[Prefix]]", prefix, 1) \
                    .replace("[[Postfix]]", postfix, 1)
@@ -90,7 +91,7 @@ def generate_sa_prompt(gt_triplet, sa_prompt_template, target, postfix='', prefi
 
     if prefix:
         text = text.lower()
-
+    text = text + ' '
     sa_tmp = sa_tmp.replace("[[Text]]", text, 1) \
                    .replace("[[Prefix]]", prefix, 1) \
                    .replace("[[Postfix]]", postfix, 1)
