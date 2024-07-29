@@ -193,13 +193,35 @@ if __name__ == "__main__":
     # output_path = "/120040051/test_resource/output_answers/instructblip_7b_outputs.json"
     # output_path = "/home/liu/github_repos/MMChallenger/eval_model/llava15_13b_outputs.json"
 
+    # outputs = read_json(output_path)
+    # mcq_error_list = find_mcq_errors(outputs)
+    # yn_error_list = find_yn_errors(outputs)
 
-    # # outputs = read_json(output_path)
-    # # mcq_error_list = find_mcq_errors(outputs)
-    # # yn_error_list = find_yn_errors(outputs)
+    # # print(mcq_error_list)
+    # print("mcq all: ", len(mcq_error_list))
+    # print("mcq all pct: ", round(len(mcq_error_list)/344, 4))
+    # mcq_error_list_action = find_mcq_errors(outputs, target="action")
+    # print("mcq action: ", len(mcq_error_list_action))
+    # print("mcq action pct: ", round(len(mcq_error_list_action)/156, 4))
+    # mcq_error_list_place = find_mcq_errors(outputs, target="place")
+    # print("mcq place: ", len(mcq_error_list_place))
+    # print("mcq place pct: ", round(len(mcq_error_list_place)/188, 4))
+
+    # # print(yn_error_list)
+    # print("yn all: ", len(yn_error_list))
+    # print("yn all pct: ", round(len(yn_error_list)/344, 4))
+    # yn_error_list_action = find_yn_errors(outputs, target="action")
+    # print("yn action: ", len(yn_error_list_action))
+    # print("yn action pct: ", round(len(yn_error_list_action)/156, 4))
+    # yn_error_list_place = find_yn_errors(outputs, target="place")
+    # print("yn place: ", len(yn_error_list_place))
+    # print("yn place pct: ", round(len(yn_error_list_place)/188, 4))
+
+    # print('\n')
+    # print(mcq_error_list)
+
     # sa_eval_list = find_sa_errors(output_list=outputs, target="all")
     # write_json("llava15_13b_sa_human_eval.json", sa_eval_list)
-
 
     eval_res = read_json("llava15_13b_sa_human_eval.json")
     total = 0
@@ -216,22 +238,3 @@ if __name__ == "__main__":
     print("sa all: ", total)
     print("sa action: ", action)
     print("sa place: ", place)
-
-        
-
-    # # print(mcq_error_list)
-    # print("mcq all: ", len(mcq_error_list))
-    # mcq_error_list_action = find_mcq_errors(outputs, target="action")
-    # print("mcq action: ", len(mcq_error_list_action))
-    # mcq_error_list_place = find_mcq_errors(outputs, target="place")
-    # print("mcq place: ", len(mcq_error_list_place))
-
-    # # print(yn_error_list)
-    # print("yn all: ", len(yn_error_list))
-    # yn_error_list_action = find_yn_errors(outputs, target="action")
-    # print("yn action: ", len(yn_error_list_action))
-    # yn_error_list_place = find_yn_errors(outputs, target="place")
-    # print("yn place: ", len(yn_error_list_place))
-
-    # print('\n')
-    # print(mcq_error_list)
