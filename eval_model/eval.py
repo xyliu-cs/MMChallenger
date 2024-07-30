@@ -3,6 +3,7 @@ from transformers import AutoProcessor, LlavaForConditionalGeneration, InstructB
 from PIL import Image
 from templates import route_templates
 from prompt import generate_mcq_prompt, generate_yn_prompt, generate_sa_prompt
+from utils import read_json, write_json, infer_target_type
 from accelerate import infer_auto_device_map, load_checkpoint_and_dispatch, init_empty_weights
 from tqdm import tqdm
 from transformers import logging as hf_logging
@@ -43,28 +44,6 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
     return model.eval(), processor
 
 
-def read_json(json_path):
-    print(f"Read json file from {json_path}")
-    with open(json_path, 'r') as f:
-        data = json.load(f)
-    return data[:]
-
-
-def write_json(json_path, json_list):
-    with open(json_path, 'w') as f:
-        json.dump(json_list, f, indent=2)
-    print(f"Write {len(json_list)} items to {json_path}")
-
-
-def infer_target_type(image_name):
-    if image_name.startswith("A"):
-        target = "action"
-    elif image_name.startswith("P"):
-        target = "place"
-    else:
-        raise ValueError(f"Illegal image naming {image_name}")
-    return target
-
 def process_input(model_type, processor, image_path, text_prompt, model_device):
     if model_type in ["llava-vicuna", "instructblip"]:
         raw_image = Image.open(image_path).convert("RGB")
@@ -80,7 +59,7 @@ def process_input(model_type, processor, image_path, text_prompt, model_device):
     return inputs
 
 
-def eval_model(model_dir, model_type, text_input_path, image_folder, text_output_path, prefix='', postfix='',use_device_map=True, half_prec=False):
+def eval_model(model_dir, model_type, text_input_path, image_folder, text_output_path, prefix='', postfix='', use_device_map=True, half_prec=False):
     model, processor = load_local_model(model_dir=model_dir, model_type=model_type, use_device_map=use_device_map)
     input_list_of_dict = read_json(text_input_path)
     output_list_of_dict = []

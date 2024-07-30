@@ -74,4 +74,8 @@ def route_templates(model_type: str) -> dict:
         model_templates = {"MCQ": INSTRUCTBLIP_MCQ, "YN": INSTRUCTBLIP_YN, "SA": INSTRUCTBLIP_SA}
     elif model_type == "qwen-vl":
         model_templates = {"MCQ": QWEN_VL_MCQ, "YN": QWEN_VL_YN, "SA": QWEN_VL_SA}
+    elif model_type == "gpt":
+        model_templates = {"MCQ": OPENAI_MCQ, "YN": OPENAI_YN, "SA": OPENAI_SA}
+    else:
+        raise ValueError(f"Unsupported model type {model_type}")
     return model_templates
