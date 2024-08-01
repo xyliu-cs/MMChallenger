@@ -1,5 +1,5 @@
 import torch, json, os, copy
-from transformers import AutoProcessor, LlavaForConditionalGeneration, InstructBlipForConditionalGeneration, InstructBlipProcessor, AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoProcessor, LlavaForConditionalGeneration, InstructBlipForConditionalGeneration, InstructBlipProcessor, AutoModelForCausalLM, AutoTokenizer, Blip2Processor, Blip2ForConditionalGeneration
 from PIL import Image
 from templates import route_templates
 from prompt import generate_mcq_prompt, generate_yn_prompt, generate_sa_prompt
@@ -10,7 +10,7 @@ from transformers import logging as hf_logging
 
 
 def load_local_model(model_dir, model_type, use_device_map=True, device_map='auto', use_half_precision=False):
-    assert model_type in ["llava-vicuna", "instructblip", "qwen-vl"], f"Unsupported model type {model_type}"
+    assert model_type in ["llava-vicuna", "instructblip-vicuna", "instructblip-t5", "qwen-vl", "blip2-t5"], f"Unsupported model type {model_type}"
     torch.cuda.empty_cache()
     if model_type == "llava-vicuna":
         processor = AutoProcessor.from_pretrained(model_dir)
@@ -21,13 +21,18 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
             device = "cuda" if torch.cuda.is_available() else "cpu"
             print(f"Setting device to {device}")
             model = LlavaForConditionalGeneration.from_pretrained(model_dir).to(device)
-    elif model_type == "instructblip":
+    elif model_type in ["instructblip-vicuna", "instructblip-t5"]:
         processor = InstructBlipProcessor.from_pretrained(model_dir)
         if use_device_map:
             with init_empty_weights():
                 instblip = InstructBlipForConditionalGeneration.from_pretrained(model_dir)
-                dmap = infer_auto_device_map(instblip, max_memory={0: "20GiB", 1: "20GiB"}, no_split_module_classes=['InstructBlipEncoderLayer', 'InstructBlipQFormerLayer', 'LlamaDecoderLayer'])
-                dmap['language_model.lm_head'] = dmap['language_projection'] = dmap[('language_model.model.embed_tokens')]
+                if model_type == "instructblip-vicuna":
+                    dmap = infer_auto_device_map(instblip, max_memory={0: "20GiB", 1: "20GiB"}, no_split_module_classes=['InstructBlipEncoderLayer', 'InstructBlipQFormerLayer', 'LlamaDecoderLayer'])
+                    dmap['language_model.lm_head'] = dmap['language_projection'] = dmap[('language_model.model.embed_tokens')]
+                elif model_type == "instructblip-t5":
+                    dmap = infer_auto_device_map(instblip, max_memory={0: "30GiB", 1: "30GiB"}, no_split_module_classes=["T5Block"])
+                    # print(dmap)
+                    dmap['language_model.lm_head'] = dmap['language_projection'] = dmap[('language_model.decoder.embed_tokens')]
             model = load_checkpoint_and_dispatch(instblip, model_dir, device_map=dmap)
         else:
             model = InstructBlipForConditionalGeneration.from_pretrained(model_dir).to(device)
@@ -41,11 +46,23 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
             device = "cuda" if torch.cuda.is_available() else "cpu"
             print(f"Setting device {device}")
             model = AutoModelForCausalLM.from_pretrained(model_dir, device_map=device, trust_remote_code=True)
+    elif model_type == "blip2-t5":
+        if use_device_map:
+            with init_empty_weights():
+                blip2_t5_xxl = Blip2ForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16)
+                # change maximum mem here
+                dmap = infer_auto_device_map(blip2_t5_xxl, max_memory={0: "20GiB", 1: "20GiB"}, no_split_module_classes=["T5Block"])
+                # print(dmap)
+                dmap['language_model.lm_head'] = dmap['language_projection'] = dmap['language_model.decoder.embed_tokens']
+            model = load_checkpoint_and_dispatch(blip2_t5_xxl, model_dir, device_map=dmap)
+        else:
+            model = Blip2ForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16).to(device)
+        processor = Blip2Processor.from_pretrained(model_dir)
     return model.eval(), processor
 
 
 def process_input(model_type, processor, image_path, text_prompt, model_device):
-    if model_type in ["llava-vicuna", "instructblip"]:
+    if model_type in ["llava-vicuna", "instructblip-t5", "instructblip-vicuna", "blip2-t5"]:
         raw_image = Image.open(image_path).convert("RGB")
         inputs = processor(text=text_prompt, images=raw_image, return_tensors="pt").to(model_device)
     elif model_type == "qwen-vl":
@@ -110,12 +127,12 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
 
 if __name__ == "__main__":
     text_input = "/120040051/merged0728/input_info.json"
-    text_output = "/120040051/test_resource/output_answers/qwen_vl_chat_outputs.json"
-    model_type = "qwen-vl"
+    text_output = "/120040051/test_resource/output_answers/instructblip-flan-t5-xxl_outputs.json"
+    model_type = "instructblip-t5"
     # export CUDA_VISIBLE_DEVICES="2,3" for qwen (only support 2 cards parallel)
-    model_dir = "/120040051/Qwen-VL-Chat"
+    model_dir = "/120040051/instructblip-flan-t5-xxl"
     image_folder = "/120040051/merged0728"
-    # append = " Please insist your common knowledge of the world for the answer."
+    # append = "Please focus on the visual information. "
     # append = " Please focus on the visual information for the answer."
 
 

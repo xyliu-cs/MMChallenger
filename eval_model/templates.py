@@ -70,7 +70,7 @@ Here is the info to check:
 def route_templates(model_type: str) -> dict:
     if model_type == "llava-vicuna":
         model_templates = {"MCQ": LLAVA_VICUNA_MCQ, "YN": LLAVA_VICUNA_YN, "SA": LLAVA_VICUNA_SA}
-    elif model_type == "instructblip":
+    elif model_type in ["instructblip-vincuna", "blip2-t5", "instructblip-t5"]:
         model_templates = {"MCQ": INSTRUCTBLIP_MCQ, "YN": INSTRUCTBLIP_YN, "SA": INSTRUCTBLIP_SA}
     elif model_type == "qwen-vl":
         model_templates = {"MCQ": QWEN_VL_MCQ, "YN": QWEN_VL_YN, "SA": QWEN_VL_SA}
