@@ -1,4 +1,4 @@
-from eval import read_json, write_json
+from utils import read_json, write_json
 from templates import OPENAI_CHECK_ANS_PREFIX_ACTION
 from tqdm import tqdm
 import json, os, time, requests, datetime
@@ -191,66 +191,71 @@ def find_sa_errors(output_list: list, target="all", eval_type="human") -> list:
 if __name__ == "__main__":
     # output_path = "/120040051/test_resource/output_answers/llava15_7b_outputs_fmt.json"
     # output_path = "/120040051/test_resource/output_answers/instructblip_7b_outputs.json"
-    output_path = "/120040051/test_resource/output_answers/qwen_vl_chat_outputs.json"
+    output_path = "instructblip-flan-t5-xxl_outputs.json"
 
     outputs = read_json(output_path)
-    mcq_error_list = find_mcq_errors(outputs)
-    yn_error_list = find_yn_errors(outputs)
+    # mcq_error_list = find_mcq_errors(outputs)
+    # yn_error_list = find_yn_errors(outputs)
 
-    # print(mcq_error_list)
-    print("mcq all: ", len(mcq_error_list))
-    print("mcq all pct: ", round(len(mcq_error_list)/344, 4))
-    mcq_error_list_action = find_mcq_errors(outputs, target="action")
-    count = 0
-    for info_dict in mcq_error_list:
-        for output_dict in outputs:
-            if output_dict['id'] == info_dict['id'] and output_dict['category'] == info_dict['category']:
-                for model_ans_list in output_dict["mcq_model_ans"]:
-                    for ans in model_ans_list:
-                        found = False
-                        if ans == "":
-                            count += 1
-                            found = True
-                            print(f"id = {output_dict['id']}, category = {output_dict['category']}")
-                            break
-                    if found:
-                        break
-    print("Empty ans:", count)
+    # # print(mcq_error_list)
+    # print("mcq all: ", len(mcq_error_list))
+    # print("mcq all pct: ", round(len(mcq_error_list)/344, 4))
+    # mcq_error_list_action = find_mcq_errors(outputs, target="action")
+    # count = 0
+    # for info_dict in mcq_error_list:
+    #     for output_dict in outputs:
+    #         if output_dict['id'] == info_dict['id'] and output_dict['category'] == info_dict['category']:
+    #             for model_ans_list in output_dict["mcq_model_ans"]:
+    #                 for ans in model_ans_list:
+    #                     found = False
+    #                     if ans == "":
+    #                         count += 1
+    #                         found = True
+    #                         print(f"id = {output_dict['id']}, category = {output_dict['category']}")
+    #                         break
+    #                 if found:
+    #                     break
+    # print("Empty ans:", count)
                     
-    print("mcq action: ", len(mcq_error_list_action))
-    print("mcq action pct: ", round(len(mcq_error_list_action)/156, 4))
-    mcq_error_list_place = find_mcq_errors(outputs, target="place")
-    print("mcq place: ", len(mcq_error_list_place))
-    print("mcq place pct: ", round(len(mcq_error_list_place)/188, 4))
+    # print("mcq action: ", len(mcq_error_list_action))
+    # print("mcq action pct: ", round(len(mcq_error_list_action)/156, 4))
+    # mcq_error_list_place = find_mcq_errors(outputs, target="place")
+    # print("mcq place: ", len(mcq_error_list_place))
+    # print("mcq place pct: ", round(len(mcq_error_list_place)/188, 4))
 
-    # print(yn_error_list)
-    print("yn all: ", len(yn_error_list))
-    print("yn all pct: ", round(len(yn_error_list)/344, 4))
-    yn_error_list_action = find_yn_errors(outputs, target="action")
-    print("yn action: ", len(yn_error_list_action))
-    print("yn action pct: ", round(len(yn_error_list_action)/156, 4))
-    yn_error_list_place = find_yn_errors(outputs, target="place")
-    print("yn place: ", len(yn_error_list_place))
-    print("yn place pct: ", round(len(yn_error_list_place)/188, 4))
+    # # print(yn_error_list)
+    # print("yn all: ", len(yn_error_list))
+    # print("yn all pct: ", round(len(yn_error_list)/344, 4))
+    # yn_error_list_action = find_yn_errors(outputs, target="action")
+    # print("yn action: ", len(yn_error_list_action))
+    # print("yn action pct: ", round(len(yn_error_list_action)/156, 4))
+    # yn_error_list_place = find_yn_errors(outputs, target="place")
+    # print("yn place: ", len(yn_error_list_place))
+    # print("yn place pct: ", round(len(yn_error_list_place)/188, 4))
 
     # print('\n')
     # print(mcq_error_list)
 
     # sa_eval_list = find_sa_errors(output_list=outputs, target="all")
-    # write_json("llava15_13b_sa_human_eval.json", sa_eval_list)
+    # write_json("instructblip-flan-t5-xxl_outputs_human_eval.json", sa_eval_list)
 
-    # eval_res = read_json("llava15_13b_sa_human_eval.json")
-    # total = 0
-    # action = 0
-    # place = 0
-    # assert len(eval_res) == 345
-    # for eval_dict in eval_res[:-1]:
-    #     if eval_dict["human_eval"][0] == "0":
-    #         total += 1
-    #         if eval_dict["category"] == "action":
-    #             action += 1
-    #         elif eval_dict["category"] == "place":
-    #             place += 1
-    # print("sa all: ", total)
-    # print("sa action: ", action)
-    # print("sa place: ", place)
+    eval_res = read_json("instructblip-flan-t5-xxl_outputs_human_eval.json")
+    total = 0
+    action = 0
+    place = 0
+    assert len(eval_res) == 345
+    for eval_dict in eval_res[:-1]:
+        if eval_dict["human_eval"][0] == "0":
+            total += 1
+            if eval_dict["category"] == "action":
+                action += 1
+            elif eval_dict["category"] == "place":
+                place += 1
+    print("sa all: ", total)
+    print("sa all (%): ", 1 - total/344)
+
+    print("sa action: ", action)
+    print("sa all (%): ", 1 - action/156)
+
+    print("sa place: ", place)
+    print("sa all (%): ", 1 - place/188)
