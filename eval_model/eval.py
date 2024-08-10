@@ -1,5 +1,6 @@
 import torch, json, os, copy
 from transformers import AutoProcessor, LlavaForConditionalGeneration, InstructBlipForConditionalGeneration, InstructBlipProcessor, AutoModelForCausalLM, AutoTokenizer, Blip2Processor, Blip2ForConditionalGeneration
+from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration, LlamaTokenizer, LlavaNextImageProcessor
 from PIL import Image
 from templates import route_templates
 from prompt import generate_mcq_prompt, generate_yn_prompt, generate_sa_prompt
@@ -10,7 +11,7 @@ from transformers import logging as hf_logging
 
 
 def load_local_model(model_dir, model_type, use_device_map=True, device_map='auto', use_half_precision=False):
-    assert model_type in ["llava-vicuna", "instructblip-vicuna", "instructblip-t5", "qwen-vl", "blip2-t5"], f"Unsupported model type {model_type}"
+    assert model_type in ["llava-vicuna", "llava-llama3", "llava-yi", "instructblip-vicuna", "instructblip-t5", "qwen-vl", "blip2-t5"], f"Unsupported model type {model_type}"
     torch.cuda.empty_cache()
     if model_type == "llava-vicuna":
         processor = AutoProcessor.from_pretrained(model_dir)
@@ -21,6 +22,18 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
             device = "cuda" if torch.cuda.is_available() else "cpu"
             print(f"Setting device to {device}")
             model = LlavaForConditionalGeneration.from_pretrained(model_dir).to(device)
+    elif model_type == "llava-llama3":
+        processor = LlavaNextProcessor.from_pretrained(model_dir)
+        if use_device_map:
+            print(f"Setting device map to {device_map}")
+            model = LlavaNextForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16, device_map=device_map)
+    elif model_type == "llava-yi":
+        tokenizer = LlamaTokenizer.from_pretrained(model_dir)
+        image_processor = LlavaNextImageProcessor.from_pretrained(model_dir)
+        processor = LlavaNextProcessor(tokenizer=tokenizer, image_processor=image_processor)
+        if use_device_map:
+            print(f"Setting device map to {device_map}")
+            model = LlavaNextForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16, device_map=device_map) 
     elif model_type in ["instructblip-vicuna", "instructblip-t5"]:
         processor = InstructBlipProcessor.from_pretrained(model_dir)
         if use_device_map:
@@ -62,7 +75,7 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
 
 
 def process_input(model_type, processor, image_path, text_prompt, model_device):
-    if model_type in ["llava-vicuna", "instructblip-t5", "instructblip-vicuna", "blip2-t5"]:
+    if model_type in ["llava-vicuna", "instructblip-t5", "instructblip-vicuna", "blip2-t5", "llava-llama3", "llava-yi"]:
         raw_image = Image.open(image_path).convert("RGB")
         inputs = processor(text=text_prompt, images=raw_image, return_tensors="pt").to(model_device)
     elif model_type == "qwen-vl":
@@ -116,7 +129,8 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
                         attempt = output_text.split('Answer:')[1].split('\n')[0].strip()
                         if attempt != '':
                             output_text = attempt
-                        # print(output_text)
+                    elif model_type in ["llava-llama3", "llava-yi"]:
+                        output_text = output_text.split("assistant")[-1].strip()
                     # print(output_text)
                     local_ans.append(output_text)
                 output_dict[f"{q_type}_model_ans"].append(local_ans)
@@ -127,10 +141,10 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
 
 if __name__ == "__main__":
     text_input = "/120040051/merged0728/input_info.json"
-    text_output = "/120040051/test_resource/output_answers/instructblip-flan-t5-xxl_outputs.json"
-    model_type = "instructblip-t5"
+    text_output = "/120040051/test_resource/output_answers/llava-v1.6-34b_outputs.json"
+    model_type = "llava-yi"
     # export CUDA_VISIBLE_DEVICES="2,3" for qwen (only support 2 cards parallel)
-    model_dir = "/120040051/instructblip-flan-t5-xxl"
+    model_dir = "/120040051/llava-v1.6-34b-hf"
     image_folder = "/120040051/merged0728"
     # append = "Please focus on the visual information. "
     # append = " Please focus on the visual information for the answer."
