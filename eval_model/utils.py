@@ -5,10 +5,10 @@ def read_json(json_path):
     print(f"Read json file from {json_path}")
     with open(json_path, 'r') as f:
         data = json.load(f)
-    return data[:]
+    return data
 
 
-def write_json(json_path, json_list):
+def write_json(json_path: str, json_list: list):
     with open(json_path, 'w') as f:
         json.dump(json_list, f, indent=2)
     print(f"Write {len(json_list)} items to {json_path}")
