@@ -207,6 +207,25 @@ def build_path_list(model_names: list) -> tuple:
     return obj_results, sub_evaled_results    
 
 
+def merge_sub_eval_to_output(obj_res_paths: list, sub_res_paths: list, base_folder: str) -> None:
+    assert len(sub_res_paths) == len(obj_res_paths), "Unequal path list length."
+    for obj_path, sub_path in list(zip(obj_res_paths, sub_res_paths)):
+        model_name = obj_path.split('_outputs')[0]
+        obj_content_list = read_json(os.path.join(base_folder, obj_path))
+        sub_content_list = read_json(os.path.join(base_folder, sub_path))
+        for eval_dict in sub_content_list[:-1]:
+            id = eval_dict["id"]
+            category = eval_dict["category"]
+            res = eval_dict["human_eval"]
+            for i in range(len(obj_content_list)):
+                if obj_content_list[i]["id"] == id and obj_content_list[i]["category"] == category:
+                    obj_content_list[i]["sa_human_eval"] = res
+                    break
+        merged_dir = os.path.join(base_folder, f"{model_name}_evaled_outputs.json")
+        write_json(merged_dir, obj_content_list)
+        
+        
+
 def write_err_stats(obj_res_list, sub_res_list, res_folder, output_file='error_stats.json'):
     assert len(obj_res_list) == len(sub_res_list), f"Unequal length of input lists {len(obj_res_list)} and {len(sub_res_list)}"
     info_dict, global_yn, global_mc, global_sa, global_all = {}, {}, {}, {}, {}
@@ -371,26 +390,29 @@ if __name__ == "__main__":
     # | ------------------------------------- |
     # |  PART 2: Collect Error Statistics     |
     # | ------------------------------------- |
-    model_names = ["llama3-llava-next-8b", "llava-v1.6-34b", "llava-1.5-13b", 
-                   "blip2_t5_xxl", "instructblip-flan-t5-xxl", "qwen-vl",
-                   "qwen-vl-chat", "gpt-4o", "claude-3-5-sonnet"]
+    # model_names = ["llama3-llava-next-8b", "llava-v1.6-34b", "llava-1.5-13b", 
+    #                "blip2_t5_xxl", "instructblip-flan-t5-xxl", "qwen-vl",
+    #                "qwen-vl-chat", "gpt-4o", "claude-3-5-sonnet"]
     
-    objective_paths, subjective_paths = build_path_list(model_names)
-    write_err_stats(obj_res_list=objective_paths, sub_res_list=subjective_paths, res_folder='results')
+    # objective_paths, subjective_paths = build_path_list(model_names=model_names)
+    # merge_sub_eval_to_output(obj_res_paths=objective_paths, sub_res_paths=subjective_paths, base_folder='results')
+    # write_err_stats(obj_res_list=objective_paths, sub_res_list=subjective_paths, res_folder='results')
 
     # | ------------------------------------- |
     # |  PART 3: Construct Challenge Set      |
     # | ------------------------------------- |
-    err_stats_file = './results/error_stats.json'
-    original_input_folder_path_full =  r"C:\Users\xiaoyuanliu\Desktop\merged0728"
+    result_folder = 'results'
+    image_input_folder =  r"C:\Users\xiaoyuanliu\Desktop\merged0728"
     check_model = "llama3-llava-next-8b"
 
-    lookup_file = os.path.join(original_input_folder_path_full, 'input_info.json')
     # model name or global
     check_model = "llama3-llava-next-8b"
-    challenge_set = 'challset_' + check_model 
-    challset_path = os.path.join(os.path.dirname(original_input_folder_path_full), challenge_set)
+    lookup_file = os.path.join(result_folder, check_model+'_evaled_outputs.json')
+    err_stats_file = os.path.join(result_folder, 'error_stats.json')
+    
     # overwrite
+    challenge_set = 'challset_' + check_model 
+    challset_path = os.path.join(os.path.dirname(image_input_folder), challenge_set)
     if os.path.exists(challset_path):
         shutil.rmtree(challset_path)
     os.makedirs(challset_path)
@@ -399,20 +421,21 @@ if __name__ == "__main__":
     err_stats = read_json(err_stats_file)
     lookup_info = read_json(lookup_file)
     
+    target_error = "sa_error"
     target_dict = err_stats[check_model]
-    target_err_yn = target_dict["yn_error"]
-    target_err_mc = target_dict["mc_error"]
-    target_err_sa = target_dict["sa_error"]
+    target_errs = target_dict[target_error]
+    # target_err_mc = target_dict["mc_error"]
+    # target_err_sa = target_dict["sa_error"]
     # target_err_all = target_dict["all_error"]
     
     threshold = 1
-    filtered_errs = [item for item in target_err_sa if item[1] >= threshold]
+    filtered_errs = [item for item in target_errs if item[1] >= threshold]
 
     challset_info = ret_input_info_upon_cond(lookup_list=lookup_info, cond_list=filtered_errs)
-    copy_imgs(challset_info, original_input_folder_path_full, challset_path)
-    out_info_path = os.path.join(challset_path, 'input_info.json')
+    copy_imgs(challset_info, image_input_folder, challset_path)
+    out_info_path = os.path.join(challset_path, f'{check_model}_evaled_outputs_{target_error}_only.json')
     write_json(out_info_path, challset_info)
 
-    print(f"error instances   (count >= {threshold}): {len(target_err_sa)}")
-    print(f"error instances % (count >= {threshold}): {len(target_err_sa)/344}")
-    print(f"error instances list: \n{target_err_sa}")
+    print(f"error instances   (count >= {threshold}): {len(target_errs)}")
+    print(f"error instances % (count >= {threshold}): {len(target_errs)/344}")
+    print(f"error instances list: \n{target_errs}")
