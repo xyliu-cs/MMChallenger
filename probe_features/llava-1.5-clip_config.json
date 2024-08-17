@@ -1,6 +1,6 @@
 {
-    "clip_path": "",
-    "llava_path": "",
-    "challset_folder": "",
-    "index_file_name": ""
+    "clip_path": "/120040051/MLLM_Repos/clip-vit-large-patch14-336",
+    "llava_path": "/120040051/MLLM_Repos/llava-1.5-13b-hf",
+    "challset_folder": "/120040051/test_resource/challset_llava-1.5-13b",
+    "index_file_name": "llava-1.5-13b_evaled_outputs_sa_error_only.json"
 }
