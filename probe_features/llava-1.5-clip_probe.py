@@ -18,6 +18,10 @@ def write_json(json_path: str, json_list: list):
     print(f"Write {len(json_list)} items to {json_path}")
 
 
+def read_image(img_path: str) -> Image:
+    image_obj = Image.open(img_path).convert("RGB")
+    return image_obj
+
 class llava_feature_probe:
     def __init__(self, config: dict) -> None:
         # this clip model should be modified to use -2 hidden layer's output as visual feature to align with llava setting
@@ -28,8 +32,11 @@ class llava_feature_probe:
         self.llava_processor = AutoProcessor.from_pretrained(config["llava_path"])
         self.challset_folder = os.path.normpath(config['challset_folder'])
         self.index_file = config['index_file_name']
-
-    def prepare_input_pairs(self) -> list:
+        self.prepared_inputs = config['prepared_inputs_name']
+        self.llava_vision_feature_layer = config['llava_vision_feature_layer']
+        self.llava_vision_feature_strategy = config['llava_vision_feature_strategy']
+        
+    def prepare_input_pairs(self) -> None:
         index_file_path = os.path.join(self.challset_folder, self.index_file)
         with open(index_file_path, 'r') as f:
             error_list = json.load(f)
@@ -54,18 +61,19 @@ class llava_feature_probe:
             # print('false caps: ', false_caps)
             image_names = error_dict["image"]
             for i, name in enumerate(image_names):
-                image_obj = Image.open(os.path.join(self.challset_folder, name)).convert("RGB")
+                # image_obj = Image.open(os.path.join(self.challset_folder, name)).convert("RGB")
                 # TODO: fix the llava-1.5-13b answers tonight and change the code to false_caps[i]
-                false_cap = false_caps[0]
-                ret_list.append((image_obj, name, true_cap, false_cap))
-        
-        return ret_list
+                false_cap = false_caps[i]
+                ret_list.append((os.path.join(self.challset_folder, name), name, true_cap, false_cap))
 
-
+        prepared_file = os.path.join(self.challset_folder, self.prepared_inputs)
+        write_json(prepared_file, ret_list)    
+    
+    
     def probe_clip_emb(self, image_text_pairs) -> list:
         scored_list = []
         for image_text_tup in tqdm(image_text_pairs[:5], "Checking CLIP embeddings: "):
-            image = image_text_tup[0]
+            image = read_image(image_text_tup[0])
             text_caps = [image_text_tup[2], image_text_tup[3]] # [true, false]
             inputs = self.clip_processor(images=image, text=text_caps, return_tensors="pt", padding=True)
             outputs = self.clip(**inputs)
@@ -74,11 +82,52 @@ class llava_feature_probe:
             scored_list.append(ret_tup)
         return scored_list
 
+    def probe_mmp_emb(self, image_text_pairs, pooling_type='max') -> list:
+        scored_list = []
+        for image_text_tup in tqdm(image_text_pairs[:5], "Checking mmp embeddings: "):
+            image = read_image(image_text_tup[0])
+            text_caps = [image_text_tup[2], image_text_tup[3]] # [true, false]
+            # visual_only_inputs = self.llava_processor(text="<image>", images=image, return_tensors="pt")
+            image_inputs = self.llava_processor.image_processor(images=image, return_tensors="pt")
+            text_only_inputs = self.llava_processor.tokenizer(text=text_caps, return_tensors="pt", padding=True)
+                  
+            image_outputs = self.llava.vision_tower(image_inputs["pixel_values"], output_hidden_states=True)
+            # this is not memory efficient at all (output_hidden_states=True) will save all the hidden stated.
+            selected_image_feature = image_outputs.hidden_states[self.llava_vision_feature_layer]
+            if self.llava_vision_feature_strategy == "default":
+                selected_image_feature = selected_image_feature[:, 1:]
+            else:
+                raise ValueError(f"Unsupported vision feature strategy: {self.llava_vision_feature_strategy}")
+            image_embeds = self.llava.multi_modal_projector(selected_image_feature)
+
+            text_outputs = self.llava(**text_only_inputs, output_hidden_states=True)
+            text_embeds = text_outputs.hidden_states[-1]        # last hidden states
+
+            # Apply pooling to the embeddings
+            if pooling_type == 'max':
+                pooled_image_embeds = torch.max(image_embeds, dim=1)[0]  
+                pooled_text_embeds = torch.max(text_embeds, dim=1)[0]
+            elif pooling_type == 'avg':
+                pooled_image_embeds = torch.mean(image_embeds, dim=1)  
+                pooled_text_embeds = torch.mean(text_embeds, dim=1) 
+            else:
+                raise ValueError("Invalid pooling type. Use 'max' or 'avg'.")
+
+            # Normalize the pooled features
+            pooled_image_embeds = pooled_image_embeds / pooled_image_embeds.norm(p=2, dim=-1, keepdim=True)  # Shape: (1, 5120)
+            pooled_text_embeds = pooled_text_embeds / pooled_text_embeds.norm(p=2, dim=-1, keepdim=True)  # Shape: (2, 5120)
+
+            # Compute cosine similarity via matrix multiplication
+            logits_per_text = torch.matmul(pooled_text_embeds, pooled_image_embeds.t())  # Shape: (2, 1)
+            scores = logits_per_text.squeeze()
+            ret_tup = (image_text_tup[1], image_text_tup[2], image_text_tup[3], scores.tolist())
+            scored_list.append(ret_tup)   
+        return scored_list
 
     def probe_llava_emb(self, image_text_pairs, pooling_type='max') -> list:
         scored_list = []
         for image_text_tup in tqdm(image_text_pairs[:5], "Checking llava embeddings: "):
-            image = image_text_tup[0]
+            image = read_image(image_text_tup[0])
             text_caps = [image_text_tup[2], image_text_tup[3]] # [true, false]
             visual_only_inputs = self.llava_processor(text="<image>", images=image, return_tensors="pt")
             text_only_inputs = self.llava_processor.tokenizer(text=text_caps, return_tensors="pt", padding=True)
@@ -111,14 +160,17 @@ class llava_feature_probe:
         return scored_list
 
     def __call__(self):
-        input_list = self.prepare_input_pairs()
+        self.prepare_input_pairs()
+        input_list = read_json(os.path.join(self.challset_folder, self.prepared_inputs))
         clip_emb_list = self.probe_clip_emb(input_list)
         print("Stage 1 (CLIP) feature probing completed.")
-        llava_emb_list = self.probe_llava_emb(input_list)
-        print("Stage 2 (llava) feature probing completed.")
+        mmp_emb_list_max = self.probe_mmp_emb(input_list, pooling_type='max')
+        print("Stage 2 (MMP) feature probing completed with max pooling.")
+        llava_emb_list_max = self.probe_llava_emb(input_list, pooling_type='max')
+        print("Stage 3 (llava) feature probing completed with max pooling.")
 
         # everything is fine, pack and go
-        if len(clip_emb_list) == len(llava_emb_list):
+        if len(clip_emb_list) == len(mmp_emb_list_max) == len(llava_emb_list_max):
             ret_list = []
             for i in range(len(clip_emb_list)):
                 local_dict = {}
@@ -127,9 +179,11 @@ class llava_feature_probe:
                 local_dict["true_cap"] = clip_info_list[1]
                 local_dict["false_cap"] = clip_info_list[2]
                 local_dict["clip_sim_score"] = clip_info_list[3]
-                local_dict["llava_sim_score"] = llava_emb_list[i][3]
+                local_dict["mmp_sim_score_max"] = mmp_emb_list_max[i][3]
+                local_dict["llava_sim_score_max"] = llava_emb_list_max[i][3]
+                
                 ret_list.append(local_dict)
-            output = os.path.join(self.challset_folder, 'feature_probing.json')
+            output = os.path.join(self.challset_folder, 'feature_score.json')
             write_json(output, ret_list)
         else:
             pass #TODO: finish the logic here
@@ -140,9 +194,10 @@ if __name__ == '__main__':
     probe_config = read_json(config_path)
     llava_probe = llava_feature_probe(probe_config)
 
-    input_list = llava_probe.prepare_input_pairs()
+    llava_probe()
+    
     # clip_emb_list = llava_probe.probe_clip_emb(input_list)
-    llava_emb_list = llava_probe.probe_llava_emb(input_list)
+    # llava_emb_list = llava_probe.probe_llava_emb(input_list)
 
     # print(clip_emb_list[:5])
-    print(llava_emb_list[:5])
+    # print(llava_emb_list[:5])
