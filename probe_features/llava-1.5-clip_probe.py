@@ -45,6 +45,7 @@ class llava_feature_probe:
         self.prepared_inputs = config['prepared_inputs_name']
         self.llava_vision_feature_layer = config['llava_vision_feature_layer']
         self.llava_vision_feature_strategy = config['llava_vision_feature_strategy']
+        self.dummy_cap = config['dummy_cap']
         
     def prepare_input_pairs(self) -> None:
         index_file_path = os.path.join(self.challset_folder, self.index_file)
@@ -74,7 +75,7 @@ class llava_feature_probe:
                 # image_obj = Image.open(os.path.join(self.challset_folder, name)).convert("RGB")
                 # TODO: fix the llava-1.5-13b answers tonight and change the code to false_caps[i]
                 false_cap = false_caps[i]
-                ret_list.append((os.path.join(self.challset_folder, name), name, true_cap, false_cap))
+                ret_list.append((os.path.join(self.challset_folder, name), name, true_cap, false_cap, self.dummy_cap))
 
         prepared_file = os.path.join(self.challset_folder, self.prepared_inputs)
         write_json(prepared_file, ret_list)    
@@ -82,21 +83,21 @@ class llava_feature_probe:
     
     def probe_clip_emb(self, image_text_pairs) -> list:
         scored_list = []
-        for image_text_tup in tqdm(image_text_pairs[:5], "Checking CLIP embeddings: "):
+        for image_text_tup in tqdm(image_text_pairs[:], "Checking CLIP embeddings: "):
             image = read_image(image_text_tup[0])
-            text_caps = [image_text_tup[2], image_text_tup[3]] # [true, false]
+            text_caps = [image_text_tup[2], image_text_tup[3], image_text_tup[4]]      # [true, false, dummy]
             inputs = self.clip_processor(images=image, text=text_caps, return_tensors="pt", padding=True)
             outputs = self.clip(**inputs)
             scores = outputs.logits_per_image.squeeze()
-            ret_tup = (image_text_tup[1], image_text_tup[2], image_text_tup[3], scores.tolist())
+            ret_tup = (image_text_tup[1], image_text_tup[2], image_text_tup[3], image_text_tup[4], scores.tolist())
             scored_list.append(ret_tup)
         return scored_list
 
     def probe_mmp_emb(self, image_text_pairs, pooling_type='max') -> list:
         scored_list = []
-        for image_text_tup in tqdm(image_text_pairs[:5], "Checking mmp embeddings: "):
+        for image_text_tup in tqdm(image_text_pairs[:], "Checking mmp embeddings: "):
             image = read_image(image_text_tup[0])
-            text_caps = [image_text_tup[2], image_text_tup[3]] # [true, false]
+            text_caps = [image_text_tup[2], image_text_tup[3], image_text_tup[4]] # [true, false, dummy]
             # visual_only_inputs = self.llava_processor(text="<image>", images=image, return_tensors="pt")
             image_inputs = self.llava_processor.image_processor(images=image, return_tensors="pt")
             text_only_inputs = self.llava_processor.tokenizer(text=text_caps, return_tensors="pt", padding=True)
@@ -130,15 +131,15 @@ class llava_feature_probe:
             # Compute cosine similarity via matrix multiplication
             logits_per_text = torch.matmul(pooled_text_embeds, pooled_image_embeds.t().to(pooled_text_embeds.device))  # Shape: (2, 1)
             scores = logits_per_text.squeeze()
-            ret_tup = (image_text_tup[1], image_text_tup[2], image_text_tup[3], scores.tolist())
+            ret_tup = (image_text_tup[1], image_text_tup[2], image_text_tup[3], image_text_tup[4], scores.tolist())
             scored_list.append(ret_tup)   
         return scored_list
 
     def probe_llava_emb(self, image_text_pairs, pooling_type='max') -> list:
         scored_list = []
-        for image_text_tup in tqdm(image_text_pairs[:5], "Checking llava embeddings: "):
+        for image_text_tup in tqdm(image_text_pairs[:], "Checking llava embeddings: "):
             image = read_image(image_text_tup[0])
-            text_caps = [image_text_tup[2], image_text_tup[3]] # [true, false]
+            text_caps = [image_text_tup[2], image_text_tup[3], image_text_tup[4]]    # [true, false, dummy]
             visual_only_inputs = self.llava_processor(text="<image>", images=image, return_tensors="pt")
             text_only_inputs = self.llava_processor.tokenizer(text=text_caps, return_tensors="pt", padding=True)
             
@@ -165,7 +166,7 @@ class llava_feature_probe:
             # Compute cosine similarity via matrix multiplication
             logits_per_text = torch.matmul(pooled_text_embeds, pooled_image_embeds.t().to(pooled_text_embeds.device))  # Shape: (2, 1)
             scores = logits_per_text.squeeze()
-            ret_tup = (image_text_tup[1], image_text_tup[2], image_text_tup[3], scores.tolist())
+            ret_tup = (image_text_tup[1], image_text_tup[2], image_text_tup[3], image_text_tup[4], scores.tolist())
             scored_list.append(ret_tup)         
         return scored_list
 
@@ -173,10 +174,11 @@ class llava_feature_probe:
         # self.prepare_input_pairs()
         input_list = read_json(os.path.join(self.challset_folder, self.prepared_inputs))
         clip_emb_list = self.probe_clip_emb(input_list)
+        pooling = 'avg'
         print("Stage 1 (CLIP) feature probing completed.")
-        mmp_emb_list_max = self.probe_mmp_emb(input_list, pooling_type='max')
+        mmp_emb_list_max = self.probe_mmp_emb(input_list, pooling_type=pooling)
         print("Stage 2 (MMP) feature probing completed with max pooling.")
-        llava_emb_list_max = self.probe_llava_emb(input_list, pooling_type='max')
+        llava_emb_list_max = self.probe_llava_emb(input_list, pooling_type=pooling)
         print("Stage 3 (llava) feature probing completed with max pooling.")
 
         # everything is fine, pack and go
@@ -188,12 +190,14 @@ class llava_feature_probe:
                 local_dict["image"] = clip_info_list[0]
                 local_dict["true_cap"] = clip_info_list[1]
                 local_dict["false_cap"] = clip_info_list[2]
-                local_dict["clip_sim_score"] = clip_info_list[3]
-                local_dict["mmp_sim_score_max"] = mmp_emb_list_max[i][3]
-                local_dict["llava_sim_score_max"] = llava_emb_list_max[i][3]
+                local_dict["dummy_cap"] = clip_info_list[3]
+
+                local_dict["clip_sim_score"] = clip_info_list[4]
+                local_dict[f"mmp_sim_score_{pooling}"] = mmp_emb_list_max[i][4]
+                local_dict[f"llava_sim_score_{pooling}"] = llava_emb_list_max[i][4]
                 
                 ret_list.append(local_dict)
-            output = os.path.join(self.challset_folder, 'feature_score.json')
+            output = os.path.join(self.challset_folder, f'feature_score_{pooling}_pooling_dmy_2.json')
             write_json(output, ret_list)
         else:
             pass #TODO: finish the logic here
@@ -205,9 +209,3 @@ if __name__ == '__main__':
     llava_probe = llava_feature_probe(probe_config)
     # llava_probe.prepare_input_pairs()
     llava_probe()
-    
-    # clip_emb_list = llava_probe.probe_clip_emb(input_list)
-    # llava_emb_list = llava_probe.probe_llava_emb(input_list)
-
-    # print(clip_emb_list[:5])
-    # print(llava_emb_list[:5])
