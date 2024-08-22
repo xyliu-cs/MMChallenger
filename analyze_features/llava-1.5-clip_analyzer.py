@@ -32,7 +32,7 @@ def convert_to_vbg(verb_phrase: str) -> str:
     # print(f"Not found VBG from verb {words[0]}")
     return verb_phrase
 
-class llava_feature_probe:
+class llava_feature_analyzer:
     def __init__(self, config: dict) -> None:
         # this clip model should be modified to use -2 hidden layer's output as visual feature to align with llava setting
         # this modified clip model should NOT utilize logit_scale (originally set to e^2.6592) in order to only output cosine similarities
@@ -81,7 +81,7 @@ class llava_feature_probe:
         write_json(prepared_file, ret_list)    
     
     
-    def probe_clip_emb(self, image_text_pairs) -> list:
+    def compare_clip_emb(self, image_text_pairs) -> list:
         scored_list = []
         for image_text_tup in tqdm(image_text_pairs[:], "Checking CLIP embeddings: "):
             image = read_image(image_text_tup[0])
@@ -93,7 +93,7 @@ class llava_feature_probe:
             scored_list.append(ret_tup)
         return scored_list
 
-    def probe_mmp_emb(self, image_text_pairs, pooling_type='max') -> list:
+    def compare_mmp_emb(self, image_text_pairs, pooling_type='max') -> list:
         scored_list = []
         for image_text_tup in tqdm(image_text_pairs[:], "Checking mmp embeddings: "):
             image = read_image(image_text_tup[0])
@@ -111,8 +111,9 @@ class llava_feature_probe:
                 raise ValueError(f"Unsupported vision feature strategy: {self.llava_vision_feature_strategy}")
             image_embeds = self.llava.multi_modal_projector(selected_image_feature)
 
-            text_outputs = self.llava(**text_only_inputs, output_hidden_states=True)
-            text_embeds = text_outputs.hidden_states[-1]        # last hidden states
+            # text_outputs = self.llava(**text_only_inputs, output_hidden_states=True)
+            # text_embeds = text_outputs.hidden_states[-1]        # last hidden states
+            text_embeds = self.llava.language_model.get_input_embeddings()(text_only_inputs.input_ids)
 
             # Apply pooling to the embeddings
             if pooling_type == 'max':
@@ -135,7 +136,7 @@ class llava_feature_probe:
             scored_list.append(ret_tup)   
         return scored_list
 
-    def probe_llava_emb(self, image_text_pairs, pooling_type='max') -> list:
+    def compare_llava_emb(self, image_text_pairs, pooling_type='max') -> list:
         scored_list = []
         for image_text_tup in tqdm(image_text_pairs[:], "Checking llava embeddings: "):
             image = read_image(image_text_tup[0])
@@ -173,13 +174,13 @@ class llava_feature_probe:
     def __call__(self):
         # self.prepare_input_pairs()
         input_list = read_json(os.path.join(self.challset_folder, self.prepared_inputs))
-        clip_emb_list = self.probe_clip_emb(input_list)
-        pooling = 'avg'
-        print("Stage 1 (CLIP) feature probing completed.")
-        mmp_emb_list_max = self.probe_mmp_emb(input_list, pooling_type=pooling)
-        print("Stage 2 (MMP) feature probing completed with max pooling.")
-        llava_emb_list_max = self.probe_llava_emb(input_list, pooling_type=pooling)
-        print("Stage 3 (llava) feature probing completed with max pooling.")
+        clip_emb_list = self.compare_clip_emb(input_list)
+        pooling_type = 'avg'
+        print("Stage 1 (CLIP) feature analysis completed.")
+        mmp_emb_list_max = self.compare_mmp_emb(input_list, pooling_type=pooling_type)
+        print(f"Stage 2 (MMP) feature analysis completed with {pooling_type} pooling.")
+        llava_emb_list_max = self.compare_llava_emb(input_list, pooling_type=pooling_type)
+        print(f"Stage 3 (llava) feature analysis completed with {pooling_type} pooling.")
 
         # everything is fine, pack and go
         if len(clip_emb_list) == len(mmp_emb_list_max) == len(llava_emb_list_max):
@@ -193,19 +194,19 @@ class llava_feature_probe:
                 local_dict["dummy_cap"] = clip_info_list[3]
 
                 local_dict["clip_sim_score"] = clip_info_list[4]
-                local_dict[f"mmp_sim_score_{pooling}"] = mmp_emb_list_max[i][4]
-                local_dict[f"llava_sim_score_{pooling}"] = llava_emb_list_max[i][4]
+                local_dict[f"mmp_sim_score_{pooling_type}"] = mmp_emb_list_max[i][4]
+                local_dict[f"llava_sim_score_{pooling_type}"] = llava_emb_list_max[i][4]
                 
                 ret_list.append(local_dict)
-            output = os.path.join(self.challset_folder, f'feature_score_{pooling}_pooling_dmy_2.json')
+            output = os.path.join(self.challset_folder, f'feature_sim_score_{pooling_type}_pooling.json')
             write_json(output, ret_list)
         else:
             pass #TODO: finish the logic here
     
 
 if __name__ == '__main__':
-    config_path = 'llava-1.5-clip_config.json'
-    probe_config = read_json(config_path)
-    llava_probe = llava_feature_probe(probe_config)
+    config_path = 'llava-1.5-clip_analyzer_config.json'
+    analyzer_config = read_json(config_path)
+    analyzer = llava_feature_analyzer(analyzer_config)
     # llava_probe.prepare_input_pairs()
-    llava_probe()
+    analyzer()
