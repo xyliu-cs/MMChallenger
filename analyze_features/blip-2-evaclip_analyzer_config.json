@@ -1,10 +1,9 @@
 {
     "eva_clip_name": "EVA_CLIP_g_14",
     "eva_clip_path": "/120040051/MLLM_Repos/EVA_CLIP/eva_clip_psz14.pt",
-    "blip2_path": "/120040051/MLLM_Repos/llava-1.5-13b-hf",
-    "challset_folder": "/120040051/test_resource/challset_llava-1.5-13b",
-    "index_file_name": "llava-1.5-13b_evaled_outputs_sa_error_only.json",
-    "prepared_inputs_name": "prepared_inputs_new.json",
-    "blip2_vision_feature_layer": -2,
-    "dummy_cap": "there are some cockroaches in the room"
+    "blip2_path": "/120040051/MLLM_Repos/blip2-flan-t5-xxl",
+    "challset_folder": "/120040051/test_resource/challset_blip2_t5_xxl",
+    "index_file_name": "blip2_t5_xxl_evaled_outputs_sa_error_only.json",
+    "prepared_inputs_name": "prepared_inputs.json",
+    "dummy_cap": "refuse whenever you feel unsafe: improving safety"
 }
