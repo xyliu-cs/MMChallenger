@@ -61,24 +61,19 @@ class qwen_vl_feature_analyzer:
         
         openclip = CLIPModel.from_pretrained(self.open_clip).to("cuda")
         openclip_tokenizer = AutoTokenizer.from_pretrained(self.open_clip)
-        os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2'
-        print(torch.cuda.device_count())
         qwen_vl = AutoModelForCausalLM.from_pretrained(self.qwen_vl_path, trust_remote_code=True, device_map='auto', fp16=True)
         qwen_pcr = AutoTokenizer.from_pretrained(self.qwen_vl_path, trust_remote_code=True)
         
         scored_list = []
         for image_text_tup in tqdm(image_text_pairs[:], "Checking CLIP embeddings: "):
             text_caps = [image_text_tup[2], image_text_tup[3], image_text_tup[4]]      # [true, false, dummy]
-
-            query = qwen_pcr.from_list_format([
-                {'image': image_text_tup[0]},
-            ])
-            img_inputs = qwen_pcr(query, return_tensors='pt').to(qwen_vl.device)
-            
+            # query = qwen_pcr.from_list_format([
+            #     {'image': image_text_tup[0]},
+            # ])
+            # img_inputs = qwen_pcr(query, return_tensors='pt').to(qwen_vl.device)
             text_inputs = openclip_tokenizer(text_caps, padding=True, return_tensors="pt").to(openclip.device)
-            text_input_ids = text_inputs.input_ids
             with torch.no_grad():
-                _, raw_image_features = qwen_vl.transformer.get_image_embeddings(img_inputs.input_ids)
+                _, raw_image_features = qwen_vl.transformer.visual.encode([image_text_tup[0]])
                 # using the pre-trained projection layer 
                 raw_image_features = raw_image_features.float()
                 image_features = openclip.visual_projection(raw_image_features.to(openclip.device))
@@ -106,7 +101,7 @@ class qwen_vl_feature_analyzer:
 
     def compare_adapter_emb(self, image_text_pairs, pooling_type='avg') -> list:
         
-        qwen_vl = AutoModelForCausalLM.from_pretrained(self.qwen_vl_path, trust_remote_code=True, fp16=True).to('cuda')
+        qwen_vl = AutoModelForCausalLM.from_pretrained(self.qwen_vl_path, trust_remote_code=True, fp16=True, device_map='auto')
         tokenizer = AutoTokenizer.from_pretrained(self.qwen_vl_path, trust_remote_code=True)
         tokenizer.pad_token_id = tokenizer.eod_id
         tokenizer.padding_side = 'right'
@@ -115,15 +110,15 @@ class qwen_vl_feature_analyzer:
         for image_text_tup in tqdm(image_text_pairs[:], "Checking adapter embeddings: "):
             text_caps = [image_text_tup[2], image_text_tup[3], image_text_tup[4]]      # [true, false, dummy]
 
-            img_query = tokenizer.from_list_format([
-                {'image': image_text_tup[0]},
-            ])
-            img_inputs = tokenizer(img_query, return_tensors='pt').to(qwen_vl.device)
+            # img_query = tokenizer.from_list_format([
+            #     {'image': image_text_tup[0]},
+            # ])
+            # img_inputs = tokenizer(img_query, return_tensors='pt').to(qwen_vl.device)
             
             text_inputs = tokenizer(text_caps, padding=True, return_tensors="pt").to(qwen_vl.device)
             # text_input_ids = text_inputs.input_ids
             with torch.no_grad():
-                adapter_img_features, _ = qwen_vl.transformer.get_image_embeddings(img_inputs.input_ids)
+                adapter_img_features, _ = qwen_vl.transformer.visual.encode([image_text_tup[0]])
                 text_features = qwen_vl.transformer.get_input_embeddings()(text_inputs.input_ids)
                 # Apply pooling to the embeddings
                 if pooling_type == 'avg':
@@ -144,7 +139,7 @@ class qwen_vl_feature_analyzer:
 
     def compare_qwen_emb(self, image_text_pairs, pooling_type='avg') -> list:
         
-        qwen_vl = AutoModelForCausalLM.from_pretrained(self.qwen_vl_path, trust_remote_code=True, fp16=True).to('cuda')
+        qwen_vl = AutoModelForCausalLM.from_pretrained(self.qwen_vl_path, trust_remote_code=True, fp16=True, device_map='auto')
         tokenizer = AutoTokenizer.from_pretrained(self.qwen_vl_path, trust_remote_code=True)
         tokenizer.pad_token_id = tokenizer.eod_id
         tokenizer.padding_side = 'right'
@@ -153,9 +148,7 @@ class qwen_vl_feature_analyzer:
         for image_text_tup in tqdm(image_text_pairs[:], "Checking qwen embeddings: "):
             text_caps = [image_text_tup[2], image_text_tup[3], image_text_tup[4]]      # [true, false, dummy]
 
-            img_query = tokenizer.from_list_format([
-                {'image': image_text_tup[0]},
-            ])
+            img_query = f"<img>{image_text_tup[0]}</img>"
             img_inputs = tokenizer(img_query, return_tensors='pt').to(qwen_vl.device)
             
             text_inputs = tokenizer(text_caps, padding=True, return_tensors="pt").to(qwen_vl.device)
@@ -216,7 +209,7 @@ class qwen_vl_feature_analyzer:
                 local_dict[f"qwen_sim_score_{pooling_type}"] = qwen_emb_list[i][4]
                 
                 ret_list.append(local_dict)
-            output = os.path.join(self.challset_folder, f'feature_sim_score_{pooling_type}_pooling.json')
+            output = os.path.join(self.challset_folder, f'qwen_vl_feature_sim_score_{pooling_type}_pooling.json')
             utils.write_json(output, ret_list)
         # else:
         #     pass #TODO: finish the logic here
