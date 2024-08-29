@@ -59,10 +59,11 @@ class qwen_vl_feature_analyzer:
     # TODO: Need to change the visual feature to use from last to -2
     def compare_clip_emb(self, image_text_pairs, pooling_type) -> list:
         
-        openclip = CLIPModel.from_pretrained(self.open_clip)
+        openclip = CLIPModel.from_pretrained(self.open_clip).to("cuda")
         openclip_tokenizer = AutoTokenizer.from_pretrained(self.open_clip)
-
-        qwen_vl = AutoModelForCausalLM.from_pretrained(self.qwen_vl_path, trust_remote_code=True, fp16=True).to('cuda')
+        os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2'
+        print(torch.cuda.device_count())
+        qwen_vl = AutoModelForCausalLM.from_pretrained(self.qwen_vl_path, trust_remote_code=True, device_map='auto', fp16=True)
         qwen_pcr = AutoTokenizer.from_pretrained(self.qwen_vl_path, trust_remote_code=True)
         
         scored_list = []
@@ -74,29 +75,24 @@ class qwen_vl_feature_analyzer:
             ])
             img_inputs = qwen_pcr(query, return_tensors='pt').to(qwen_vl.device)
             
-            text_inputs = openclip_tokenizer(text_caps, padding=True, return_tensors="pt")
+            text_inputs = openclip_tokenizer(text_caps, padding=True, return_tensors="pt").to(openclip.device)
             text_input_ids = text_inputs.input_ids
             with torch.no_grad():
                 _, raw_image_features = qwen_vl.transformer.get_image_embeddings(img_inputs.input_ids)
                 # using the pre-trained projection layer 
-                image_features = openclip.visual_projection(raw_image_features)
-                text_features = openclip.get_text_features(**text_inputs)
+                raw_image_features = raw_image_features.float()
+                image_features = openclip.visual_projection(raw_image_features.to(openclip.device))
                 # Apply pooling to the embeddings
                 if pooling_type == 'tok':
                     # [cls]
                     pooled_image_embeds = image_features[:, 0, :]
                     # [eos]
-                    pooled_text_embeds = text_features[
-                        torch.arange(text_features.shape[0], device=text_features.device),
-                        # We need to get the first position of `eos_token_id` value (`pad_token_ids` might equal to `eos_token_id`)
-                        # Note: we assume each sequence (along batch dim.) contains an  `eos_token_id` (e.g. prepared by the tokenizer)
-                        (text_input_ids.to(dtype=torch.int, device=text_features.device) == openclip_tokenizer.eos_token_id)
-                        .int()
-                        .argmax(dim=-1),
-                    ]
+                    pooled_text_embeds = openclip.get_text_features(**text_inputs)
                 elif pooling_type == 'avg':
+                    text_outputs = openclip.text_model(**text_inputs, output_hidden_states=True)
+                    text_feature = text_outputs.last_hidden_state
                     pooled_image_embeds = torch.mean(image_features, dim=1)  
-                    pooled_text_embeds = torch.mean(text_features, dim=1) 
+                    pooled_text_embeds = torch.mean(text_feature, dim=1) 
                 else:
                     raise ValueError("Invalid pooling type. Use 'max' or 'avg'.")                
                 
@@ -124,27 +120,13 @@ class qwen_vl_feature_analyzer:
             ])
             img_inputs = tokenizer(img_query, return_tensors='pt').to(qwen_vl.device)
             
-            text_inputs = tokenizer(text_caps, padding=True, return_tensors="pt")
+            text_inputs = tokenizer(text_caps, padding=True, return_tensors="pt").to(qwen_vl.device)
             # text_input_ids = text_inputs.input_ids
             with torch.no_grad():
                 adapter_img_features, _ = qwen_vl.transformer.get_image_embeddings(img_inputs.input_ids)
                 text_features = qwen_vl.transformer.get_input_embeddings()(text_inputs.input_ids)
                 # Apply pooling to the embeddings
-                if pooling_type == 'tok':
-                    # # [cls]
-                    # pooled_image_embeds = image_features[:, 0, :]
-                    # # [eos]
-                    # text_input_ids = text_features.input_ids
-                    # pooled_text_embeds = text_features[
-                    #     torch.arange(text_features.shape[0], device=text_features.device),
-                    #     # We need to get the first position of `eos_token_id` value (`pad_token_ids` might equal to `eos_token_id`)
-                    #     # Note: we assume each sequence (along batch dim.) contains an  `eos_token_id` (e.g. prepared by the tokenizer)
-                    #     (text_input_ids.to(dtype=torch.int, device=text_features.device) == tokenize.pad_token_id)
-                    #     .int()
-                    #     .argmax(dim=-1),
-                    # ]
-                    raise ValueError("Qwen does not really attend to eos token")
-                elif pooling_type == 'avg':
+                if pooling_type == 'avg':
                     pooled_image_embeds = torch.mean(adapter_img_features, dim=1)  
                     pooled_text_embeds = torch.mean(text_features, dim=1)
                 elif pooling_type == 'max':
@@ -176,7 +158,7 @@ class qwen_vl_feature_analyzer:
             ])
             img_inputs = tokenizer(img_query, return_tensors='pt').to(qwen_vl.device)
             
-            text_inputs = tokenizer(text_caps, padding=True, return_tensors="pt")
+            text_inputs = tokenizer(text_caps, padding=True, return_tensors="pt").to(qwen_vl.device)
             # text_input_ids = text_inputs.input_ids
             with torch.no_grad():
                 qwen_img_features = qwen_vl(**img_inputs, output_hidden_states=True)
@@ -184,10 +166,7 @@ class qwen_vl_feature_analyzer:
                 img_lhs = qwen_img_features.hidden_states[-1]
                 text_lhs = qwen_text_features.hidden_states[-1]
                 # Apply pooling to the embeddings
-                if pooling_type == 'tok':
-
-                    raise ValueError("Qwen does not really attend to eos token")
-                elif pooling_type == 'avg':
+                if pooling_type == 'avg':
                     pooled_image_embeds = torch.mean(img_lhs, dim=1)  
                     pooled_text_embeds = torch.mean(text_lhs, dim=1)
                 elif pooling_type == 'max':
@@ -206,16 +185,23 @@ class qwen_vl_feature_analyzer:
     def __call__(self):
         # self.prepare_input_pairs()
         input_list = utils.read_json(os.path.join(self.challset_folder, self.prepared_inputs))
-        clip_emb_list = self.compare_clip_emb(input_list)
+        clip_emb_list = self.compare_clip_emb(input_list, pooling_type='tok')
+        # print(clip_emb_list[:5])
         print("Stage 1 (CLIP) feature analysis completed.")
+        torch.cuda.empty_cache()
         pooling_type = 'avg'
-        qformer_emb_list = self.compare_qformer_emb(input_list, pooling_type=pooling_type)
-        print(f"Stage 2 (Q-Former) feature analysis completed with {pooling_type} pooling.")
+        
+        adapter_emb_list = self.compare_adapter_emb(input_list, pooling_type=pooling_type)
+        print(f"Stage 2 (Adapter) feature analysis completed with {pooling_type} pooling.")
+        # print(adapter_emb_list[:5])
+        torch.cuda.empty_cache()
 
-        blip2_emb_list = self.compare_blip2_emb(input_list, pooling_type=pooling_type)
-        print(f"Stage 3 (BLIP-2) feature analysis completed with {pooling_type} pooling.")
-        # # everything is fine, pack and go
-        if len(clip_emb_list) == len(qformer_emb_list) == len(blip2_emb_list):
+        qwen_emb_list = self.compare_qwen_emb(input_list, pooling_type=pooling_type)
+        print(f"Stage 3 (Qwen) feature analysis completed with {pooling_type} pooling.")
+        # print(qwen_emb_list[:5])
+        torch.cuda.empty_cache()
+        # everything is fine, pack and go
+        if len(clip_emb_list) == len(adapter_emb_list) == len(qwen_emb_list):
             ret_list = []
             for i in range(len(clip_emb_list)):
                 local_dict = {}
@@ -226,12 +212,11 @@ class qwen_vl_feature_analyzer:
                 local_dict["dummy_cap"] = clip_info_list[3]
 
                 local_dict["clip_sim_score"] = clip_info_list[4]
-                local_dict[f"qformer_sim_score_{pooling_type}"] = qformer_emb_list[i][4]
-                local_dict[f"blip2_sim_score_{pooling_type}"] = blip2_emb_list[i][4]
+                local_dict[f"adapter_sim_score_{pooling_type}"] = adapter_emb_list[i][4]
+                local_dict[f"qwen_sim_score_{pooling_type}"] = qwen_emb_list[i][4]
                 
                 ret_list.append(local_dict)
             output = os.path.join(self.challset_folder, f'feature_sim_score_{pooling_type}_pooling.json')
-        # output = os.path.join(self.challset_folder, f'feature_sim_score_blip2.json')
             utils.write_json(output, ret_list)
         # else:
         #     pass #TODO: finish the logic here
