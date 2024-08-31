@@ -35,3 +35,25 @@ def cosine_sim(pooled_image_embeds: torch.tensor, pooled_text_embeds: torch.tens
     cosine_sim = torch.matmul(norm_text, norm_img.t().to(pooled_text_embeds.device))
     return cosine_sim.squeeze()
 
+def custom_pooling(image_features: torch.tensor, text_features: torch.tensor, pooling_type: str) -> torch.tensor:
+    if pooling_type == 'avg':
+        pooled_image_embeds = torch.mean(image_features, dim=1)  
+        pooled_text_embeds = torch.mean(text_features, dim=1)
+    elif pooling_type == 'max':
+        pooled_image_embeds = torch.max(image_features, dim=1)[0]  
+        pooled_text_embeds = torch.max(text_features, dim=1)[0]
+    elif pooling_type == 'eol':
+        pooled_image_embeds = image_features[:, -1, :]
+        # text features should be right aligned since we pad to the left
+        pooled_text_embeds = text_features[:, -1, :]
+    # use for adapter layer comparison
+    elif pooling_type == 'tok':
+        # [cls] token is (should be) placed at the first position of the patches 
+        pooled_image_embeds = image_features[:, 0, :]
+        # text features should be right aligned since we pad to the left
+        # assume text uses prompt eol strategy
+        pooled_text_embeds = text_features[:, -1, :]
+    else:
+        raise ValueError("Invalid pooling type. Use 'max' or 'avg'.") 
+    
+    return  pooled_image_embeds, pooled_text_embeds
