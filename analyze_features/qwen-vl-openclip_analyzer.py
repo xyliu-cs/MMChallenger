@@ -143,7 +143,7 @@ class qwen_vl_feature_analyzer:
         return scored_list
 
 
-    def compare_qwen_emb(self, image_text_pairs, use_prompt=True, pooling_type='eol') -> list:  
+    def compare_llm_emb(self, image_text_pairs, use_prompt=True, pooling_type='eol') -> list:  
         qwen_vl = AutoModelForCausalLM.from_pretrained(self.qwen_vl_path, trust_remote_code=True, fp16=True, device_map='auto')
         tokenizer = AutoTokenizer.from_pretrained(self.qwen_vl_path, trust_remote_code=True)
         tokenizer.pad_token_id = tokenizer.eod_id
@@ -199,28 +199,28 @@ class qwen_vl_feature_analyzer:
         print(f"Stage 1 (CLIP) feature analysis completed with {vision_model_pooling_type} pooling.")
         torch.cuda.empty_cache()
         
-        adapter_pooling_type = 'avg'
+        adapter_pooling_type = 'avg_eol' # or 'avg'
         adapter_emb_list = self.compare_adapter_emb(input_list, pooling_type=adapter_pooling_type, contextualize_text=True)
         print(f"Stage 2 (Adapter) feature analysis completed with {adapter_pooling_type} pooling.")
         # # print(adapter_emb_list[:5])
         torch.cuda.empty_cache()
 
         lm_pooling_type = 'eol'
-        qwen_emb_list = self.compare_qwen_emb(input_list, pooling_type=lm_pooling_type)
-        print(f"Stage 3 (Qwen) feature analysis completed with {lm_pooling_type} pooling.")
+        llm_emb_list = self.compare_llm_emb(input_list, pooling_type=lm_pooling_type)
+        print(f"Stage 3 (LLM) feature analysis completed with {lm_pooling_type} pooling.")
         
         # output = os.path.join(self.challset_folder, f'qwen_vl_feature_sim_score.json')
         # utils.write_json(output, qwen_emb_list)
         # print(qwen_emb_list[:20])
         torch.cuda.empty_cache()
         # everything is fine, pack and go
-        if len(clip_emb_list) == len(adapter_emb_list) == len(qwen_emb_list):
+        if len(clip_emb_list) == len(adapter_emb_list) == len(llm_emb_list):
             ret_list = []
             for i in range(len(clip_emb_list)):
                 clip_info_list = clip_emb_list[i]
                 local_dict = {"image": clip_info_list[0], "category": clip_info_list[1],  "true_cap": clip_info_list[2],
                               "false_cap": clip_info_list[3], "dummy_cap": clip_info_list[4],
-                              "clip_sim_score": clip_info_list[5], "adapter_sim_score": adapter_emb_list[i][5], "lm_sim_score": qwen_emb_list[i][5]}
+                              "clip_sim_score": clip_info_list[5], "adapter_sim_score": adapter_emb_list[i][5], "lm_sim_score": llm_emb_list[i][5]}
                 ret_list.append(local_dict)
             output = os.path.join(self.challset_folder, f'qwen_vl_image_text_sim_scores.json')
             utils.write_json(output, ret_list)

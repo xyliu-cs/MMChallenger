@@ -14,18 +14,6 @@ from eva_clip import build_eva_model_and_transforms
 class blip2_feature_analyzer:
     def __init__(self, config: dict) -> None:
 
-        self.blip2_processor = Blip2Processor.from_pretrained(config["blip2_path"])
-        with init_empty_weights():
-            blip2_t5_xxl = Blip2Model.from_pretrained(config["blip2_path"], torch_dtype=torch.float16)
-        #     # change maximum mem here
-        #     # dmap = infer_auto_device_map(blip2_t5_xxl, max_memory={0: "35GiB", 1: "35GiB", 2: "35GiB", 3: "35GiB"}, no_split_module_classes=["T5Block"])
-        #     dmap = infer_auto_device_map(blip2_t5_xxl, max_memory={0: "22GiB", 1: "28GiB", 2: "18GiB", 3: "20GiB"}, no_split_module_classes=["T5Block"])
-        #     print(dmap)
-        #     dmap['language_model.lm_head'] = dmap['language_projection'] = dmap['language_model.decoder.embed_tokens']
-
-        blip2 = load_checkpoint_and_dispatch(blip2_t5_xxl, config["blip2_path"], device_map='auto', no_split_module_classes=["T5Block"])
-        self.blip2 = blip2.eval()
-
         self.evaclip_path = config["eva_clip_path"]
         self.evaclip_name = config["eva_clip_name"]
         self.blip2_path = config["blip2_path"]
@@ -91,7 +79,9 @@ class blip2_feature_analyzer:
             
             image = evaclip_preprocessor(Image.open(image_path)).unsqueeze(0)
             text = evaclip_tokenizer(text_caps)
-
+            image = image.to(device)
+            text = text.to(device)
+            
             with torch.no_grad():
                 image_features = evaclip.encode_image(image)
                 text_features = evaclip.encode_text(text)
@@ -102,12 +92,12 @@ class blip2_feature_analyzer:
         return scored_list
 
 
-    def compare_adapter_emb(self, image_text_pairs, pooling_type='max', use_prompt=True, contextualize_text=True) -> list:
+    def compare_adapter_emb(self, image_text_pairs, pooling_type='avg_eol', use_prompt=True, contextualize_text=True) -> list:
         blip2_processor = Blip2Processor.from_pretrained(self.blip2_path)
         with init_empty_weights():
             blip2_t5_xxl = Blip2Model.from_pretrained(self.blip2_path, torch_dtype=torch.float16)
         blip2 = load_checkpoint_and_dispatch(blip2_t5_xxl, self.blip2_path, device_map='auto', no_split_module_classes=["T5Block"])
-        self.blip2 = blip2.eval()        
+        blip2 = blip2.eval()        
         
         scored_list = []
         for image_text_tup in tqdm(image_text_pairs[:], "Checking qformer embeddings: "):            
@@ -129,15 +119,17 @@ class blip2_feature_analyzer:
             
             image_inputs = blip2_processor.image_processor(images=image, return_tensors="pt")
             text_inputs = blip2_processor.tokenizer(text=text_query, return_tensors="pt", padding=True)
-            text_inputs.to(blip2.device)
-            image_inputs.to(blip2.device)
+            print('text inputs:\n', image_inputs.input_ids)
+            
+            image_inputs = image_inputs.to(blip2.device)
+            text_inputs = text_inputs.to(blip2.device)
             
             with torch.no_grad():
                 if contextualize_text:
                     text_embeds = blip2(**text_inputs)    # encoder last hidden states, this requires modification of modeling_blip_2.py
                 else:
                     text_embeds = blip2.get_input_embeddings()(text_inputs.input_ids)   
-                qformer_outputs = self.blip2.get_qformer_features(**image_inputs, output_hidden_states=False)
+                qformer_outputs = blip2.get_qformer_features(**image_inputs, output_hidden_states=False)
                 qformer_lhs = qformer_outputs[0]
                 image_embeds = blip2.language_projection(qformer_lhs)
 
@@ -152,72 +144,98 @@ class blip2_feature_analyzer:
 
     def compare_llm_emb(self, image_text_pairs, use_prompt=True, pooling_type='eol') -> list:
         blip2_processor = Blip2Processor.from_pretrained(self.blip2_path)
-        with init_empty_weights():
-            blip2_t5_xxl = Blip2Model.from_pretrained(self.blip2_path, torch_dtype=torch.float16)
-        blip2 = load_checkpoint_and_dispatch(blip2_t5_xxl, self.blip2_path, device_map='auto', no_split_module_classes=["T5Block"])
-        self.blip2 = blip2.eval()   
+
+        blip2 = Blip2Model.from_pretrained(self.blip2_path, device_map='auto', torch_dtype=torch.float16)
+
+        blip2 = blip2.eval()   
+        blip2_processor.num_query_tokens = blip2.config.num_query_tokens
+        blip2_processor.tokenizer.padding_side = 'left'
+        
         
         # TODO: Unfinished here !!!!!
         scored_list = []
         for image_text_tup in tqdm(image_text_pairs[:], "Checking blip2 embeddings: "):
-            image = utils.read_image(image_text_tup[0])
-            text_caps = [image_text_tup[2], image_text_tup[3], image_text_tup[4]]    # [true, false, dummy]
+            image_path = image_text_tup[0]
+            category = image_text_tup[2]
             
-            visual_only_inputs = self.blip2_processor(images=image, return_tensors="pt")
-            text_only_inputs = self.blip2_processor.tokenizer(text=text_caps, return_tensors="pt", padding=True)
-            
-            image_encoder_lhs = self.blip2(**visual_only_inputs)
-            text_encoder_lhs = self.blip2(**text_only_inputs)
-
-            # Apply pooling to the embeddings
-            if pooling_type == 'max':
-                pooled_image_embeds = torch.max(image_encoder_lhs, dim=1)[0]  
-                pooled_text_embeds = torch.max(text_encoder_lhs, dim=1)[0]
-            elif pooling_type == 'avg':
-                pooled_image_embeds = torch.mean(image_encoder_lhs, dim=1)  
-                pooled_text_embeds = torch.mean(text_encoder_lhs, dim=1) 
+            image = utils.read_image(image_path)
+            if use_prompt:  
+                text_caps = [cap.capitalize() + '.' for cap in image_text_tup[3:]]      # [true, false, dummy]
+                prompt_eol = 'This sentence : "{sent_exp}" means in one word:"{word_exp}". This sentence : "{actual_sent}" means in one word:"'
+                #  copying the below comments from processing_blip_2.py from transformers 4.45.0 dev
+                #  " if we know how many query tokens, expand text inside processor. We need this hacky manipulation
+                #  because BLIP expects image tokens to be at the beginning even before BOS token "
+                #  This means that blip model always puts the image token first, so it is a little awkward for us to use PromptEOL
+                prompt_eol_img = 'This image means in one word:"'
+                if category == 'action':
+                    text_query = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps]
+                elif category == 'place':
+                    text_query = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps]
+                
+                text_inputs = blip2_processor.tokenizer(text=text_query, return_tensors="pt", padding=True)
+                image_inputs = blip2_processor(text=prompt_eol_img, images=image, return_tensors="pt")
+                print(image_inputs.input_ids)
+                print("text input shape: ", text_inputs.input_ids[0].shape)
+                print("image input shape: ", image_inputs.input_ids[0].shape) 
             else:
-                raise ValueError("Invalid pooling type. Use 'max' or 'avg'.")
+                text_query = image_text_tup[3:]  # [true, false, dummy]
+                text_inputs = blip2_processor.tokenizer(text=text_query, return_tensors="pt", padding=True)
+                image_inputs = blip2_processor(images=image, return_tensors="pt")
+                print(image_inputs)  
+            
+            text_inputs.to(blip2.device)
+            image_inputs.to(blip2.device)
+            
+            # the below code requires modification of the modeling_blip_2.py 
+            image_encoder_lhs = blip2(**image_inputs)
+            text_encoder_lhs = blip2(**text_inputs)
+
+            print(image_encoder_lhs.shape)
+            print(text_encoder_lhs.shape)
+            # Apply pooling to the embeddings
+            pooled_image_embeds, pooled_text_embeds = utils.custom_pooling(image_encoder_lhs, text_encoder_lhs, pooling_type)
             
             # Append pooled features
             # self.language_features.append((pooled_image_embeds, pooled_text_embeds))
             # Compute cosine similarity via matrix multiplication
             cosine_sim = utils.cosine_sim(pooled_image_embeds, pooled_text_embeds)
 
-            ret_tup = (image_text_tup[1], image_text_tup[2], image_text_tup[3], image_text_tup[4], cosine_sim.tolist())
+            ret_tup = image_text_tup[1:] + [cosine_sim.tolist()]
             scored_list.append(ret_tup)         
         return scored_list
 
     def __call__(self):
         # self.prepare_input_pairs()
         input_list = utils.read_json(os.path.join(self.challset_folder, self.prepared_inputs))
-        clip_emb_list = self.compare_clip_emb(input_list)
-        print("Stage 1 (CLIP) feature analysis completed.")
-        pooling_type = 'avg'
-        qformer_emb_list = self.compare_adapter_emb(input_list, pooling_type=pooling_type)
-        print(f"Stage 2 (Q-Former) feature analysis completed with {pooling_type} pooling.")
+        # clip_emb_list = self.compare_clip_emb(input_list)
+        # print(clip_emb_list[:5])
+        # print(f"Stage 1 (CLIP) feature analysis completed.")
+        # torch.cuda.empty_cache()
+        
+        # adapter_pooling_type = 'avg_eol'  # or 'avg'
+        # adapter_emb_list = self.compare_adapter_emb(input_list, pooling_type=adapter_pooling_type, use_prompt=True, contextualize_text=True)
+        # print(f"Stage 2 (Adapter) feature analysis completed with {adapter_pooling_type} pooling.")
+        # print(adapter_emb_list[:5])
+        # torch.cuda.empty_cache()
 
-        blip2_emb_list = self.compare_llm_emb(input_list, pooling_type=pooling_type)
-        print(f"Stage 3 (BLIP-2) feature analysis completed with {pooling_type} pooling.")
+        lm_pooling_type = 'eol'
+        llm_emb_list = self.compare_llm_emb(input_list, use_prompt=True, pooling_type=lm_pooling_type)
+        print(f"Stage 3 (LLM) feature analysis completed with {lm_pooling_type} pooling.")
+        print(llm_emb_list[:20])
+        torch.cuda.empty_cache()
+
+        # # utils.write_json(output, qwen_emb_list)
         # # everything is fine, pack and go
-        if len(clip_emb_list) == len(qformer_emb_list) == len(blip2_emb_list):
-            ret_list = []
-            for i in range(len(clip_emb_list)):
-                local_dict = {}
-                clip_info_list = clip_emb_list[i]
-                local_dict["image"] = clip_info_list[0]
-                local_dict["true_cap"] = clip_info_list[1]
-                local_dict["false_cap"] = clip_info_list[2]
-                local_dict["dummy_cap"] = clip_info_list[3]
-
-                local_dict["clip_sim_score"] = clip_info_list[4]
-                local_dict[f"qformer_sim_score_{pooling_type}"] = qformer_emb_list[i][4]
-                local_dict[f"blip2_sim_score_{pooling_type}"] = blip2_emb_list[i][4]
-                
-                ret_list.append(local_dict)
-            output = os.path.join(self.challset_folder, f'feature_sim_score_{pooling_type}_pooling.json')
-        # output = os.path.join(self.challset_folder, f'feature_sim_score_blip2.json')
-            utils.write_json(output, ret_list)
+        # if len(clip_emb_list) == len(adapter_emb_list) == len(llm_emb_list):
+        #     ret_list = []
+        #     for i in range(len(clip_emb_list)):
+        #         clip_info_list = clip_emb_list[i]
+        #         local_dict = {"image": clip_info_list[0], "category": clip_info_list[1],  "true_cap": clip_info_list[2],
+        #                       "false_cap": clip_info_list[3], "dummy_cap": clip_info_list[4],
+        #                       "clip_sim_score": clip_info_list[5], "adapter_sim_score": adapter_emb_list[i][5], "lm_sim_score": llm_emb_list[i][5]}
+        #         ret_list.append(local_dict)
+        #     output = os.path.join(self.challset_folder, f'blip2_image_text_sim_scores.json')
+        #     utils.write_json(output, ret_list)
         # else:
         #     pass #TODO: finish the logic here
     

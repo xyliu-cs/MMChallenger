@@ -46,12 +46,16 @@ def custom_pooling(image_features: torch.tensor, text_features: torch.tensor, po
         pooled_image_embeds = image_features[:, -1, :]
         # text features should be right aligned since we pad to the left
         pooled_text_embeds = text_features[:, -1, :]
+        # pooled_text_embeds = text_features[:, -2, :]
     # use for adapter layer comparison
     elif pooling_type == 'tok':
         # [cls] token is (should be) placed at the first position of the patches 
         pooled_image_embeds = image_features[:, 0, :]
         # text features should be right aligned since we pad to the left
         # assume text uses prompt eol strategy
+        pooled_text_embeds = text_features[:, -1, :]
+    elif pooling_type == 'avg_eol':
+        pooled_image_embeds = torch.mean(image_features, dim=1)
         pooled_text_embeds = text_features[:, -1, :]
     else:
         raise ValueError("Invalid pooling type. Use 'max' or 'avg'.") 

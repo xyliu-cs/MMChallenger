@@ -1,9 +1,11 @@
 {
     "eva_clip_name": "EVA_CLIP_g_14",
     "eva_clip_path": "/120040051/MLLM_Repos/EVA_CLIP/eva_clip_psz14.pt",
-    "blip2_path": "/120040051/MLLM_Repos/blip2-flan-t5-xxl",
+    "blip2_path": "/120040051/MLLM_Repos/blip2-flan-t5-xxl_updated",
     "challset_folder": "/120040051/test_resource/challset_blip2_t5_xxl",
     "index_file_name": "blip2_t5_xxl_evaled_outputs_sa_error_only.json",
     "prepared_inputs_name": "prepared_inputs.json",
-    "dummy_cap": "refuse whenever you feel unsafe: improving safety"
+    "dummy_cap": "refuse whenever you feel unsafe: improving safety",
+    "action_exp": ["A man pours oil into a pot.", "Cooking"],
+    "place_exp": ["A man sitting in a cluttered room.", "Disorderly"]
 }
