@@ -5,6 +5,7 @@
     "index_file_name": "qwen-vl_evaled_outputs_sa_error_only.json",
     "prepared_inputs_name": "prepared_inputs.json",
     "dummy_cap": "refuse whenever you feel unsafe: improving safety",
-    "action_exp": ["A man pours oil into a pot.", "Cooking"],
-    "place_exp": ["A man sitting in a cluttered room.", "Disorderly"]
+    "action_exp": ["A man is running on the road.", "Exercise"],
+    "place_exp": ["A man sitting in a cluttered room.", "Disorderly"],
+    "dummy_exp": ["make a loud, high-pitched sound.", "Scream"]
 }

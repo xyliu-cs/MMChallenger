@@ -18,6 +18,8 @@ class llava_feature_analyzer:
         self.dummy_cap = config['dummy_cap']
         self.action_exp = config['action_exp']
         self.place_exp = config['place_exp']
+        self.dummy_exp = config['dummy_exp']
+        
 
 
     def prepare_input_pairs(self) -> None:
@@ -74,6 +76,7 @@ class llava_feature_analyzer:
 
 
     def compare_adapter_emb(self, image_text_pairs, pooling_type='avg', use_prompt=True, contextualize_text=True) -> list:
+        assert (use_prompt == contextualize_text), "If use PromptEOL strategy, contextualization is expected"
         llava_processor = AutoProcessor.from_pretrained(self.llava_path)
         llava = LlavaForConditionalGeneration.from_pretrained(self.llava_path, torch_dtype=torch.float16, device_map='auto').eval()
         
@@ -87,9 +90,15 @@ class llava_feature_analyzer:
                 text_caps = [cap.capitalize() + '.' for cap in image_text_tup[3:]]      # [true, false, dummy]
                 prompt_eol = 'This sentence : "{sent_exp}" means in one word:"{word_exp}". This sentence : "{actual_sent}" means in one word:"'
                 if category == 'action':
-                    text_query = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps]
+                    # text_query = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps]
+                    text_query_tf = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps[:2]]
+                    text_query_dm = [prompt_eol.format(sent_exp=self.dummy_exp[0], word_exp=self.dummy_exp[1], actual_sent=text_caps[2])]
+                    text_query = text_query_tf + text_query_dm
                 elif category == 'place':
-                    text_query = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps]  
+                    # text_query = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps] 
+                    text_query_tf = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps[:2]]
+                    text_query_dm = [prompt_eol.format(sent_exp=self.dummy_exp[0], word_exp=self.dummy_exp[1], actual_sent=text_caps[2])]
+                    text_query = text_query_tf + text_query_dm  
             else:
                 text_query = image_text_tup[3:]
             
@@ -119,7 +128,7 @@ class llava_feature_analyzer:
         return scored_list
 
 
-    def compare_llm_emb(self, image_text_pairs, use_prompt=True, pooling_type='max') -> list:
+    def compare_llm_emb(self, image_text_pairs, use_prompt=True, pooling_type='eol') -> list:
         llava_processor = AutoProcessor.from_pretrained(self.llava_path)
         llava = LlavaForConditionalGeneration.from_pretrained(self.llava_path, torch_dtype=torch.float16, device_map='auto').eval()
 
@@ -135,10 +144,14 @@ class llava_feature_analyzer:
                 img_symbol = "<image>"
                 if category == 'action':
                     image_query_text = prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=img_symbol)
-                    text_query = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps]
+                    text_query_tf = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps[:2]]
+                    text_query_dm = [prompt_eol.format(sent_exp=self.dummy_exp[0], word_exp=self.dummy_exp[1], actual_sent=text_caps[2])]
+                    text_query = text_query_tf + text_query_dm
                 elif category == 'place':
                     image_query_text = prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=img_symbol)
-                    text_query = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps]  
+                    text_query_tf = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps[:2]]
+                    text_query_dm = [prompt_eol.format(sent_exp=self.dummy_exp[0], word_exp=self.dummy_exp[1], actual_sent=text_caps[2])]
+                    text_query = text_query_tf + text_query_dm 
             else:
                 text_query = image_text_tup[3:]
                 image_query_text = "<image>"

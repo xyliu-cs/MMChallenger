@@ -21,6 +21,7 @@ class qwen_vl_feature_analyzer:
         
         self.action_exp = config['action_exp']
         self.place_exp = config['place_exp']
+        self.dummy_exp = config['dummy_exp']
 
         # self.vision_features = []
         # self.adaptor_features = []
@@ -98,7 +99,8 @@ class qwen_vl_feature_analyzer:
 
 
     def compare_adapter_emb(self, image_text_pairs, pooling_type='avg', use_prompt=True, contextualize_text=True) -> list:
-        assert pooling_type in ['avg', 'max']
+        assert (use_prompt == contextualize_text), "If use PromptEOL strategy, contextualization is expected"
+        assert pooling_type in ['avg', 'max', 'avg_eol']
         qwen_vl = AutoModelForCausalLM.from_pretrained(self.qwen_vl_path, trust_remote_code=True, fp16=True, device_map='auto')
         tokenizer = AutoTokenizer.from_pretrained(self.qwen_vl_path, trust_remote_code=True)
         tokenizer.pad_token_id = tokenizer.eod_id
@@ -114,9 +116,13 @@ class qwen_vl_feature_analyzer:
                 text_caps = [cap.capitalize() + '.' for cap in image_text_tup[3:]]      # [true, false, dummy]
                 prompt_eol = 'This sentence : "{sent_exp}" means in one word:"{word_exp}". This sentence : "{actual_sent}" means in one word:"'
                 if category == 'action':
-                    text_query = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps]
+                    text_query_tf = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps[:2]]
+                    text_query_dm = [prompt_eol.format(sent_exp=self.dummy_exp[0], word_exp=self.dummy_exp[1], actual_sent=text_caps[2])]
+                    text_query = text_query_tf + text_query_dm
                 elif category == 'place':
-                    text_query = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps]  
+                    text_query_tf = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps[:2]]
+                    text_query_dm = [prompt_eol.format(sent_exp=self.dummy_exp[0], word_exp=self.dummy_exp[1], actual_sent=text_caps[2])]
+                    text_query = text_query_tf + text_query_dm
             else:
                 text_query = image_text_tup[3:]
                 
@@ -160,10 +166,14 @@ class qwen_vl_feature_analyzer:
                 img_seq = f"<img>{image_path}</img>"
                 if category == 'action':
                     image_query = prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=img_seq)
-                    text_query = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps]
+                    text_query_tf = [prompt_eol.format(sent_exp=self.action_exp[0], word_exp=self.action_exp[1], actual_sent=text_cap) for text_cap in text_caps[:2]]
+                    text_query_dm = [prompt_eol.format(sent_exp=self.dummy_exp[0], word_exp=self.dummy_exp[1], actual_sent=text_caps[2])]
+                    text_query = text_query_tf + text_query_dm
                 elif category == 'place':
                     image_query = prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=img_seq)
-                    text_query = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps]  
+                    text_query_tf = [prompt_eol.format(sent_exp=self.place_exp[0], word_exp=self.place_exp[1], actual_sent=text_cap) for text_cap in text_caps[:2]]
+                    text_query_dm = [prompt_eol.format(sent_exp=self.dummy_exp[0], word_exp=self.dummy_exp[1], actual_sent=text_caps[2])]
+                    text_query = text_query_tf + text_query_dm
             else:
                 text_query = image_text_tup[3:]
                 image_query = f"<img>{image_path}</img>"
@@ -200,14 +210,14 @@ class qwen_vl_feature_analyzer:
         torch.cuda.empty_cache()
         
         adapter_pooling_type = 'avg_eol' # or 'avg'
-        adapter_emb_list = self.compare_adapter_emb(input_list, pooling_type=adapter_pooling_type, contextualize_text=True)
+        adapter_emb_list = self.compare_adapter_emb(input_list, pooling_type=adapter_pooling_type, use_prompt=True, contextualize_text=True)
         print(f"Stage 2 (Adapter) feature analysis completed with {adapter_pooling_type} pooling.")
         # # print(adapter_emb_list[:5])
         torch.cuda.empty_cache()
 
-        lm_pooling_type = 'eol'
-        llm_emb_list = self.compare_llm_emb(input_list, pooling_type=lm_pooling_type)
-        print(f"Stage 3 (LLM) feature analysis completed with {lm_pooling_type} pooling.")
+        llm_pooling_type = 'eol'
+        llm_emb_list = self.compare_llm_emb(input_list, use_prompt=True, pooling_type=llm_pooling_type)
+        print(f"Stage 3 (LLM) feature analysis completed with {llm_pooling_type} pooling.")
         
         # output = os.path.join(self.challset_folder, f'qwen_vl_feature_sim_score.json')
         # utils.write_json(output, qwen_emb_list)
