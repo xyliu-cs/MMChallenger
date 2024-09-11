@@ -106,10 +106,10 @@ def find_yn_errors(output_list: list, target="all") -> list:
     ret_list = []
     if target == "all":
         for output_dict in output_list:
-            id = output_dict["id"]
+            out_id = output_dict["id"]
             category = output_dict["category"]
             model_ans_lists = output_dict["yn_model_ans"]
-            local_dict = {"id": id, "category": category, "image": []}
+            local_dict = {"id": out_id, "category": category, "image": []}
             for iid, ans_list in enumerate(model_ans_lists):
                 for ans in ans_list:
                     if not check_yn_correctness(ans, "Yes"):
@@ -120,7 +120,7 @@ def find_yn_errors(output_list: list, target="all") -> list:
     else:
         for output_dict in output_list:
             if output_dict["category"] == target:
-                id = output_dict["id"]
+                out_id = output_dict["id"]
                 category = output_dict["category"]
                 model_ans_lists = output_dict["yn_model_ans"]
                 local_dict = {"id": id, "category": category, "image": []}
@@ -319,26 +319,79 @@ if __name__ == "__main__":
     # | ------------------------------------- |
     # output_path = "/120040051/test_resource/output_answers/llava15_7b_outputs_fmt.json"
     # output_path = "/120040051/test_resource/output_answers/instructblip_7b_outputs.json"
-    # output_path = "llama3-llava-next-8b_outputs.json"
+    # output_path = "/120040051/Github_Repos/VKConflict/eval_model/updated_results/qwen-vl_outputs_vcd_a1_b01.json"
+    output_path = "/120040051/Github_Repos/VKConflict/eval_model/updated_results/llava-1.5-34b_updated_outputs_insist_csk.json"
+    outputs = read_json(output_path)
+    
+    
+    # human_evaled_sa_path = "/120040051/Github_Repos/VKConflict/eval_model/results/blip2_t5_xxl_sa_human_eval.json"
+    # human_evaled_sa_path = "/120040051/Github_Repos/VKConflict/eval_model/updated_results/qwen-vl_sa_human_eval_updated_vcd.json"
+    # human_evaled_sa_path = "/120040051/Github_Repos/VKConflict/eval_model/updated_results/llava-1.5-13b_sa_human_eval_updated_layers_2-32_tokens_25_eos_attn_0.5_cfg_1.1.json"
+    # eval_res = read_json(human_evaled_sa_path)
+    
+    totol_num = len(outputs)
+    print(f"Total data: {totol_num}")
+    action_num = len([output_dict for output_dict in outputs if output_dict["category"] == "action"])
+    place_num = len([output_dict for output_dict in outputs if output_dict["category"] == "place"])
+    print(f"Action data: {action_num}")
+    print(f"Place data: {place_num}")
+    
+    yn_error_list = find_yn_errors(outputs)
+    mcq_error_list = find_mcq_errors(outputs)
+    # def list_to_strs(input_list):
+    #     for i, item_dict in enumerate(input_list):
+    #         ret_str = f"{item_dict['category']}{item_dict['id']}"
+    #         input_list[i] = ret_str
+    #     return input_list
+    # def sa_eval_list_to_str(sa_eval_list):
+    #     ret_list = []
+    #     for item_dict in sa_eval_list[:-1]:
+    #         if item_dict["human_eval"][0] == "0":
+    #             ret_str = f"{item_dict['category']}{item_dict['id']}"
+    #             ret_list.append(ret_str)
+    #     return ret_list
+    # mcq_error_list = list_to_strs(mcq_error_list)
+    # yn_error_list = list_to_strs(yn_error_list)
+    # sa_error_list = sa_eval_list_to_str(eval_res)
+    # print(list_to_strs(yn_error_list))
+    # print(list_to_strs(mcq_error_list))
+    # print(sa_eval_list_to_str(eval_res))
+    
+    # mcq_error_only = [item for item in mcq_error_list if item not in yn_error_list and item not in sa_error_list]
+    # yn_error_only = [item for item in yn_error_list if item not in mcq_error_list and item not in sa_error_list]
+    # sa_error_only = [item for item in sa_error_list if item not in mcq_error_list and item not in yn_error_list] 
+    
+    # print(f"MCQ error only: {mcq_error_only}")
+    # print(f"YN error only: {yn_error_only}")
+    # print(f"SA error only: {sa_error_only}")
 
-    # outputs = read_json(output_path)
-
-    # mcq_error_list = find_mcq_errors(outputs)
-    # yn_error_list = find_yn_errors(outputs)
+    print('-'*40)
+    print("Summary:")
+    print('-'*40 + '\n')
     # print(yn_error_list)
-    # print("yn all: ", len(yn_error_list))
-    # print("yn all pct: ", round(1 - len(yn_error_list)/344, 4))
-    # yn_error_list_action = find_yn_errors(outputs, target="action")
-    # print("yn action: ", len(yn_error_list_action))
-    # print("yn action pct: ", round(1 - len(yn_error_list_action)/156, 4))
-    # yn_error_list_place = find_yn_errors(outputs, target="place")
-    # print("yn place: ", len(yn_error_list_place))
-    # print("yn place pct: ", round(1 - len(yn_error_list_place)/188, 4))
-
-    # # print(mcq_error_list)
-    # print("mcq all: ", len(mcq_error_list))
-    # print("mcq all pct: ", round(1 - len(mcq_error_list)/344, 4))
-    # mcq_error_list_action = find_mcq_errors(outputs, target="action")
+    print('='*40)
+    print("yn all: ", len(yn_error_list))
+    print("yn all pct: ", round(1 - len(yn_error_list)/totol_num, 3))
+    print('='*40)
+    yn_error_list_action = find_yn_errors(outputs, target="action")
+    print("yn action: ", len(yn_error_list_action))
+    print("yn action pct: ", round(1 - len(yn_error_list_action)/action_num, 3))
+    yn_error_list_place = find_yn_errors(outputs, target="place")
+    print("yn place: ", len(yn_error_list_place))
+    print("yn place pct: ", round(1 - len(yn_error_list_place)/place_num, 3))
+    print()
+    # print(mcq_error_list)
+    print('='*40)
+    print("mcq all: ", len(mcq_error_list))
+    print("mcq all pct: ", round(1 - len(mcq_error_list)/totol_num, 3))
+    print('='*40)
+    mcq_error_list_action = find_mcq_errors(outputs, target="action")
+    print("mcq action: ", len(mcq_error_list_action))
+    print("mcq action pct: ", round(1 - len(mcq_error_list_action)/action_num, 3))
+    mcq_error_list_place = find_mcq_errors(outputs, target="place")
+    print("mcq place: ", len(mcq_error_list_place))
+    print("mcq place pct: ", round(1 - len(mcq_error_list_place)/place_num, 3))
+    print('\n')
     # count = 0
     # for info_dict in mcq_error_list:
     #     for output_dict in outputs:
@@ -355,38 +408,37 @@ if __name__ == "__main__":
     #                     break
     # print("Empty ans:", count)
 
-    # print("mcq action: ", len(mcq_error_list_action))
-    # print("mcq action pct: ", round(1 - len(mcq_error_list_action)/156, 4))
-    # mcq_error_list_place = find_mcq_errors(outputs, target="place")
-    # print("mcq place: ", len(mcq_error_list_place))
-    # print("mcq place pct: ", round(1 - len(mcq_error_list_place)/188, 4))
-
     # human eval
-    # sa_eval_list = eval_sa_answers(output_list=outputs, target="all")
-    # write_json("llava-v1.6-34b_outputs_human_eval.json", sa_eval_list)
+    # # sa_eval_list = eval_sa_answers(output_list=outputs, target="all")
+    # # write_json("llava-v1.6-34b_outputs_human_eval.json", sa_eval_list)
 
-    # eval_res = read_json("llama3-llava-next-8b_outputs_human_eval.json")
-    # total = 0
-    # action = 0
-    # place = 0
-    # assert len(eval_res) == 345
+    # sa_total, sa_action, sa_place = 0, 0, 0
+    # assert len(eval_res) == totol_num + 1 # +1 human evaluator info
     # for eval_dict in eval_res[:-1]:
     #     if eval_dict["human_eval"][0] == "0":
-    #         total += 1
+    #         sa_total += 1
     #         if eval_dict["category"] == "action":
-    #             action += 1
+    #             sa_action += 1
     #         elif eval_dict["category"] == "place":
-    #             place += 1
-    # print("sa all: ", total)
-    # print("sa all (%): ", round(1 - total/344, 4))
+    #             sa_place += 1
+    # print("="*40)
+    # print("sa all: ", sa_total)
+    # print("sa all (%): ", round(1 - sa_total/totol_num, 3))
+    # print("="*40)
 
-    # print("sa action: ", action)
-    # print("sa all (%): ", round(1 - action/156, 4))
+    # print("sa action: ", sa_action)
+    # print("sa action (%): ", round(1 - sa_action/action_num, 3))
 
-    # print("sa place: ", place)
-    # print("sa all (%): ", round(1 - place/188, 4))
+    # print("sa place: ", sa_place)
+    # print("sa place (%): ", round(1 - sa_place/place_num, 3))
+    
+    # print('\n' + '='*40)
+    # total_errors = len(yn_error_list) + len(mcq_error_list) + sa_total
 
-
+    # print('Total error instances:', total_errors)
+    # print('Total error instances %:', round(1 - total_errors/(totol_num*3), 3))
+    # print('='*40)
+    
     # | ------------------------------------- |
     # |  PART 2: Collect Error Statistics     |
     # | ------------------------------------- |
@@ -401,41 +453,40 @@ if __name__ == "__main__":
     # | ------------------------------------- |
     # |  PART 3: Construct Challenge Set      |
     # | ------------------------------------- |
-    result_folder = 'results'
-    image_input_folder =  r"C:\Users\xiaoyuanliu\Desktop\merged0728"
-    check_model = "llama3-llava-next-8b"
+    # result_folder = 'results'
+    # image_input_folder =  "/120040051/test_resource/merged0728"
+    # check_model = "qwen-vl"
 
-    # model name or global
-    check_model = "llama3-llava-next-8b"
-    lookup_file = os.path.join(result_folder, check_model+'_evaled_outputs.json')
-    err_stats_file = os.path.join(result_folder, 'error_stats.json')
+    # # model name or global
+    # lookup_file = os.path.join(result_folder, check_model+'_evaled_outputs.json')
+    # err_stats_file = os.path.join(result_folder, 'error_stats.json')
     
-    # overwrite
-    challenge_set = 'challset_' + check_model 
-    challset_path = os.path.join(os.path.dirname(image_input_folder), challenge_set)
-    if os.path.exists(challset_path):
-        shutil.rmtree(challset_path)
-    os.makedirs(challset_path)
-    print(f"Directory {challset_path} created")
+    # # overwrite
+    # challenge_set = 'challset_' + check_model 
+    # challset_path = os.path.join(os.path.dirname(image_input_folder), challenge_set)
+    # if os.path.exists(challset_path):
+    #     shutil.rmtree(challset_path)
+    # os.makedirs(challset_path)
+    # print(f"Directory {challset_path} created")
     
-    err_stats = read_json(err_stats_file)
-    lookup_info = read_json(lookup_file)
+    # err_stats = read_json(err_stats_file)
+    # lookup_info = read_json(lookup_file)
     
-    target_error = "sa_error"
-    target_dict = err_stats[check_model]
-    target_errs = target_dict[target_error]
-    # target_err_mc = target_dict["mc_error"]
-    # target_err_sa = target_dict["sa_error"]
-    # target_err_all = target_dict["all_error"]
+    # target_error = "sa_error"
+    # target_dict = err_stats[check_model]
+    # target_errs = target_dict[target_error]
+    # # target_err_mc = target_dict["mc_error"]
+    # # target_err_sa = target_dict["sa_error"]
+    # # target_err_all = target_dict["all_error"]
     
-    threshold = 1
-    filtered_errs = [item for item in target_errs if item[1] >= threshold]
+    # threshold = 1
+    # filtered_errs = [item for item in target_errs if item[1] >= threshold]
 
-    challset_info = ret_input_info_upon_cond(lookup_list=lookup_info, cond_list=filtered_errs)
-    copy_imgs(challset_info, image_input_folder, challset_path)
-    out_info_path = os.path.join(challset_path, f'{check_model}_evaled_outputs_{target_error}_only.json')
-    write_json(out_info_path, challset_info)
+    # challset_info = ret_input_info_upon_cond(lookup_list=lookup_info, cond_list=filtered_errs)
+    # copy_imgs(challset_info, image_input_folder, challset_path)
+    # out_info_path = os.path.join(challset_path, f'{check_model}_evaled_outputs_{target_error}_only.json')
+    # write_json(out_info_path, challset_info)
 
-    print(f"error instances   (count >= {threshold}): {len(target_errs)}")
-    print(f"error instances % (count >= {threshold}): {len(target_errs)/344}")
-    print(f"error instances list: \n{target_errs}")
+    # print(f"error instances   (count >= {threshold}): {len(target_errs)}")
+    # print(f"error instances % (count >= {threshold}): {len(target_errs)/344}")
+    # print(f"error instances list: \n{target_errs}")

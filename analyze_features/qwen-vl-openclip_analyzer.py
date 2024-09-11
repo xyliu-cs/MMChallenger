@@ -209,8 +209,8 @@ class qwen_vl_feature_analyzer:
         print(f"Stage 1 (CLIP) feature analysis completed with {vision_model_pooling_type} pooling.")
         torch.cuda.empty_cache()
         
-        adapter_pooling_type = 'avg_eol' # or 'avg'
-        adapter_emb_list = self.compare_adapter_emb(input_list, pooling_type=adapter_pooling_type, use_prompt=True, contextualize_text=True)
+        adapter_pooling_type = 'avg' # or 'avg'
+        adapter_emb_list = self.compare_adapter_emb(input_list, pooling_type=adapter_pooling_type, use_prompt=False, contextualize_text=False)
         print(f"Stage 2 (Adapter) feature analysis completed with {adapter_pooling_type} pooling.")
         # # print(adapter_emb_list[:5])
         torch.cuda.empty_cache()

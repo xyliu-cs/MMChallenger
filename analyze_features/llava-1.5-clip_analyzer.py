@@ -185,7 +185,7 @@ class llava_feature_analyzer:
         torch.cuda.empty_cache()
         
         adapter_pooling_type = 'avg'
-        adapter_emb_list = self.compare_adapter_emb(input_list, pooling_type=adapter_pooling_type, use_prompt=False, contextualize_text=True)
+        adapter_emb_list = self.compare_adapter_emb(input_list, pooling_type=adapter_pooling_type, use_prompt=False, contextualize_text=False)
         print(f"Stage 2 (Adapter) feature analysis completed with {adapter_pooling_type} pooling.")
         # # print(adapter_emb_list[:5])
         torch.cuda.empty_cache()
