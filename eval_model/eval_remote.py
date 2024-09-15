@@ -8,7 +8,7 @@ from utils import read_json, write_json, infer_target_type, base64_encode_img
 
 # use openai input format for all models as required by the third party api provider
 def build_query(model_name, image_path, text_prompt, max_tokens=100, style='gpt'):
-    api_key = os.environ.get('API_KEY')   # use export OPENAI_API_KEY = 'your key'
+    api_key = os.environ.get('API_KEY')   # use export API_KEY = 'your key'
     if style == 'gpt':
         b64_img = base64_encode_img(image_path=image_path)
         img_dict = { 
@@ -115,7 +115,7 @@ def parse_response(response, model_type):
 def eval_model_api(model_name, model_type, end_url, text_input_path, image_folder, text_output_path, prefix='', postfix='', repeat=1):
     input_list_of_dict = read_json(text_input_path)
     output_list_of_dict = []
-    for input_dict in tqdm(input_list_of_dict[20:], "Infering answers"):
+    for input_dict in tqdm(input_list_of_dict[:], "Infering answers"):
         input_type = infer_target_type(input_dict["image"][0])
         image_names = input_dict["image"]
         image_paths = [os.path.join(image_folder, name) for name in image_names]
