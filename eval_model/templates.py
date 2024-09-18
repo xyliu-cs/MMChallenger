@@ -6,6 +6,11 @@ INSTRUCTBLIP_YN = """[[Prefix]][[Text]][[Postfix]]Answer:"""
 INSTRUCTBLIP_SA = """[[Prefix]][[Text]][[Postfix]]Short Answer:"""
 
 
+INSTRUCTBLIP_MCQ_COT = """Question: [[Text]] Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]]. [[Postfix]]Let's think step by step and provide the final answer as an option letter at last after saying "The final answer:". First,"""
+INSTRUCTBLIP_YN_COT = """[[Prefix]][[Text]][[Postfix]]Let's think step by step and provide the final answer at last after saying "The final answer:"."""
+INSTRUCTBLIP_SA_COT = """[[Prefix]][[Text]][[Postfix]]Let's think step by step and provide a short answer at last after saying "The final answer:". First,"""
+
+
 # https://huggingface.co/docs/transformers/en/model_doc/llava#usage-tips
 LLAVA_VICUNA_MCQ = """USER: <image>
 Question: [[Text]]
@@ -17,6 +22,18 @@ Answer Yes or No directly. ASSISTANT:"""
 LLAVA_VICUNA_SA = """USER: <image>
 [[Prefix]][[Text]][[Postfix]]
 Answer no more than 5 words. ASSISTANT:"""
+
+
+LLAVA_VICUNA_MCQ_COT = """USER: <image>
+Question: [[Text]]
+Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]].
+[[Postfix]]Provide your final answer with the option's letter from the given choices directly at last after saying 'Therefore, the answer is'. ASSISTANT: Let's think step by step."""
+LLAVA_VICUNA_YN_COT = """USER: <image>
+[[Prefix]][[Text]][[Postfix]]Provide your final answer with Yes or No directly at last after saying 'Therefore, the answer is'.
+ASSISTANT: Let's think step by step."""
+LLAVA_VICUNA_SA_COT = """USER: <image>
+[[Prefix]][[Text]][[Postfix]]Provide your final answer within 5 words at last after saying 'Therefore, the answer is'.
+ASSISTANT: Let's think step by step."""
 
 
 # https://huggingface.co/docs/transformers/main/en/model_doc/llava_next#usage-tips
@@ -42,6 +59,30 @@ You are a helpful language and vision assistant. You are able to understand the 
 [[Prefix]][[Text]][[Postfix]]Answer no more than 5 words.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"""
 
 
+
+# https://huggingface.co/docs/transformers/main/en/model_doc/llava_next#usage-tips
+LLAVA_LLAMA3_MCQ_COT = """<|start_header_id|>system<|end_header_id|>
+
+You are a helpful language and vision assistant. You are able to understand the visual content that the user provides, and assist the user with a variety of tasks using natural language.<|eot_id|><|start_header_id|><|start_header_id|>user<|end_header_id|>
+
+<image>
+Question: [[Text]]
+Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]].
+[[Postfix]]Provide your final answer with the option's letter from the given choices at last after saying "Therefore, the answer is".<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nLet's think step by step."""
+LLAVA_LLAMA3_YN_COT = """<|start_header_id|>system<|end_header_id|>
+
+You are a helpful language and vision assistant. You are able to understand the visual content that the user provides, and assist the user with a variety of tasks using natural language.<|eot_id|><|start_header_id|><|start_header_id|>user<|end_header_id|>
+
+<image>
+[[Prefix]][[Text]][[Postfix]]Provide your final answer in one word at last after saying "Therefore, the answer is".<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nLet's think step by step."""
+LLAVA_LLAMA3_SA_COT = """<|start_header_id|>system<|end_header_id|>
+
+You are a helpful language and vision assistant. You are able to understand the visual content that the user provides, and assist the user with a variety of tasks using natural language.<|eot_id|><|start_header_id|><|start_header_id|>user<|end_header_id|>
+
+<image>
+[[Prefix]][[Text]][[Postfix]]Provide your final answer in 5 words at last after saying "Therefore, the answer is".<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nLet's think step by step."""
+
+
 # https://huggingface.co/docs/transformers/main/en/model_doc/llava_next#usage-tips
 LLAVA_YI_MCQ = """<|im_start|>system\nAnswer the questions.<|im_end|><|im_start|>user\n<image>
 Question: [[Text]]
@@ -51,6 +92,16 @@ LLAVA_YI_YN = """<|im_start|>system\nAnswer the questions.<|im_end|><|im_start|>
 [[Prefix]][[Text]][[Postfix]]Answer Yes or No directly.<|im_end|><|im_start|>assistant\n"""
 LLAVA_YI_SA = """<|im_start|>system\nAnswer the questions.<|im_end|><|im_start|>user\n<image>
 [[Prefix]][[Text]][[Postfix]]Answer no more than 5 words.<|im_end|><|im_start|>assistant\n"""
+
+
+LLAVA_YI_MCQ_COT = """<|im_start|>system\nAnswer the questions.<|im_end|><|im_start|>user\n<image>
+Question: [[Text]]
+Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]].
+[[Postfix]]Provide your final answer with the option's letter from the given choices at last after saying 'Therefore, the answer is'.<|im_end|><|im_start|>assistant\nLet's think step by step."""
+LLAVA_YI_YN_COT = """<|im_start|>system\nAnswer the questions.<|im_end|><|im_start|>user\n<image>
+[[Prefix]][[Text]][[Postfix]]Provide your final answer 'Yes' or 'No' at last after saying 'Therefore, the answer is'.<|im_end|><|im_start|>assistant\nLet's think step by step."""
+LLAVA_YI_SA_COT = """<|im_start|>system\nAnswer the questions.<|im_end|><|im_start|>user\n<image>
+[[Prefix]][[Text]][[Postfix]]Provide your final answer within 5 words at last after saying 'Therefore, the answer is'.<|im_end|><|im_start|>assistant\nLet's think step by step."""
 
 
 # https://github.com/QwenLM/Qwen-VL/blob/aa00ed04091eea5fcdd32985e7915f1c53e7d599/eval_mm/evaluate_vqa.py#L281
@@ -66,9 +117,29 @@ QWEN_VL_YN = """[[Prefix]][[Text]][[Postfix]]Answer:"""
 QWEN_VL_SA = """[[Prefix]][[Text]][[Postfix]]Answer:"""
 
 
+QWEN_VL_MCQ_COT = """Question: [[Text]]
+Options: A. [[OptionA]]
+B. [[OptionB]]
+C. [[OptionC]]
+D. [[OptionD]]
+[[Postfix]]Provide your final answer at last after saying "Therefore, the answer is" """
+QWEN_VL_YN_COT = """[[Prefix]][[Text]][[Postfix]]Provide your final answer as "Yes" or "No" at last after saying "Therefore, the answer is" """
+QWEN_VL_SA_COT = """[[Prefix]][[Text]][[Postfix]]Provide your final answer briefly after saying "Therefore, the answer is" """
+
+
+QWEN_VL_CHAT_MCQ = """Question: [[Text]]
+Options: A. [[OptionA]]
+B. [[OptionB]]
+C. [[OptionC]]
+D. [[OptionD]]
+[[Postfix]]Answer with the option's letter from the given choices directly."""
+QWEN_VL_CHAT_YN = """[[Prefix]][[Text]][[Postfix]]Answer Yes or No directly."""
+QWEN_VL_CHAT_SA = """[[Prefix]][[Text]][[Postfix]]Answer with a single word or phrase."""
+
+
 OPENAI_MCQ = """Question: [[Text]]Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]]. [[Postfix]]Answer with the option's letter from the given choices directly."""
 OPENAI_YN = """[[Prefix]][[Text]][[Postfix]]Answer Yes or No directly."""
-OPENAI_SA = """[[Prefix]][[Text]][[Postfix]]Answer no more than 5 words."""
+OPENAI_SA = """[[Prefix]][[Text]][[Postfix]]Short Answer:"""
 
 
 OPENAI_CHECK_ANS_PREFIX_ACTION = """You are going to check if a model's response is correct based on the provided information. Specifically, you will be provided a [Question], a [Ground truth] answer to that question, and one or more [Model answer] rounds, where each round contains one or more phrases separated with comma. Your job is to analyze each phrase in each model answer round and determine whether it has a similar meaning to the ground truth answer for the question. If the answer is overly generic but relevant (e.g., "standing"), classify it as partially correct. 
@@ -104,15 +175,32 @@ Here is the info to check:
 """
 
 
-def route_templates(model_type: str) -> dict:
+def route_templates(model_type: str, use_cot: bool) -> dict:
     if model_type in "llava-vicuna":
-        model_templates = {"MCQ": LLAVA_VICUNA_MCQ, "YN": LLAVA_VICUNA_YN, "SA": LLAVA_VICUNA_SA}
+        if use_cot:
+            model_templates = {"MCQ": LLAVA_VICUNA_MCQ_COT, "YN": LLAVA_VICUNA_YN_COT, "SA": LLAVA_VICUNA_SA_COT}
+        else:
+            model_templates = {"MCQ": LLAVA_VICUNA_MCQ, "YN": LLAVA_VICUNA_YN, "SA": LLAVA_VICUNA_SA}
     elif model_type == "llava-llama3":
-        model_templates = {"MCQ": LLAVA_LLAMA3_MCQ, "YN": LLAVA_LLAMA3_YN, "SA": LLAVA_LLAMA3_SA}
+        if use_cot:
+            model_templates = {"MCQ": LLAVA_LLAMA3_MCQ_COT, "YN": LLAVA_LLAMA3_YN_COT, "SA": LLAVA_LLAMA3_SA_COT}
+        else:
+            model_templates = {"MCQ": LLAVA_LLAMA3_MCQ, "YN": LLAVA_LLAMA3_YN, "SA": LLAVA_LLAMA3_SA}
     elif model_type == "llava-yi":
-        model_templates = {"MCQ": LLAVA_YI_MCQ, "YN": LLAVA_YI_YN, "SA": LLAVA_YI_SA}
+        if use_cot:
+            model_templates = {"MCQ": LLAVA_YI_MCQ_COT, "YN": LLAVA_YI_YN_COT, "SA": LLAVA_YI_SA_COT}
+        else:
+            model_templates = {"MCQ": LLAVA_YI_MCQ, "YN": LLAVA_YI_YN, "SA": LLAVA_YI_SA}
     elif model_type in ["instructblip-vincuna", "blip2-t5", "instructblip-t5"]:
-        model_templates = {"MCQ": INSTRUCTBLIP_MCQ, "YN": INSTRUCTBLIP_YN, "SA": INSTRUCTBLIP_SA}
+        if use_cot:
+            model_templates = {"MCQ": INSTRUCTBLIP_MCQ_COT, "YN": INSTRUCTBLIP_YN_COT, "SA": INSTRUCTBLIP_SA_COT}
+        else:
+            model_templates = {"MCQ": INSTRUCTBLIP_MCQ, "YN": INSTRUCTBLIP_YN, "SA": INSTRUCTBLIP_SA}
+    elif model_type == "qwen-vl-chat":
+        if use_cot:
+            model_templates = {"MCQ": QWEN_VL_MCQ_COT, "YN": QWEN_VL_YN_COT, "SA": QWEN_VL_SA_COT}
+        else:
+            model_templates = {"MCQ": QWEN_VL_MCQ, "YN": QWEN_VL_YN, "SA": QWEN_VL_SA}
     elif model_type == "qwen-vl":
         model_templates = {"MCQ": QWEN_VL_MCQ, "YN": QWEN_VL_YN, "SA": QWEN_VL_SA}
     elif model_type in ["gpt", "anthropic"]:

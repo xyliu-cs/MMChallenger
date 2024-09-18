@@ -1,7 +1,9 @@
 # steps in the progress bar = training samples * num_train_epochs / (per_device_train_batch_size * gradient_accumulation_steps)
+export TOKENIZERS_PARALLELISM=false
+
 HF_ENDPOINT=https://hf-mirror.com python train_llava.py \
     --model_name_or_path /120040051/MLLM_Repos/llava-1.5-13b-hf \
-    --output_dir "/120040051/MLLM_Repos/llava-1.5-13b-sft" \
+    --output_dir "/120040051/MLLM_Repos/llava-1.5-13b-ft" \
     --max_seq_length 512 \
     --per_device_train_batch_size 8 \
     --gradient_accumulation_steps 8 \

@@ -19,8 +19,13 @@ from peft import LoraConfig, get_peft_model
 class LLavaDataCollator:
     def __init__(self, processor, response_template):
         self.processor = processor
+        self.tokenizer = processor.tokenizer
+        self.tokenizer.add_eos_token = False   # need to set this to false to avoid complete silence
+        self.tokenizer.add_bos_token = True
+        self.tokenizer.padding_side = 'left'
+        
         self.response_template = response_template
-        self.response_token_ids = self.processor.tokenizer.encode(response_template, add_special_tokens=False)
+        self.response_token_ids = self.tokenizer.encode(response_template, add_special_tokens=False)
 
     def __call__(self, examples):
         texts = [self.processor.apply_chat_template(example["messages"], tokenize=False, add_generation_prompt=False) for example in examples]
@@ -28,8 +33,8 @@ class LLavaDataCollator:
         mm_batch = self.processor(texts, images, return_tensors="pt", padding=True)
     
         labels = mm_batch["input_ids"].clone()
-        if self.processor.tokenizer.pad_token_id is not None:
-            labels[labels == self.processor.tokenizer.pad_token_id] = -100
+        if self.tokenizer.pad_token_id is not None:
+            labels[labels == self.tokenizer.pad_token_id] = -100
         mm_batch["labels"] = labels
         
         # print('len of examples: ', len(examples))
@@ -45,7 +50,7 @@ class LLavaDataCollator:
             if response_token_ids_start_idx is None:
                 warnings.warn(
                     f"Could not find response key `{self.response_template}` in the "
-                    f'following instance: {self.processor.tokenizer.decode(mm_batch["input_ids"][i])} '
+                    f'following instance: {self.tokenizer.decode(mm_batch["input_ids"][i])} '
                     f"This instance will be ignored in loss calculation. "
                     f"Note, if this happens often, consider increasing the `max_seq_length`."
                 )

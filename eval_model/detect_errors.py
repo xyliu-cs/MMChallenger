@@ -4,7 +4,7 @@ from tqdm import tqdm
 import json, os, time, requests, datetime, shutil
 import warnings
 
-def find_mcq_errors(output_list: list, target="all") -> list:
+def find_mcq_errors(output_list: list, target="all", response_prefix='') -> list:
     assert target in ["all", "action", "place"]
 
     def is_mcq_correct(model_ans, label_ans):
@@ -14,6 +14,25 @@ def find_mcq_errors(output_list: list, target="all") -> list:
                 return True
         return False
     
+    def is_mcq_direct_incrt(model_ans, label_ans, labels=['A', 'B', 'C', 'D']):
+        incorrect_labels = [label for label in labels if label != label_ans]
+        for label in incorrect_labels:
+            check_list = [label, f'({label}']
+            if any([model_ans.startswith(check) for check in check_list]):
+                return True
+        return False
+
+    def human_eval_mcq(question, model_ans, label_ans, mcq_options):
+        print(f"Question: {question}")
+        print(f"Label answer: {label_ans} {mcq_options[label_ans]}")
+        print(f"Model answer: {model_ans}")
+        input_res = input("Enter 0 for incorrect, 1 for correct: ")
+        while input_res not in ['0', '1']:
+            input_res = input("Invalid input. Please enter 0 for incorrect, 1 for correct: ")
+        if input_res == '0':
+            return False
+        return True
+
     if target == "all":
         examine_list = output_list
     elif target == "action":
@@ -28,31 +47,61 @@ def find_mcq_errors(output_list: list, target="all") -> list:
         category = output_dict["category"]
         mcq_ans = output_dict["MCQ_ans"]
         model_ans_lists = output_dict["mcq_model_ans"]
+        mcq_options = output_dict["MCQ_options"]
         local_dict = {"id": id, "category": category, "ans_idx": []}
         for iid, ans_list in enumerate(model_ans_lists):
-            ans_list = [ans.split('Therefore, the answer is')[1].strip() if 'Therefore, the answer is' in ans else ans for ans in ans_list] # for cot only
+            # ans_list = [ans.split(response_prefix)[1].strip() if response_prefix in ans else ans for ans in ans_list] # for cot only
             for ans in ans_list:
-                if not is_mcq_correct(ans, mcq_ans):
-                    print(f"MCQ Correct answer: {mcq_ans} {output_dict["MCQ_options"][mcq_ans]}")
-                    # print("MCQ Correct option:", mcq_ans)
-
-                    print(f"MCQ model answer: {ans}")
-                    print(f'{output_dict["MCQ_options"]}')
-                    print('')
-                    local_dict["ans_idx"].append(iid+1)
-                    mcq_error_count += 1
-                    break
+                if response_prefix:
+                    if response_prefix in ans:
+                        ans = ans.split(response_prefix)[-1].replace(':', '').replace('"', '').replace("'", '').strip()
+                        if not is_mcq_correct(ans, mcq_ans):
+                            local_dict["ans_idx"].append(iid+1)
+                            mcq_error_count += 1
+                            break
+                    # go to human mode
+                    else:
+                        # directly false
+                        if is_mcq_correct(ans, mcq_ans):
+                            continue
+                        if is_mcq_direct_incrt(ans, mcq_ans):
+                            local_dict["ans_idx"].append(iid+1)
+                            mcq_error_count += 1
+                            break
+                        # not directly false, but is human evaled fasle
+                        if not human_eval_mcq(output_dict["mcq"], ans, mcq_ans, mcq_options): # if model answer does not contain the correct option, go to human mode
+                            local_dict["ans_idx"].append(iid+1)
+                            mcq_error_count += 1
+                            break
+                        # else, treat as correct, continue
+                else:
+                    if not is_mcq_correct(ans, mcq_ans):
+                        local_dict["ans_idx"].append(iid+1)
+                        mcq_error_count += 1
+                        break
+                    
         if local_dict["ans_idx"]:
             ret_list.append(local_dict)
     
     return ret_list, mcq_error_count
 
 
-def find_yn_errors(output_list: list, target="all", global_yn_label="Yes") -> list:
+def find_yn_errors(output_list: list, target="all", global_yn_label="Yes", response_prefix='') -> list:
     assert target in ["all", "action", "place"]
 
     def is_yn_correct(model_ans, label_ans):
         return label_ans.lower() in model_ans.lower()
+    
+    def human_eval_yn(question, model_ans, label_ans):
+        print(f"Question: {question}")
+        print(f"Label answer: {label_ans}")
+        print(f"Model answer: {model_ans}")
+        input_res = input("Enter 0 for incorrect, 1 for correct: ")
+        while input_res not in ['0', '1']:
+            input_res = input("Invalid input. Please enter 0 for incorrect, 1 for correct: ")
+        if input_res == '0':
+            return False
+        return True
     
     if target == "all":
         examine_list = output_list
@@ -69,20 +118,33 @@ def find_yn_errors(output_list: list, target="all", global_yn_label="Yes") -> li
         model_ans_lists = output_dict["yn_model_ans"]
         local_dict = {"id": out_id, "category": category, "ans_idx": []}
         for iid, ans_list in enumerate(model_ans_lists):
-            ans_list = [ans.split('Therefore, the answer is')[1].strip() if 'Therefore, the answer is' in ans else ans for ans in ans_list] # for cot only
             for ans in ans_list:
-                if not is_yn_correct(ans, global_yn_label):   # only check for "Yes" answer by default
-                    print("YN Incorrct Model answer:", ans)
-                    local_dict["ans_idx"].append(iid+1)
-                    yn_error_count += 1
-                    break
+                if response_prefix:
+                    if response_prefix in ans:
+                        ans = ans.split(response_prefix)[-1].replace(':', '').replace('"', '').replace("'", '').strip()
+                        if not is_yn_correct(ans, global_yn_label):   # only check for "Yes" answer by default
+                            # print("YN Incorrct Model answer:", ans)
+                            local_dict["ans_idx"].append(iid+1)
+                            yn_error_count += 1
+                            break
+                    else:
+                        if not human_eval_yn(output_dict["yn"], ans, global_yn_label):
+                            local_dict["ans_idx"].append(iid+1)
+                            yn_error_count += 1
+                            break
+                else:
+                    if not is_yn_correct(ans, global_yn_label):
+                        local_dict["ans_idx"].append(iid+1)
+                        yn_error_count += 1
+                        break
+                     
         if local_dict["ans_idx"]:
             ret_list.append(local_dict)
 
     return ret_list, yn_error_count
 
 
-def human_eval_sa_answers(output_list: list) -> list:
+def human_eval_sa_answers(output_list: list, split_symbol='') -> list:
     def check_sa_correctness_human(basic_str, iteration):
         print(basic_str)
         res_list = []
@@ -106,7 +168,9 @@ def human_eval_sa_answers(output_list: list) -> list:
         local_dict = {"id": id, "category": category, "image": [], "info": '',"human_eval": []}
         ans_str_list = []
         for iid, ans_list in enumerate(model_ans_lists):
-            ans_list = [ans.split('Therefore, the answer is')[1] if 'Therefore, the answer is' in ans else ans for ans in ans_list] # for cot only
+            if split_symbol:
+                ans_list = [ans.split(split_symbol)[-1].replace(':', '').replace('"', '').replace("'", '').strip() 
+                            if split_symbol in ans else ans for ans in ans_list] # for cot only
             ans_set = list(set(ans_list))
             ans_string = f"[Model answer {iid+1}] {', '.join(ans_set)}"
             ans_str_list.append(ans_string)
@@ -160,6 +224,92 @@ def find_sa_errors(evaled_ans_list: list, target='all') -> list:
             ret_list.append(local_dict)
     return ret_list, sa_error_count
 
+
+def batch_auto_plus_human_eval_ans(model_ans_paths: list, split_symbols: dict, error_stats_fp='mixed_error_stats.txt') -> list:
+    def get_one_type_error(error_list: list, q_type: str) -> dict:
+        one_type_error = []
+        one_type_error_count = 0
+        for error_dict in error_list:
+            if error_dict["category"] == q_type:
+                one_type_error.append(error_dict)
+                one_type_error_count += len(error_dict["ans_idx"])
+        return one_type_error, one_type_error_count
+    
+    
+    for model_ans_path in model_ans_paths:
+        model_ans_list = read_json(model_ans_path)
+        # model_ans_list = model_ans_list[:5] + model_ans_list[-5:]
+        
+        model_name = os.path.basename(model_ans_path).split('_')[0]
+        mcq_split_symbol = split_symbols["mcq"]
+        yn_split_symbol = split_symbols["yn"]
+        sa_split_symbol = split_symbols["sa"]
+        
+        mcq_error_list, mcq_error_count = find_mcq_errors(model_ans_list, response_prefix=mcq_split_symbol)
+        yn_error_list, yn_error_count = find_yn_errors(model_ans_list, response_prefix=yn_split_symbol)
+        write_json(f"{model_name}_mcq_err_dump.json", mcq_error_list)
+        write_json(f"{model_name}_yn_err_dump.json", yn_error_list)
+        evaled_error_list = human_eval_sa_answers(model_ans_list, sa_split_symbol)
+        sa_out_path = os.path.basename(model_ans_path).replace('updated_outputs', 'sa_human_eval_updated')
+        write_json(sa_out_path, evaled_error_list)
+        sa_error_list, sa_error_count = find_sa_errors(evaled_error_list)
+
+        total_error_count = yn_error_count + mcq_error_count + sa_error_count
+        total = get_total(model_ans_list)
+        total_acc_percentage = (1 - total_error_count / (total * 3)) * 100
+        yn_acc_percentage = (1 - yn_error_count / total) * 100
+        mcq_acc_percentage = (1 - mcq_error_count / total) * 100
+        sa_acc_percentage = (1 - sa_error_count / total) * 100
+
+        action_yn_error_list, action_yn_error_count = get_one_type_error(yn_error_list, q_type='action')
+        action_mcq_error_list, action_mcq_error_count = get_one_type_error(mcq_error_list, q_type='action')
+        action_sa_error_list, action_sa_error_count = get_one_type_error(sa_error_list, q_type='action')
+        
+        action_total = get_total(model_ans_list, target='action')
+        action_yn_acc_percentage = (1 - action_yn_error_count / action_total) * 100
+        action_mcq_acc_percentage = (1 - action_mcq_error_count / action_total) * 100
+        action_sa_acc_percentage = (1 - action_sa_error_count / action_total) * 100
+
+        place_yn_error_list, place_yn_error_count = get_one_type_error(yn_error_list, q_type='place')
+        place_mcq_error_list, place_mcq_error_count = get_one_type_error(mcq_error_list, q_type='place')
+        place_sa_error_list, place_sa_error_count = get_one_type_error(sa_error_list, q_type='place')
+        place_total = get_total(model_ans_list, target='place')
+        
+        place_yn_acc_percentage = (1 - place_yn_error_count / place_total) * 100
+        place_mcq_acc_percentage = (1 - place_mcq_error_count / place_total) * 100
+        place_sa_acc_percentage = (1 - place_sa_error_count / place_total) * 100
+
+        print(f"Model answer file {os.path.basename(model_ans_path)}", file=open(error_stats_fp, 'a'))
+        print(f"Model evaled file {os.path.basename(sa_out_path)}\n", file=open(error_stats_fp, 'a'))
+
+        print(f"Model {model_name} total instances: {total}", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} action total instances: {action_total}", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} place total instances: {place_total}", file=open(error_stats_fp, 'a'))
+
+        print(f"Model {model_name} mcq error instances: {mcq_error_count}", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} yn error instances: {yn_error_count}", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} sa error instances: {sa_error_count}", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} total error instances: {total_error_count}\n", file=open(error_stats_fp, 'a'))
+
+        print(f"Model {model_name} total accuracy %: {total_acc_percentage:.1f}%", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} yn accuracy %: {yn_acc_percentage:.1f}%", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} mcq accuracy %: {mcq_acc_percentage:.1f}%", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} sa accuracy %: {sa_acc_percentage:.1f}%\n", file=open(error_stats_fp, 'a'))
+
+        print(f"Model {model_name} action yn accuracy %: {action_yn_acc_percentage:.1f}%", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} action mcq accuracy %: {action_mcq_acc_percentage:.1f}%", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} action sa accuracy %: {action_sa_acc_percentage:.1f}%\n", file=open(error_stats_fp, 'a'))
+
+        print(f"Model {model_name} place yn accuracy %: {place_yn_acc_percentage:.1f}%", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} place mcq accuracy %: {place_mcq_acc_percentage:.1f}%", file=open(error_stats_fp, 'a'))
+        print(f"Model {model_name} place sa accuracy %: {place_sa_acc_percentage:.1f}%", file=open(error_stats_fp, 'a'))
+
+        # print(f"Model {model_name} error instances list: \n{mcq_error_list}\n{yn_error_list}\n{sa_error_list}\n", file=open(error_stats_fp, 'a'))
+
+        print('='*40, file=open(error_stats_fp, 'a'))
+        print('\n', file=open(error_stats_fp, 'a'))
+    
+    
 
 def get_total(model_ans_list: list, target='all') -> int:
     assert target in ['all', 'action', 'place']
@@ -366,9 +516,10 @@ if __name__ == "__main__":
     # model_names = ["llava-v1.6-34b", "llava-1.5-13b", "gpt-4o-2024-05-13"]
     # postfix_shorts = ['insist_csk', 'focus_vision']  
 
-    model_ans_paths = ['/Users/xiaoyuan/Desktop/workspace/results_batch/updated_results/impr/cot/llava-1.5-13b_updated_outputs_cot_fmted.json']
-    ans_list = read_json(model_ans_paths[0])
-    find_yn_errors(ans_list)
+    model_ans_paths = ['/120040051/Github_Repos/VKConflict/eval_model/updated_results/llava-v1.6-34b_updated_outputs_cot.json']
+    # batch_find_and_print_error_stats(model_output_paths=model_ans_paths, sa_eval_paths=[], error_stats_fp='error_stats.txt')
+    split_symbols = {"mcq": "answer is", "yn": "answer is", "sa": "answer is"}
+    batch_auto_plus_human_eval_ans(model_ans_paths, split_symbols, error_stats_fp='llava-v1.6-34b_error_stats.txt')
 
     
     # | ------------------------------------- |
