@@ -73,18 +73,19 @@ def build_query(model_name, image_path, text_prompt, max_tokens=100, style='gpt'
     return query
 
 
-def post_request(input_dict, end_point, max_retry=5):
+def post_request(input_dict, end_point, max_retry=5, timeout=30):
     attempt = 0
     while attempt < max_retry:
         try:
-            response = requests.request("POST", url=end_point, headers=input_dict["headers"], data=json.dumps(input_dict["payload"]))
+            response = requests.request("POST", url=end_point, headers=input_dict["headers"], data=json.dumps(input_dict["payload"]), timeout=timeout)
             response.raise_for_status()  # Raises exception for HTTP errors
             return response
-        except Exception as e:
+        except requests.exceptions.Timeout:
+            print(f"Attempt {attempt + 1} failed: Request timed out.")
+        except requests.exceptions.RequestException as e:
             print(f"Attempt {attempt + 1} failed: {str(e)}")
-            # print(response.text)
-            time.sleep(5)  # Wait before retrying
-            attempt += 1
+        time.sleep(5)  # Wait before retrying
+        attempt += 1
     print("Maximum retry attempts reached, returning an empty string.")
     return ""
 
@@ -112,58 +113,76 @@ def parse_response(response, model_type):
             return output_text
 
 
-def eval_model_api(model_name, model_type, end_url, text_input_path, image_folder, text_output_path, prefix='', postfix='', repeat=1):
+def eval_model_api(model_name, model_type, end_url, text_input_path, image_folder, 
+                   text_output_path, prefix='', postfix='', repeat=1, use_cot=False, max_tokens=100):
     input_list_of_dict = read_json(text_input_path)
     output_list_of_dict = []
-    for input_dict in tqdm(input_list_of_dict[:], "Infering answers"):
-        input_type = infer_target_type(input_dict["image"][0])
-        image_names = input_dict["image"]
-        image_paths = [os.path.join(image_folder, name) for name in image_names]
-        subject = input_dict["context"]["subject"]
-        if input_type == "action":
-            action = input_dict["target"]["action"]
-            place = input_dict["context"]["place"]
-        elif input_type == "place":
-            action = input_dict["context"]["action"]
-            place = input_dict["target"]["place"]
-        gt_triplet = [subject, action, place]
-        model_templates = route_templates(model_type=model_type)
-        mcq = generate_mcq_prompt(gt_triplet=gt_triplet, mcq_dict=input_dict["MCQ_options"], target=input_type, mcq_prompt_template=model_templates["MCQ"], postfix=postfix)
-        yn = generate_yn_prompt(gt_triplet=gt_triplet, yn_prompt_template=model_templates["YN"], target=input_type, prefix=prefix, postfix=postfix)
-        sa = generate_sa_prompt(gt_triplet=gt_triplet, sa_prompt_template=model_templates["SA"], target=input_type, prefix=prefix, postfix=postfix)
-        prompt_dict = {"mcq": mcq, "yn": yn, "sa": sa}
-        output_dict = copy.deepcopy(input_dict)
-        output_dict["category"] = input_type
-        for q_type, prompt in prompt_dict.items():
-            output_dict[q_type] = prompt
-            output_dict[f"{q_type}_model_ans"] = []
-            for i, image_path in enumerate(image_paths):
-                local_ans = []
-                for iter in range(repeat):
-                    query = build_query(model_name=model_name, image_path=image_path, text_prompt=prompt, style=model_type)
-                    response = post_request(input_dict=query, end_point=end_url)
-                    output_text = parse_response(response=response, model_type=model_type)
-                    # print(output_text)
-                    time.sleep(1)
-                    local_ans.append(output_text)
-                output_dict[f"{q_type}_model_ans"].append(local_ans)
-        output_list_of_dict.append(output_dict)
-    print(f"Finished on all the {len(output_list_of_dict)} inputs")
-    write_json(json_list=output_list_of_dict, json_path=text_output_path)
+    with open(text_output_path, "a") as f:
+        f.write("[\n")
+        for idx, input_dict in tqdm(enumerate(input_list_of_dict[2:]), total=len(input_list_of_dict), desc="Infering answers"):
+            input_type = infer_target_type(input_dict["image"][0])
+            image_names = input_dict["image"]
+            image_paths = [os.path.join(image_folder, name) for name in image_names]
+            subject = input_dict["context"]["subject"]
+            if input_type == "action":
+                action = input_dict["target"]["action"]
+                place = input_dict["context"]["place"]
+            elif input_type == "place":
+                action = input_dict["context"]["action"]
+                place = input_dict["target"]["place"]
+            gt_triplet = [subject, action, place]
+            model_templates = route_templates(model_type=model_type, use_cot=use_cot)
+            mcq = generate_mcq_prompt(gt_triplet=gt_triplet, mcq_dict=input_dict["MCQ_options"], target=input_type, 
+                                      mcq_prompt_template=model_templates["MCQ"], postfix=postfix)
+            yn = generate_yn_prompt(gt_triplet=gt_triplet, yn_prompt_template=model_templates["YN"], target=input_type, 
+                                    prefix=prefix, postfix=postfix)
+            sa = generate_sa_prompt(gt_triplet=gt_triplet, sa_prompt_template=model_templates["SA"], target=input_type, 
+                                    prefix=prefix, postfix=postfix)
+            prompt_dict = {"mcq": mcq, "yn": yn, "sa": sa}
+            output_dict = copy.deepcopy(input_dict)
+            output_dict["category"] = input_type
+            for q_type, prompt in prompt_dict.items():
+                output_dict[q_type] = prompt
+                output_dict[f"{q_type}_model_ans"] = []
+                for i, image_path in enumerate(image_paths):
+                    local_ans = []
+                    for iter in range(repeat):
+                        query = build_query(model_name=model_name, image_path=image_path, text_prompt=prompt, 
+                                            style=model_type, max_tokens=max_tokens)
+                        print("Query: ", query['payload']['messages'][0]['content'][1]['text'])
+                        response = post_request(input_dict=query, end_point=end_url)
+                        output_text = parse_response(response=response, model_type=model_type)
+                        print(output_text)
+                        time.sleep(1)
+                        local_ans.append(output_text)
+                    output_dict[f"{q_type}_model_ans"].append(local_ans)
+            f.write(json.dumps(output_dict, indent=4))
+            if idx != len(input_list_of_dict) - 1:
+                f.write(",\n")
+            f.flush()
+            output_list_of_dict.append(output_dict)
+        f.write('\n]')
+        f.flush()   
+        print(f"Finished on all the {len(output_list_of_dict)} inputs")
+    return output_list_of_dict
 
 
 
 if __name__ == "__main__":
-    model_name = "claude-3-5-sonnet-20240620"
+    # model_name = "claude-3-5-sonnet-20240620"
     # model_name = "claude-3-sonnet"
+    model_name = "gpt-4o-2024-05-13"
 
-    model_type = "anthropic"
-    # end_url = "https://aigptx.top/v1/chat/completions"
-    end_url_2 = "https://cn2us02.opapi.win/v1/messages"
 
-    text_input_path = "/home/liu/merged0728/input_info.json"
-    image_folder = "/home/liu/merged0728"
+    model_type = "gpt"
+    end_url = "https://aigptx.top/v1/chat/completions"
+    # end_url_2 = "https://cn2us02.opapi.win/v1/messages"
+
+    text_input_path = "/Users/xiaoyuan/Desktop/workspace/VKConflict/eval_model/input_info.json"
+    image_folder = "/Users/xiaoyuan/Desktop/workspace/conflict_vis/images"
     # out_path = "/home/liu/test_resources/output_answers/GPT-4o/gpt-4o-2024-05-13_outputs_10.json"
-    out_path = "/home/liu/test_resources/output_answers/claude-3-5-sonnet-20240620/claude-3-5-sonnet-20240620_outputs_after_20.json"
+    out_path = "/Users/xiaoyuan/Desktop/workspace/VKConflict/eval_model/gpt-4o-2024-05-13_updated_outputs_cot.json"
     # postfix = "Please insist your common knowledge of the world. "
-    eval_model_api(model_name=model_name, model_type=model_type, end_url=end_url_2, text_input_path=text_input_path, image_folder=image_folder, text_output_path=out_path)
+    eval_model_api(model_name=model_name, model_type=model_type, end_url=end_url, 
+                   text_input_path=text_input_path, image_folder=image_folder, 
+                   text_output_path=out_path, use_cot=True, repeat=1, max_tokens=200)
