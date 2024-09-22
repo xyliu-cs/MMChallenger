@@ -3,22 +3,28 @@ from tqdm import tqdm
 from PIL import Image
 from templates import route_templates
 from prompt import generate_mcq_prompt, generate_yn_prompt, generate_sa_prompt
+from prompt import generate_mcq_prompt_st, generate_yn_prompt_st, generate_sa_prompt_st
 from utils import read_json, write_json, infer_target_type, base64_encode_img
 
 
 # use openai input format for all models as required by the third party api provider
-def build_query(model_name, image_path, text_prompt, max_tokens=100, style='gpt'):
+def build_query(model_name, image_path, text_prompt, max_tokens=100, style='gpt', use_img=True):
     api_key = os.environ.get('API_KEY')   # use export API_KEY = 'your key'
     if style == 'gpt':
-        b64_img = base64_encode_img(image_path=image_path)
-        img_dict = { 
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpg;base64,{b64_img}"      # remember to change the image types accordingly
-                        }   
-                    }
-        prompt_dict = {"type": "text", "text": text_prompt}
-        user_content = [img_dict, prompt_dict]
+        if use_img:
+            b64_img = base64_encode_img(image_path=image_path)
+            img_dict = { 
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpg;base64,{b64_img}"      # remember to change the image types accordingly
+                            }   
+                        }
+            prompt_dict = {"type": "text", "text": text_prompt}
+            user_content = [img_dict, prompt_dict]
+        else:
+            prompt_dict = {"type": "text", "text": text_prompt}
+            user_content = [prompt_dict]
+
         headers = {
             "User-Agent": 'Apifox/1.0.0 (https://apifox.com)',
             "Content-Type": "application/json",
@@ -36,7 +42,28 @@ def build_query(model_name, image_path, text_prompt, max_tokens=100, style='gpt'
             "stream": False
         }
     elif style == 'anthropic':
-        b64_img = base64_encode_img(image_path=image_path, resize=True)    # resize to 800 x 800
+        if use_img: 
+            b64_img = base64_encode_img(image_path=image_path, resize=True)    # resize to 800 x 800
+            image_dict = {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": "image/jpeg",
+                                "data": b64_img
+                            }
+                        }
+            text_dict = {
+                        "type": "text",
+                        "text": text_prompt
+                    }
+            user_content = [image_dict, text_dict]
+        else:
+            text_dict = {
+                        "type": "text",
+                        "text": text_prompt
+                    }
+            user_content = [text_dict]
+           
         headers = {
             "User-Agent": 'Apifox/1.0.0 (https://apifox.com)',
             "Content-Type": "application/json",
@@ -46,20 +73,7 @@ def build_query(model_name, image_path, text_prompt, max_tokens=100, style='gpt'
         messages = [
             {
                 "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "image/jpeg",
-                            "data": b64_img
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": text_prompt
-                    }
-                ]
+                "content": user_content
             }
         ]
         payload = {
@@ -114,12 +128,13 @@ def parse_response(response, model_type):
 
 
 def eval_model_api(model_name, model_type, end_url, text_input_path, image_folder, 
-                   text_output_path, prefix='', postfix='', repeat=1, use_cot=False, max_tokens=100):
+                   text_output_path, prefix='', postfix='', repeat=1, sanity_test=False, 
+                   use_cot=False, max_tokens=10, use_img=True):
     input_list_of_dict = read_json(text_input_path)
     output_list_of_dict = []
-    with open(text_output_path, "a") as f:
+    with open(text_output_path, "w") as f:
         f.write("[\n")
-        for idx, input_dict in tqdm(enumerate(input_list_of_dict[2:]), total=len(input_list_of_dict), desc="Infering answers"):
+        for idx, input_dict in tqdm(enumerate(input_list_of_dict[:]), total=len(input_list_of_dict), desc="Infering answers"):
             input_type = infer_target_type(input_dict["image"][0])
             image_names = input_dict["image"]
             image_paths = [os.path.join(image_folder, name) for name in image_names]
@@ -131,13 +146,21 @@ def eval_model_api(model_name, model_type, end_url, text_input_path, image_folde
                 action = input_dict["context"]["action"]
                 place = input_dict["target"]["place"]
             gt_triplet = [subject, action, place]
-            model_templates = route_templates(model_type=model_type, use_cot=use_cot)
-            mcq = generate_mcq_prompt(gt_triplet=gt_triplet, mcq_dict=input_dict["MCQ_options"], target=input_type, 
+            model_templates = route_templates(model_type=model_type, use_cot=use_cot, sanity_test=sanity_test)
+            if sanity_test:
+                mcq = generate_mcq_prompt_st(gt_triplet=gt_triplet, mcq_dict=input_dict["MCQ_options"], target=input_type, 
                                       mcq_prompt_template=model_templates["MCQ"], postfix=postfix)
-            yn = generate_yn_prompt(gt_triplet=gt_triplet, yn_prompt_template=model_templates["YN"], target=input_type, 
-                                    prefix=prefix, postfix=postfix)
-            sa = generate_sa_prompt(gt_triplet=gt_triplet, sa_prompt_template=model_templates["SA"], target=input_type, 
-                                    prefix=prefix, postfix=postfix)
+                yn = generate_yn_prompt_st(gt_triplet=gt_triplet, yn_prompt_template=model_templates["YN"], target=input_type, 
+                                        prefix=prefix, postfix=postfix)
+                sa = generate_sa_prompt_st(gt_triplet=gt_triplet, sa_prompt_template=model_templates["SA"], target=input_type, 
+                                        prefix=prefix, postfix=postfix)
+            else:
+                mcq = generate_mcq_prompt(gt_triplet=gt_triplet, mcq_dict=input_dict["MCQ_options"], target=input_type, 
+                                        mcq_prompt_template=model_templates["MCQ"], postfix=postfix)
+                yn = generate_yn_prompt(gt_triplet=gt_triplet, yn_prompt_template=model_templates["YN"], target=input_type, 
+                                        prefix=prefix, postfix=postfix)
+                sa = generate_sa_prompt(gt_triplet=gt_triplet, sa_prompt_template=model_templates["SA"], target=input_type, 
+                                        prefix=prefix, postfix=postfix)
             prompt_dict = {"mcq": mcq, "yn": yn, "sa": sa}
             output_dict = copy.deepcopy(input_dict)
             output_dict["category"] = input_type
@@ -148,8 +171,8 @@ def eval_model_api(model_name, model_type, end_url, text_input_path, image_folde
                     local_ans = []
                     for iter in range(repeat):
                         query = build_query(model_name=model_name, image_path=image_path, text_prompt=prompt, 
-                                            style=model_type, max_tokens=max_tokens)
-                        print("Query: ", query['payload']['messages'][0]['content'][1]['text'])
+                                            style=model_type, max_tokens=max_tokens, use_img=use_img)
+                        print("Query: ", query['payload']['messages'][0]['content'][0]['text'])
                         response = post_request(input_dict=query, end_point=end_url)
                         output_text = parse_response(response=response, model_type=model_type)
                         print(output_text)
@@ -169,20 +192,25 @@ def eval_model_api(model_name, model_type, end_url, text_input_path, image_folde
 
 
 if __name__ == "__main__":
-    # model_name = "claude-3-5-sonnet-20240620"
+    model_name = "claude-3-5-sonnet-20240620"
     # model_name = "claude-3-sonnet"
-    model_name = "gpt-4o-2024-05-13"
+    # model_name = "gpt-4o-2024-05-13"
 
 
-    model_type = "gpt"
-    end_url = "https://aigptx.top/v1/chat/completions"
-    # end_url_2 = "https://cn2us02.opapi.win/v1/messages"
+    # model_type = "gpt"
+    model_type = "anthropic"
+    
+    # end_url = "https://aigptx.top/v1/chat/completions"
+    end_url_2 = "https://cn2us02.opapi.win/v1/messages"
 
-    text_input_path = "/Users/xiaoyuan/Desktop/workspace/VKConflict/eval_model/input_info.json"
-    image_folder = "/Users/xiaoyuan/Desktop/workspace/conflict_vis/images"
+    text_input_path = "/120040051/test_resource/merged0728/input_info.json"
+    image_folder = "/120040051/test_resource/merged0728/"
     # out_path = "/home/liu/test_resources/output_answers/GPT-4o/gpt-4o-2024-05-13_outputs_10.json"
-    out_path = "/Users/xiaoyuan/Desktop/workspace/VKConflict/eval_model/gpt-4o-2024-05-13_updated_outputs_cot.json"
+    # out_path = "/120040051/Github_Repos/VKConflict/eval_model/sanity_test_results/gpt-4o-2024-05-13_sanity_test.json"
+    out_path = f"/120040051/Github_Repos/VKConflict/eval_model/sanity_test_results/{model_name}_sanity_test.json"
+    
     # postfix = "Please insist your common knowledge of the world. "
-    eval_model_api(model_name=model_name, model_type=model_type, end_url=end_url, 
+    eval_model_api(model_name=model_name, model_type=model_type, end_url=end_url_2, 
                    text_input_path=text_input_path, image_folder=image_folder, 
-                   text_output_path=out_path, use_cot=True, repeat=1, max_tokens=200)
+                   text_output_path=out_path, use_cot=False, repeat=1, max_tokens=20, 
+                   sanity_test=True, use_img=False)

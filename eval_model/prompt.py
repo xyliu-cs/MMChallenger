@@ -46,7 +46,30 @@ def generate_mcq_prompt(gt_triplet, mcq_dict, target, mcq_prompt_template, postf
     return mcq_tmp
 
 
-# if a postfix is given, it should include a leading white space
+def generate_mcq_prompt_st(gt_triplet, mcq_dict, target, mcq_prompt_template, postfix=''):
+    subject, action, place = gt_triplet[0], gt_triplet[1], gt_triplet[2]
+    mcq_tmp = copy.deepcopy(mcq_prompt_template)
+    aux = match_aux_verb(subject)
+    if target == "place":
+        text = f"Based on common sense, what is the most likely place for {subject} {action}?"
+    elif target == "action":
+        text = f"Based on common sense, what is the most likely action for {subject} {place}?"
+    else:
+        raise ValueError(f"Unsupported target type {target}")
+    text = text + ' '  
+    option_A = mcq_dict["A"]
+    option_B = mcq_dict["B"]
+    option_C = mcq_dict["C"]
+    option_D = mcq_dict["D"]
+    mcq_tmp = mcq_tmp.replace("[[Text]]", text, 1) \
+                     .replace("[[OptionA]]", option_A, 1) \
+                     .replace("[[OptionB]]", option_B, 1) \
+                     .replace("[[OptionC]]", option_C, 1) \
+                     .replace("[[OptionD]]", option_D, 1) \
+                     .replace("[[Postfix]]", postfix, 1)
+    return mcq_tmp
+
+
 # if a prefix is given, it should include a tailing white space
 def generate_yn_prompt(gt_triplet, yn_prompt_template, target, postfix='', prefix='', short_ver=False):
     subject, action, place = gt_triplet[0], gt_triplet[1], gt_triplet[2]
@@ -76,7 +99,27 @@ def generate_yn_prompt(gt_triplet, yn_prompt_template, target, postfix='', prefi
     return yn_tmp
 
 
-# if a postfix is given, it should include a leading white space
+# if a prefix is given, it should include a tailing white space
+def generate_yn_prompt_st(gt_triplet, yn_prompt_template, target, postfix='', prefix=''):
+    subject, action, place = gt_triplet[0], gt_triplet[1], gt_triplet[2]
+    yn_tmp = copy.deepcopy(yn_prompt_template)
+    aux = match_aux_verb(subject)
+    if target == "place":
+        text = f"Based on common sense, is it possible for {subject} {action} {place}?"
+    elif target == "action":
+        text = f"Based on common sense, is it possible for {subject} {place} {action}?"
+    else:
+        raise ValueError(f"Unsupported target type {target}")  
+    if prefix:
+        text = text.lower()
+    text = text + ' '
+    yn_tmp = yn_tmp.replace("[[Text]]", text, 1) \
+                   .replace("[[Prefix]]", prefix, 1) \
+                   .replace("[[Postfix]]", postfix, 1) 
+    return yn_tmp
+
+
+
 # if a prefix is given, it should include a tailing white space
 def generate_sa_prompt(gt_triplet, sa_prompt_template, target, postfix='', prefix=''):
     subject, action, place = gt_triplet[0], gt_triplet[1], gt_triplet[2]
@@ -86,6 +129,26 @@ def generate_sa_prompt(gt_triplet, sa_prompt_template, target, postfix='', prefi
         text = f"Where {aux} {subject} {action}?"
     elif target == "action":
         text = f"What {aux} {subject} doing {place}?"
+    else:
+        raise ValueError(f"Unsupported target type {target}")  
+
+    if prefix:
+        text = text.lower()
+    text = text + ' '
+    sa_tmp = sa_tmp.replace("[[Text]]", text, 1) \
+                   .replace("[[Prefix]]", prefix, 1) \
+                   .replace("[[Postfix]]", postfix, 1)
+    return sa_tmp
+
+# if a prefix is given, it should include a tailing white space
+def generate_sa_prompt_st(gt_triplet, sa_prompt_template, target, postfix='', prefix=''):
+    subject, action, place = gt_triplet[0], gt_triplet[1], gt_triplet[2]
+    sa_tmp = copy.deepcopy(sa_prompt_template)
+    aux = match_aux_verb(subject)
+    if target == "place":
+        text = f"Based on common sense, what is the most likely place for {subject} {action}?"
+    elif target == "action":
+        text = f"Based on common sense, what is the most likely action for {subject} {place}?"
     else:
         raise ValueError(f"Unsupported target type {target}")  
 

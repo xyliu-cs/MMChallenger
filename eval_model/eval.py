@@ -15,13 +15,13 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
                           "instructblip-vicuna", "instructblip-t5", "qwen-vl", 
                           "qwen-vl-chat", "blip2-t5"], f"Unsupported model type {model_type}"
     torch.cuda.empty_cache()
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     if model_type == "llava-vicuna":
         processor = AutoProcessor.from_pretrained(model_dir)
         if use_device_map:
             print(f"Setting device map to {device_map}")
             model = LlavaForConditionalGeneration.from_pretrained(model_dir, device_map=device_map)
         else:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
             print(f"Setting device to {device}")
             model = LlavaForConditionalGeneration.from_pretrained(model_dir).to(device)
     elif model_type == "llava-llama3":
@@ -29,13 +29,18 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
         if use_device_map:
             print(f"Setting device map to {device_map}")
             model = LlavaNextForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16, device_map=device_map)
+        else:
+            model = LlavaNextForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16).to(device)
     elif model_type == "llava-yi":
         tokenizer = LlamaTokenizer.from_pretrained(model_dir)
         image_processor = LlavaNextImageProcessor.from_pretrained(model_dir)
         processor = LlavaNextProcessor(tokenizer=tokenizer, image_processor=image_processor)
         if use_device_map:
             print(f"Setting device map to {device_map}")
-            model = LlavaNextForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16, device_map=device_map) 
+            model = LlavaNextForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16, device_map=device_map)
+        else:
+            print(f"Setting device to {device}")
+            model = LlavaNextForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16).to(device)
     elif model_type in ["instructblip-vicuna", "instructblip-t5"]:
         processor = InstructBlipProcessor.from_pretrained(model_dir)
         if use_device_map:
@@ -50,6 +55,7 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
                     dmap['language_model.lm_head'] = dmap['language_projection'] = dmap[('language_model.decoder.embed_tokens')]
             model = load_checkpoint_and_dispatch(instblip, model_dir, device_map=dmap)
         else:
+            print(f"Setting device {device}")
             model = InstructBlipForConditionalGeneration.from_pretrained(model_dir).to(device)
     elif model_type in ["qwen-vl", "qwen-vl-chat"]:
         torch.manual_seed(1234)
@@ -58,19 +64,20 @@ def load_local_model(model_dir, model_type, use_device_map=True, device_map='aut
             print(f"Setting device map to {device_map}")
             model = AutoModelForCausalLM.from_pretrained(model_dir, device_map="auto", trust_remote_code=True, fp16=True)
         else:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
             print(f"Setting device {device}")
             model = AutoModelForCausalLM.from_pretrained(model_dir, device_map=device, trust_remote_code=True)
     elif model_type == "blip2-t5":
         if use_device_map:
-            with init_empty_weights():
-                blip2_t5_xxl = Blip2ForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16)
-                # change maximum mem here
-                dmap = infer_auto_device_map(blip2_t5_xxl, max_memory={0: "20GiB", 1: "20GiB"}, no_split_module_classes=["T5Block"])
-                # print(dmap)
-                dmap['language_model.lm_head'] = dmap['language_projection'] = dmap['language_model.decoder.embed_tokens']
-            model = load_checkpoint_and_dispatch(blip2_t5_xxl, model_dir, device_map=dmap)
+            model = Blip2ForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16, device_map=device_map)
+            # with init_empty_weights():
+            #     blip2_t5_xxl = Blip2ForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16)
+            #     # change maximum mem here
+            #     dmap = infer_auto_device_map(blip2_t5_xxl, max_memory={0: "20GiB", 1: "20GiB"}, no_split_module_classes=["T5Block"])
+            #     print(dmap)
+            #     dmap['language_model.lm_head'] = dmap['language_projection'] = dmap['language_model.decoder.embed_tokens']
+            # model = load_checkpoint_and_dispatch(blip2_t5_xxl, model_dir, device_map=dmap)
         else:
+            print(f"Setting device to {device}")
             model = Blip2ForConditionalGeneration.from_pretrained(model_dir, torch_dtype=torch.float16).to(device)
         processor = Blip2Processor.from_pretrained(model_dir)
     return model.eval(), processor
@@ -144,6 +151,7 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
             output_dict = copy.deepcopy(input_dict)
             output_dict["category"] = input_type
             for q_type, prompt in prompt_dict.items():
+                # print('prompt:', prompt)
                 output_dict[q_type] = prompt
                 # print('prompt:', prompt)
                 output_dict[f"{q_type}_model_ans"] = []
@@ -173,7 +181,7 @@ def eval_model(model_dir, model_type, text_input_path, image_folder, text_output
 
 if __name__ == "__main__":
     text_input = "/120040051/test_resource/merged0728/input_info.json"
-    text_output = "/120040051/Github_Repos/VKConflict/eval_model/updated_results/qwen-vl-chat_outputs_updated_chat_2.json"
+    text_output = "/120040051/Github_Repos/VKConflict/eval_model/updated_results/qwen-vl-chat_outputs_updated_chat_new_fmt.json"
     model_type = "qwen-vl-chat"
     # export CUDA_VISIBLE_DEVICES="2,3" for qwen (only support 2 cards parallel)
     model_dir = "/120040051/MLLM_Repos/Qwen-VL-Chat"
@@ -181,11 +189,14 @@ if __name__ == "__main__":
     # append = "Let's think step by step. Provide your final answer within 5 words after saying '###Final Answer###'. "
     # append = "Provide your final answer with the option's letter from the given choices directly in the format of [[answer option]]"
     # append = 'Please insist your common knowledge of the world. '
+    # append = 'Please focus on the visual information. '
+    append = ''
+
 
 
     hf_logging.set_verbosity_error()
     eval_model(model_dir=model_dir, model_type=model_type, text_input_path=text_input, 
-               image_folder=image_folder, text_output_path=text_output,
+               image_folder=image_folder, text_output_path=text_output, postfix=append,
                repeat=1, max_new_tokens=25, use_cot=False)
     # eval_model(model_dir=model_dir, model_type=model_type, text_input_path=text_input, 
     #            image_folder=image_folder, text_output_path=text_output, postfix='',

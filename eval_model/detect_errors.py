@@ -7,11 +7,14 @@ import warnings
 def find_mcq_errors(output_list: list, target="all", response_prefix='') -> list:
     assert target in ["all", "action", "place"]
 
-    def is_mcq_correct(model_ans, label_ans):
+    def is_mcq_correct(model_ans, label_ans, label_phrase):
         sanity_list = [label_ans, f'({label_ans})', f'({label_ans}']
         for ans in sanity_list:
             if model_ans.startswith(ans):
                 return True
+        if (label_phrase in model_ans) and ("not" not in model_ans):
+            print(f'[Warning] Correct answer "{label_phrase}" found in model answer "{model_ans}" but not at the beginning.')
+            return True
         return False
     
     def is_mcq_direct_incrt(model_ans, label_ans, labels=['A', 'B', 'C', 'D']):
@@ -55,7 +58,7 @@ def find_mcq_errors(output_list: list, target="all", response_prefix='') -> list
                 if response_prefix:
                     if response_prefix in ans:
                         ans = ans.split(response_prefix)[-1].replace(':', '').replace('"', '').replace("'", '').strip()
-                        if not is_mcq_correct(ans, mcq_ans):
+                        if not is_mcq_correct(ans, mcq_ans, mcq_options[mcq_ans].lower()):
                             local_dict["ans_idx"].append(iid+1)
                             mcq_error_count += 1
                             break
@@ -75,7 +78,7 @@ def find_mcq_errors(output_list: list, target="all", response_prefix='') -> list
                             break
                         # else, treat as correct, continue
                 else:
-                    if not is_mcq_correct(ans, mcq_ans):
+                    if not is_mcq_correct(ans, mcq_ans, mcq_options[mcq_ans].lower()):
                         local_dict["ans_idx"].append(iid+1)
                         mcq_error_count += 1
                         break
@@ -250,7 +253,7 @@ def batch_auto_plus_human_eval_ans(model_ans_paths: list, split_symbols: dict, e
         write_json(f"{model_name}_mcq_err_dump.json", mcq_error_list)
         write_json(f"{model_name}_yn_err_dump.json", yn_error_list)
         evaled_error_list = human_eval_sa_answers(model_ans_list, sa_split_symbol)
-        sa_out_path = os.path.basename(model_ans_path).replace('updated_outputs', 'sa_human_eval_updated')
+        sa_out_path = os.path.basename(model_ans_path).replace('_outputs', '').replace('_updated', '').replace('.json', '_sa_human_eval_updated.json')
         write_json(sa_out_path, evaled_error_list)
         sa_error_list, sa_error_count = find_sa_errors(evaled_error_list)
 
@@ -325,37 +328,56 @@ def get_total(model_ans_list: list, target='all') -> int:
     return total
 
 
-def batch_find_and_print_error_stats(model_output_paths: list[str], sa_eval_paths: list[str], error_stats_fp='error_stats.txt') -> None:
+def batch_find_and_print_error_stats(model_output_paths: list[str], sa_eval_paths: list[str], split_symbols={'mcq':'','yn':'','sa':''},
+                                      error_stats_fp='error_stats.txt') -> None:
+    def get_one_type_error(error_list: list, q_type: str) -> dict:
+        one_type_error = []
+        one_type_error_count = 0
+        for error_dict in error_list:
+            if error_dict["category"] == q_type:
+                one_type_error.append(error_dict)
+                one_type_error_count += len(error_dict["ans_idx"])
+        return one_type_error, one_type_error_count
+    
     with open(error_stats_fp, 'w') as f:
         pass
+    
     for model_output_path, sa_eval_path in list(zip(model_output_paths, sa_eval_paths)):
         model_name = os.path.basename(model_output_path).split('_')[0]
-        output_list = read_json(model_output_path)
-        sa_eval_list = read_json(sa_eval_path)
-        assert len(sa_eval_list) == len(output_list) + 1, f"Invalid length of input lists: sa={len(sa_eval_list)}, output={len(output_list)}"
-        print(f"Model {model_name} loaded.")
-        yn_error_list, yn_error_count = find_yn_errors(output_list)
-        mcq_error_list, mcq_error_count = find_mcq_errors(output_list)
-        sa_error_list, sa_error_count = find_sa_errors(sa_eval_list)
+        model_ans_list = read_json(model_output_path)
+        evaled_error_list = read_json(sa_eval_path)
+
+        mcq_split_symbol = split_symbols["mcq"]
+        yn_split_symbol = split_symbols["yn"]
+        sa_split_symbol = split_symbols["sa"]
+        
+        mcq_error_list, mcq_error_count = find_mcq_errors(model_ans_list, response_prefix=mcq_split_symbol)
+        yn_error_list, yn_error_count = find_yn_errors(model_ans_list, response_prefix=yn_split_symbol)
+        write_json(f"{model_name}_mcq_err_dump.json", mcq_error_list)
+        write_json(f"{model_name}_yn_err_dump.json", yn_error_list)
+
+        sa_error_list, sa_error_count = find_sa_errors(evaled_error_list)
         total_error_count = yn_error_count + mcq_error_count + sa_error_count
-        total = get_total(output_list)
+        total = get_total(model_ans_list)
         total_acc_percentage = (1 - total_error_count / (total * 3)) * 100
         yn_acc_percentage = (1 - yn_error_count / total) * 100
         mcq_acc_percentage = (1 - mcq_error_count / total) * 100
         sa_acc_percentage = (1 - sa_error_count / total) * 100
 
-        action_yn_error_list, action_yn_error_count = find_yn_errors(output_list, target='action')
-        action_mcq_error_list, action_mcq_error_count = find_mcq_errors(output_list, target='action')
-        action_sa_error_list, action_sa_error_count = find_sa_errors(sa_eval_list, target='action')
-        action_total = get_total(output_list, target='action')
+        action_yn_error_list, action_yn_error_count = get_one_type_error(yn_error_list, q_type='action')
+        action_mcq_error_list, action_mcq_error_count = get_one_type_error(mcq_error_list, q_type='action')
+        action_sa_error_list, action_sa_error_count = get_one_type_error(sa_error_list, q_type='action')
+        
+        action_total = get_total(model_ans_list, target='action')
         action_yn_acc_percentage = (1 - action_yn_error_count / action_total) * 100
         action_mcq_acc_percentage = (1 - action_mcq_error_count / action_total) * 100
         action_sa_acc_percentage = (1 - action_sa_error_count / action_total) * 100
 
-        place_yn_error_list, place_yn_error_count = find_yn_errors(output_list, target='place')
-        place_mcq_error_list, place_mcq_error_count = find_mcq_errors(output_list, target='place')
-        place_sa_error_list, place_sa_error_count = find_sa_errors(sa_eval_list, target='place')
-        place_total = get_total(output_list, target='place')
+        place_yn_error_list, place_yn_error_count = get_one_type_error(yn_error_list, q_type='place')
+        place_mcq_error_list, place_mcq_error_count = get_one_type_error(mcq_error_list, q_type='place')
+        place_sa_error_list, place_sa_error_count = get_one_type_error(sa_error_list, q_type='place')
+        place_total = get_total(model_ans_list, target='place')
+        
         place_yn_acc_percentage = (1 - place_yn_error_count / place_total) * 100
         place_mcq_acc_percentage = (1 - place_mcq_error_count / place_total) * 100
         place_sa_acc_percentage = (1 - place_sa_error_count / place_total) * 100
@@ -516,10 +538,12 @@ if __name__ == "__main__":
     # model_names = ["llava-v1.6-34b", "llava-1.5-13b", "gpt-4o-2024-05-13"]
     # postfix_shorts = ['insist_csk', 'focus_vision']  
 
-    model_ans_paths = ['/120040051/Github_Repos/VKConflict/eval_model/updated_results/llava-v1.6-34b_updated_outputs_cot.json']
-    # batch_find_and_print_error_stats(model_output_paths=model_ans_paths, sa_eval_paths=[], error_stats_fp='error_stats.txt')
-    split_symbols = {"mcq": "answer is", "yn": "answer is", "sa": "answer is"}
-    batch_auto_plus_human_eval_ans(model_ans_paths, split_symbols, error_stats_fp='llava-v1.6-34b_error_stats.txt')
+    model_ans_paths = ['/120040051/Github_Repos/VKConflict/eval_model/updated_results/qwen-vl_chat_outputs_vcd_a1_b01_n500_chat_fmt.json']
+    sa_eval_paths = ['/120040051/Github_Repos/VKConflict/eval_model/updated_results/qwen-vl_chat_outputs_vcd_a1_b01_n500_chat_fmt_sa_human_eval_updated.json']
+    splits = {'mcq': '', 'yn': '', 'sa': ''}
+    batch_find_and_print_error_stats(model_output_paths=model_ans_paths, sa_eval_paths=sa_eval_paths, error_stats_fp='qwen-vl-chat_error_stats_vcd.txt')
+    # batch_auto_plus_human_eval_ans(model_ans_paths=model_ans_paths, split_symbols=splits, error_stats_fp='qwen-vl-chat_error_stats_fov.txt')
+
 
     
     # | ------------------------------------- |
