@@ -182,6 +182,11 @@ OPENAI_YN = """[[Prefix]][[Text]][[Postfix]]Answer Yes or No directly."""
 OPENAI_SA = """[[Prefix]][[Text]][[Postfix]]Answer within 5 words."""
 
 
+OPENAI_MCQ_COT = """Question: [[Text]]Options: (A) [[OptionA]]. (B) [[OptionB]]. (C) [[OptionC]]. (D) [[OptionD]]. [[Postfix]]Think step-by-step and give your the final answer as an option letter at last after saying "Final Answer:"."""
+OPENAI_YN_COT = """[[Prefix]][[Text]][[Postfix]]Think step-by-step and give your the final answer as Yes or No at last after saying "Final Answer:"."""
+OPENAI_SA_COT = """[[Prefix]][[Text]][[Postfix]]Think step-by-step and give your the final answer within 5 words at last after saying "Final Answer:"."""
+
+
 OPENAI_CHECK_ANS_PREFIX_ACTION = """You are going to check if a model's response is correct based on the provided information. Specifically, you will be provided a [Question], a [Ground truth] answer to that question, and one or more [Model answer] rounds, where each round contains one or more phrases separated with comma. Your job is to analyze each phrase in each model answer round and determine whether it has a similar meaning to the ground truth answer for the question. If the answer is overly generic but relevant (e.g., "standing"), classify it as partially correct. 
 
 Output "Correct" for correct answers, "Acceptable" for partially correct answers, "Incorrect" for incorrect answers. Output one word per line for each model answer round.
@@ -254,7 +259,10 @@ def route_templates(model_type: str, sanity_test: bool, use_cot: bool) -> dict:
         else:
             model_templates = {"MCQ": QWEN_VL_MCQ, "YN": QWEN_VL_YN, "SA": QWEN_VL_SA}
     elif model_type in ["gpt", "anthropic"]:
-        model_templates = {"MCQ": OPENAI_MCQ, "YN": OPENAI_YN, "SA": OPENAI_SA}
+        if use_cot:
+            model_templates = {"MCQ": OPENAI_MCQ_COT, "YN": OPENAI_YN_COT, "SA": OPENAI_SA_COT}
+        else:
+            model_templates = {"MCQ": OPENAI_MCQ, "YN": OPENAI_YN, "SA": OPENAI_SA}
     else:
         raise ValueError(f"Unsupported model type {model_type}")
     return model_templates

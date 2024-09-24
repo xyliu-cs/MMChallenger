@@ -1,0 +1,20 @@
+mcq_judgement_conditions
+
+llava-1.5-13b
+if _mcq_model_ans == _k_mcq_ans:
+llama3-llava-next-8b
+if _mcq_model_ans == _k_mcq_ans:
+blip2-t5-xxl
+if _mcq_model_ans == _k_mcq_ans:
+instructblip-flan-t5-xxl
+if _mcq_model_ans.startswith(_k_mcq_ans):
+qwen-vl
+if _k_mcq_ans.startswith(_mcq_model_ans):
+claude-3.5-sonnet
+if _mcq_model_ans.startswith(_k_mcq_ans):
+gpt-4o
+if _mcq_model_ans.startswith(_k_mcq_ans) or _mcq_model_ans.startswith(f"({_k_mcq_ans})") or _mcq_model_ans.startswith(f"({_k_mcq_ans[0]}"):
+llava-v1.6-34b
+if _mcq_model_ans == _k_mcq_ans:
+qwen-vl-chat
+if _k_mcq_ans in _mcq_model_ans or _k_mcq_ans.split()[1] in _mcq_model_ans:

@@ -65,7 +65,7 @@ def find_mcq_errors(output_list: list, target="all", response_prefix='') -> list
                     # go to human mode
                     else:
                         # directly false
-                        if is_mcq_correct(ans, mcq_ans):
+                        if is_mcq_correct(ans, mcq_ans, mcq_options[mcq_ans].lower()):
                             continue
                         if is_mcq_direct_incrt(ans, mcq_ans):
                             local_dict["ans_idx"].append(iid+1)
@@ -85,7 +85,7 @@ def find_mcq_errors(output_list: list, target="all", response_prefix='') -> list
                     
         if local_dict["ans_idx"]:
             ret_list.append(local_dict)
-    
+
     return ret_list, mcq_error_count
 
 
@@ -123,7 +123,9 @@ def find_yn_errors(output_list: list, target="all", global_yn_label="Yes", respo
         for iid, ans_list in enumerate(model_ans_lists):
             for ans in ans_list:
                 if response_prefix:
-                    if response_prefix in ans:
+                    if response_prefix.lower() in ans.lower():
+                        ans = ans.lower()
+                        response_prefix = response_prefix.lower()
                         ans = ans.split(response_prefix)[-1].replace(':', '').replace('"', '').replace("'", '').strip()
                         if not is_yn_correct(ans, global_yn_label):   # only check for "Yes" answer by default
                             # print("YN Incorrct Model answer:", ans)
@@ -526,9 +528,223 @@ def copy_imgs(info_list: list, source_folder: str, target_folder: str) -> None:
 
 
 
+def eval_mcq_ans_same_as_knowledge(model_ans_path: str, knowledge_ans_path: str) -> None:
+
+    splits = {'mcq': 'answer is', 'yn': '', 'sa': ''}
+    # batch_find_and_print_error_stats(model_output_paths=model_ans_paths, sa_eval_paths=sa_eval_paths, error_stats_fp='qwen-vl-chat_error_stats_vcd.txt')
+    model_ans_list = read_json(model_ans_path)
+    model_knowledge_list = read_json(knowledge_ans_path)
+    total_question = get_total(model_ans_list, 'all')
+    total_knowledge = get_total(model_knowledge_list, 'all')
+    assert total_question == total_knowledge == 374, "Total question count mismatch"
+
+    mcq_error_list, mcq_error_count = find_mcq_errors(model_ans_list)
+
+    # qwen-vl-chat needs to read from the dump, it needs manual examination
+    # mcq_error_list = read_json('/Users/xiaoyuan/Desktop/workspace/results_batch/updated_results/impr/cot/eval_results/qwen-vl-chat_mcq_err_dump.json')
+    # mcq_error_count = sum([len(item["ans_idx"]) for item in mcq_error_list])
+
+    knowledge_count = 0
+    others_count = 0
+    for error_dict in mcq_error_list:
+        error_id = error_dict["id"]
+        error_cat = error_dict["category"]
+        for ans_dict in model_ans_list:
+            if ans_dict["id"] == error_id and ans_dict["category"] == error_cat:
+                for ans_idx in error_dict["ans_idx"]:
+                    mcq_model_ans = ans_dict["mcq_model_ans"][ans_idx-1][0] # first repeat
+                    for k_ans in model_knowledge_list: # find the corresponding model knowledge answer
+                        if k_ans["id"] == error_id and k_ans["category"] == error_cat:
+                            k_mcq_ans = k_ans["mcq_model_ans"][ans_idx-1][0] # first repeat
+                            break
+                    # print(f"Question: {ans_dict['mcq']}")
+                    print(f"Correct answer: {ans_dict['MCQ_ans']} {ans_dict['MCQ_options'][ans_dict['MCQ_ans']]}")
+                    print(f"Model answer: {mcq_model_ans}")
+                    print(f"Model knowledge answer: {k_mcq_ans}")
+                    _k_mcq_ans = k_mcq_ans.replace('.', '').lower()
+                    _mcq_model_ans = mcq_model_ans.replace('.', '').lower()
+
+                    # CHANGE HERE !!!
+                    if _k_mcq_ans in _mcq_model_ans or _k_mcq_ans.split()[1] in _mcq_model_ans:
+                    # if .startswith(_k_mcq_ans):
+                    # if _mcq_model_ans.startswith(_k_mcq_ans):
+                        knowledge_count += 1
+                        error_dict["error_type"] = "knowledge"
+                    else:
+                        print('=================Notice above=================')
+                        others_count += 1
+                        error_dict["error_type"] = "other"
+                    print('\n')
+                break
+    assert mcq_error_count == knowledge_count + others_count, "Count mismatch"
+    print("Total error count: ", mcq_error_count)
+    print("mcq error rate: ", round((mcq_error_count/total_question)*100, 1))
+    print("knowledge error rate: ", round((knowledge_count/total_question)*100, 1))
+    print("others error rate: ", round((others_count/total_question)*100, 1))
+
+    model_name = os.path.basename(model_ans_path).split('_')[0]
+    with open(f'{model_name}_mcq_error_dump.json', 'w') as f:
+        json.dump(mcq_error_list, f)
+    return mcq_error_count, knowledge_count, others_count
+
+
+
+def two_open_answers_are_same(open_ans1: str, open_ans2: str) -> bool:
+    print('='*40)
+    print(f"[Model answer    ]: {open_ans1}")
+    print(f"[Knowledge answer]: {open_ans2}")
+    judegement = input("Enter 0 for different, 1 for same: ")
+    while judegement not in ['0', '1']:
+        judegement = input("Invalid input. Please enter 0 for different, 1 for same: ")
+    return judegement == '1'
+
+
+
+def get_knowledge_or_other_from_error_list(error_list: list, target_type: str):
+    knowledge_count, other_count = 0, 0
+    for error_dict in error_list:
+        if error_dict["category"] == target_type:
+            if error_dict["error_type"] == "knowledge":
+                knowledge_count += len(error_dict["ans_idx"])
+            elif error_dict["error_type"] == "other":
+                other_count += len(error_dict["ans_idx"])
+            else:
+                raise ValueError("Invalid error type")
+    return knowledge_count, other_count
+
+
+
+def get_evaled_knowledge_or_other_from_error_list(error_list: list, target_type: str):
+    knowledge_count, other_count = 0, 0
+    for error_dict in error_list:
+        if error_dict["category"] == target_type or target_type == 'all':
+            if error_dict["similar"] == True:
+                knowledge_count += len(error_dict["ans_idx"])
+            else:
+                other_count += len(error_dict["ans_idx"])
+    return knowledge_count, other_count 
+
+
+
+def human_eval_sa_answer_error_type_knowlegde_or_other(model_name, model_ans_path, sa_human_eval_path, knowledge_ans_path) -> list:
+    sa_eval_list = read_json(sa_human_eval_path)
+    model_ans_list = read_json(model_ans_path)
+    model_knowledge_list = read_json(knowledge_ans_path)
+    total_question = get_total(model_ans_list, 'all')
+
+    sa_error_list, sa_error_count = find_sa_errors(sa_eval_list[:])
+    sa_error_count = sum([len(item["ans_idx"]) for item in sa_error_list[:]])
+
+    knowledge_count = 0
+    others_count = 0
+    error_dump = []
+    for error_dict in sa_error_list:
+        error_id = error_dict["id"]
+        error_cat = error_dict["category"]
+        for ans_dict in model_ans_list:
+            if ans_dict["id"] == error_id and ans_dict["category"] == error_cat:
+                for ans_idx in error_dict["ans_idx"]:
+                    sa_model_ans = ans_dict["sa_model_ans"][ans_idx-1][0] # first repeat
+                    for k_ans in model_knowledge_list: # find the corresponding model knowledge answer
+                        if k_ans["id"] == error_id and k_ans["category"] == error_cat:
+                            k_mcq_ans = k_ans["sa_model_ans"][ans_idx-1][0] # first repeat
+                            break
+                    # print(f"Question: {ans_dict['mcq']}")
+                    print(f"Correct answer: {ans_dict['MCQ_options'][ans_dict['MCQ_ans']]}")
+                    print(f"Model answer: {sa_model_ans}")
+                    print(f"Model knowledge answer: {k_mcq_ans}")
+
+                    if two_open_answers_are_same(sa_model_ans, k_mcq_ans):
+                        local_dict = {"id": error_id, "category": error_cat, "ans_idx": [ans_idx], 
+                                      "model_ans": sa_model_ans, "knowledge_ans": k_mcq_ans, "similar": True}
+                        knowledge_count += 1
+                    else:
+                        local_dict = {"id": error_id, "category": error_cat, "ans_idx": [ans_idx], 
+                                      "model_ans": sa_model_ans, "knowledge_ans": k_mcq_ans, "similar": False}
+                        print('=================Notice above=================')
+                        others_count += 1
+                    error_dump.append(local_dict)
+                    print('\n')
+                break
+
+    assert sa_error_count == knowledge_count + others_count, "Count mismatch"
+    print("Total error count: ", sa_error_count)
+    print("total error rate: ", round((sa_error_count/total_question)*100, 1))
+    print("knowledge error rate: ", round((knowledge_count/total_question)*100))
+    write_json(f'{model_name}_error_sa_types.json', error_dump)
+
+
+
+def get_knowledge_vision_other_for_action_place(model_ans_path, model_knowledge_path, sa_evaled_path, target):
+    my_target = 'place'
+
+    model_names = ["llama3-llava-next-8b", "llava-v1.6-34b", "llava-1.5-13b", 
+                   "blip2-t5-xxl", "instructblip-flan-t5-xxl", "qwen-vl",
+                   "qwen-vl-chat", "gpt-4o-2024-05-13", "claude-3-5-sonnet-20240620"]
+    
+    model_name = "qwen-vl-chat"
+    model_ans_path = f'/Users/xiaoyuan/Desktop/workspace/results_batch/updated_results/main/{model_name}_updated_outputs.json'
+    model_knowledge_path = f'/Users/xiaoyuan/Desktop/workspace/results_batch/updated_results/sanity/{model_name}_with_uncertainty_new.json'
+
+    # model_knowledge_path = f'/Users/xiaoyuan/Desktop/workspace/results_batch/updated_results/sanity/{model_name}_sanity_test.json'
+
+    sa_evaled_fp = f"/Users/xiaoyuan/Desktop/workspace/results_batch/updated_results/sanity/eval_results/{model_name}_error_sa_types.json"
+
+
+    model_ans_list = read_json(model_ans_path)
+    type_total = get_total(model_ans_list, target=my_target)
+    total = get_total(model_ans_list, target='all')
+    
+    # NEED TO CHANGE ASSERTION TYPES BELOW
+    mcq_error_count_all, mcq_knowledge_count, _ = eval_mcq_ans_same_as_knowledge(model_ans_path, model_knowledge_path) # for sanity check, write to list
+    read_path = os.path.basename(model_ans_path).split('_')[0] + '_mcq_error_dump.json'
+    mcq_error_list = read_json(read_path)
+
+    mc_knowledge, mc_other = get_knowledge_or_other_from_error_list(mcq_error_list, target_type=my_target)
+
+
+    yn_error_list_all, yn_error_count_all = find_yn_errors(model_ans_list, target='all') # for sanity check
+    yn_error_list, yn_error_count = find_yn_errors(model_ans_list, target=my_target)
+    
+
+    sa_evaled_list = read_json(sa_evaled_fp)
+    sa_knowledge_error_all, sa_other_error_all = get_evaled_knowledge_or_other_from_error_list(sa_evaled_list, target_type='all')
+    sa_knowledge_error, sa_other_error = get_evaled_knowledge_or_other_from_error_list(sa_evaled_list, target_type=my_target)
+    
+    print(f"YN acc: {round( (1 - yn_error_count_all/374) *100, 1) }")
+    # print(f"YN {my_target} acc: {round( 1 - yn_error_count/type_total, 3) *100 }")
+    print(f"MCQ acc: {round( (1 - mcq_error_count_all/374) *100, 1) }")
+    print('MCQ knowledge count:', mcq_knowledge_count)
+    # print(f"MCQ {my_target} acc: {round( 1 - mcq_error_count/type_total, 3) *100}")
+    print(f"SA Knowledge: {round((sa_knowledge_error_all/374) *100, 1)}")
+    print(f"SA Other: {round((sa_other_error_all/374) *100, 1) }")
+    print('='*40)
+
+    print(f"{my_target} YN knowledge error: {yn_error_count}")
+    print(f"{my_target} YN other error: 0")
+
+    print(f"{my_target} MCQ knowledge error: {mc_knowledge}")
+    print(f"{my_target} MCQ other error: {mc_other}")
+
+    print(f"{my_target} SA knowledge error: {sa_knowledge_error}")
+    print(f"{my_target} SA other error: {sa_other_error}")
+
+    print('='*40)
+    print(f"{my_target} knowledge total: {yn_error_count+mc_knowledge+sa_knowledge_error}")
+    print(f"{my_target} other total: {mc_other+sa_other_error}")
+    print(f"{my_target} total: {type_total}, total*3: {type_total*3}")
+    print(f"{my_target} knowledge percentage: {round((yn_error_count+mc_knowledge+sa_knowledge_error)/(type_total*3)*100, 1)}")
+    print(f"{my_target} other percentage: {round((mc_other+0+sa_other_error)/(type_total*3)*100, 1)}")
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
-
+    print("Hello, world!")
     # | ------------------------------------- |
     # |  PART 1: Eval and Collect Errors      |
     # | ------------------------------------- |
@@ -537,14 +753,50 @@ if __name__ == "__main__":
     #                "qwen-vl-chat", "gpt-4o-2024-05-13", "claude-3-5-sonnet-20240620"]
     # model_names = ["llava-v1.6-34b", "llava-1.5-13b", "gpt-4o-2024-05-13"]
     # postfix_shorts = ['insist_csk', 'focus_vision']  
+    # model_ans_path = '/Users/xiaoyuan/Desktop/workspace/results_batch/updated_results/main/llava-v1.6-34b_updated_outputs.json'
+    # model_ans_list = read_json(model_ans_path)
 
-    model_ans_paths = ['/120040051/Github_Repos/VKConflict/eval_model/updated_results/qwen-vl_chat_outputs_vcd_a1_b01_n500_chat_fmt.json']
-    sa_eval_paths = ['/120040051/Github_Repos/VKConflict/eval_model/updated_results/qwen-vl_chat_outputs_vcd_a1_b01_n500_chat_fmt_sa_human_eval_updated.json']
-    splits = {'mcq': '', 'yn': '', 'sa': ''}
-    batch_find_and_print_error_stats(model_output_paths=model_ans_paths, sa_eval_paths=sa_eval_paths, error_stats_fp='qwen-vl-chat_error_stats_vcd.txt')
+    # mcq_error_list, mcq_error_count = find_mcq_errors(model_ans_list)
+    # mcq_error_list_ac, mcq_error_count_ac = find_mcq_errors(model_ans_list, target='action')
+    # mcq_error_list_pl, mcq_error_count_pl = find_mcq_errors(model_ans_list, target='place')
+
+    # yn_error_list, yn_error_count = find_yn_errors(model_ans_list)
+    # yn_error_list_ac, yn_error_count_ac = find_yn_errors(model_ans_list, target='action')
+    # yn_error_list_pl, yn_error_count_pl = find_yn_errors(model_ans_list, target='place')
+
+    # sa_human_eval_fp = '/Users/xiaoyuan/Desktop/workspace/results_batch/updated_results/main/llava-v1.6-34b_sa_human_eval_updated.json'
+    # sa_evaled_list = read_json(sa_human_eval_fp)
+    # sa_error_list, sa_error_count = find_sa_errors(sa_evaled_list)
+    # sa_error_list_ac, sa_error_count_ac = find_sa_errors(sa_evaled_list, target='action')
+    # sa_error_list_pl, sa_error_count_pl = find_sa_errors(sa_evaled_list, target='place')
+
+    # total_question = get_total(model_ans_list, 'all')
+    # action_question = get_total(model_ans_list, 'action')
+    # place_question = get_total(model_ans_list, 'place')
+
+    # # print(f"MCQ errors: {mcq_error_list}")
+
+    # print(f"MCQ accuracy: {round((1 - mcq_error_count/total_question) *100, 1)}")
+    # print(f"MCQ action accuracy: {round((1 - mcq_error_count_ac/action_question)*100, 1)}")
+    # print(f"MCQ place accuracy: {round((1 - mcq_error_count_pl/place_question) *100, 1)}")
+
+    # print(f"YN accuracy: {round((1 - yn_error_count/total_question) *100, 1)}")
+    # print(f"YN action accuracy: {round((1 - yn_error_count_ac/action_question) *100, 1)}")
+    # print(f"YN place accuracy: {round((1 - yn_error_count_pl/place_question) *100, 1)}")
+
+    # print(f"SA accuracy: {round((1 - sa_error_count/total_question) *100, 1)}")
+    # print(f"SA action accuracy: {round((1 - sa_error_count_ac/action_question) *100, 1)}")
+    # print(f"SA place accuracy: {round((1 - sa_error_count_pl/place_question) *100, 1)}")
+
+    # print(f"YN accuracy: {round(1 - yn_error_count/total_question, 3)}")
+
+
+    # mcq_error_list = read_json('/Users/xiaoyuan/Desktop/workspace/results_batch/updated_results/impr/cot/eval_results/qwen-vl-chat_mcq_err_dump.json')
+    # mcq_error_count = sum([len(item["ans_idx"]) for item in mcq_error_list])
+
+    # print(f"MCQ errors: {mcq_error_list}")
     # batch_auto_plus_human_eval_ans(model_ans_paths=model_ans_paths, split_symbols=splits, error_stats_fp='qwen-vl-chat_error_stats_fov.txt')
-
-
+    
     
     # | ------------------------------------- |
     # |  PART 2: Collect Error Statistics     |
